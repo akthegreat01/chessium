@@ -30,7 +30,7 @@ export default function AboutPage() {
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-black mb-8 tracking-widest uppercase shadow-[0_0_15px_rgba(59,130,246,0.15)]">
             <Hexagon className="w-3.5 h-3.5" />
-            Underpromotion
+            Chessium
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black mb-6 text-white tracking-tight leading-tight drop-shadow-2xl">
@@ -39,7 +39,7 @@ export default function AboutPage() {
           </h1>
 
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-12">
-            Underpromotion is a professional-grade, locally-computed analysis platform. By combining the raw power of Stockfish 16.1 WebAssembly with an uncompromising, distraction-free aesthetic, it brings absolute clarity to the beautiful game.
+            Chessium is a professional-grade, locally-computed analysis platform. By combining the raw power of Stockfish 16.1 WebAssembly with an uncompromising, distraction-free aesthetic, it brings absolute clarity to the beautiful game.
           </p>
 
           {/* Stats */}
@@ -60,7 +60,7 @@ export default function AboutPage() {
 
       {/* Features Grid */}
       <div className="max-w-5xl mx-auto px-4 pb-20 w-full relative z-10">
-        <h2 className="text-sm font-black text-gray-500 uppercase tracking-[0.2em] text-center mb-8">What Makes Underpromotion Different</h2>
+        <h2 className="text-sm font-black text-gray-500 uppercase tracking-[0.2em] text-center mb-8">What Makes Chessium Different</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((f) => (
             <div key={f.title} className="glass-panel p-6 rounded-2xl group hover:border-blue-500/30 hover:bg-white/5 transition-all duration-300">

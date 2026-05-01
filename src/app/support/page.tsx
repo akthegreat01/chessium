@@ -13,13 +13,13 @@ export default function SupportPage() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pink-500/10 border border-pink-500/20 text-pink-400 text-xs font-black mb-6 tracking-widest uppercase shadow-[0_0_15px_rgba(236,72,153,0.15)]">
             <Heart className="w-3.5 h-3.5" fill="currentColor" />
-            Support Underpromotion
+            Support Chessium
           </div>
           <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight mb-4 drop-shadow-lg">
             Keep the Engine <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">Running</span>
           </h1>
           <p className="text-gray-400 max-w-lg mx-auto leading-relaxed text-lg">
-            Underpromotion is built with passion to provide an elite, ad-free analysis experience. 
+            Chessium is built with passion to provide an elite, ad-free analysis experience. 
             Your support helps keep this project alive and growing.
           </p>
         </div>
@@ -50,7 +50,7 @@ export default function SupportPage() {
             <div className="flex flex-col gap-6">
               {[
                 { icon: Coffee, title: "Fund Development", desc: "Every contribution goes directly towards improving analysis accuracy, adding features, and maintaining performance." },
-                { icon: Code, title: "Open Source", desc: "Underpromotion is built openly. Your support enables us to keep it free and accessible to every player." },
+                { icon: Code, title: "Open Source", desc: "Chessium is built openly. Your support enables us to keep it free and accessible to every player." },
                 { icon: Star, title: "Premium Features", desc: "Support helps fund advanced features like opening databases, endgame tablebases, and cloud sync." },
               ].map((item) => (
                 <div key={item.title} className="flex gap-4 group">

@@ -14,6 +14,7 @@ const GameReview = dynamic(() => import("@/components/GameReview"), { ssr: false
 const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
 const GameHistoryPanel = dynamic(() => import("@/components/GameHistoryPanel"), { ssr: false });
 const TrainMistakesLauncher = dynamic(() => import("@/components/TrainMistakesLauncher"), { ssr: false });
+const SidebarAd = dynamic(() => import("@/components/SidebarAd"), { ssr: false });
 
 export default function Home() {
   const {
@@ -56,7 +57,7 @@ export default function Home() {
     const blob = new Blob([game.pgn()], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url;
-    a.download = `aurachess_${Date.now()}.pgn`; a.click();
+    a.download = `chessium_${Date.now()}.pgn`; a.click();
     URL.revokeObjectURL(url);
   };
 
@@ -64,7 +65,10 @@ export default function Home() {
   const bottomColor = boardFlipped ? 'b' : 'w';
 
   return (
-    <div className="flex justify-center gap-6 p-4 max-w-[1420px] mx-auto" style={{ height: 'calc(100vh - 56px)' }}>
+    <div className="flex justify-center gap-6 p-4 max-w-[1780px] mx-auto w-full" style={{ height: 'calc(100vh - 56px)' }}>
+      
+      {/* Left Ad Sidebar */}
+      <SidebarAd side="left" />
 
       {/* Center: Board Column */}
       <div className="flex flex-col shrink-0" style={{ width: 'calc(100vh - 220px)', maxWidth: 'min(100%, 850px)' }}>
@@ -165,6 +169,9 @@ export default function Home() {
           </>
         )}
       </div>
+
+      {/* Right Ad Sidebar */}
+      <SidebarAd side="right" />
     </div>
   );
 }

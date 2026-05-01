@@ -26,7 +26,7 @@ export default function Header() {
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-lg tracking-tight text-white leading-none">
-              Under<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 font-black">promotion</span>
+              Chess<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 font-black">ium</span>
             </span>
             <span className="text-[9px] text-gray-400 font-medium tracking-tight mt-1 opacity-70 uppercase">
               The best move is not always obvious

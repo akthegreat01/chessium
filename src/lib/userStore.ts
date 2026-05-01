@@ -17,8 +17,8 @@ export const useUserStore = create<UserState>((set) => {
   let initialMaxStreak = 0;
 
   if (typeof window !== 'undefined') {
-    initialXp = parseInt(localStorage.getItem('aurachess_xp') || '0', 10);
-    initialMaxStreak = parseInt(localStorage.getItem('aurachess_max_streak') || '0', 10);
+    initialXp = parseInt(localStorage.getItem('chessium_xp') || '0', 10);
+    initialMaxStreak = parseInt(localStorage.getItem('chessium_max_streak') || '0', 10);
   }
 
   const calculateLevel = (xp: number) => Math.floor(Math.pow(xp / 100, 0.7)) + 1;
@@ -34,7 +34,7 @@ export const useUserStore = create<UserState>((set) => {
       const newLevel = calculateLevel(newXp);
       
       if (typeof window !== 'undefined') {
-        localStorage.setItem('aurachess_xp', newXp.toString());
+        localStorage.setItem('chessium_xp', newXp.toString());
       }
       
       return { xp: newXp, level: newLevel };
@@ -45,7 +45,7 @@ export const useUserStore = create<UserState>((set) => {
       const newMax = Math.max(state.maxStreak, newStreak);
       
       if (typeof window !== 'undefined') {
-        localStorage.setItem('aurachess_max_streak', newMax.toString());
+        localStorage.setItem('chessium_max_streak', newMax.toString());
       }
       
       return { streak: newStreak, maxStreak: newMax };

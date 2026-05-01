@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Underpromotion | Premium Chess Analysis",
+  title: "Chessium | Premium Chess Analysis",
   description: "High-performance, beautifully crafted browser-based chess analysis engine powered by Stockfish WASM.",
 };
 

@@ -115,7 +115,7 @@ export default function GameImport() {
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');
               a.href = url;
-              a.download = `aurachess_${new Date().getTime()}.pgn`;
+              a.download = `chessium_${new Date().getTime()}.pgn`;
               a.click();
               URL.revokeObjectURL(url);
             }}
