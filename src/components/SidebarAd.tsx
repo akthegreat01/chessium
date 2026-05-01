@@ -1,49 +1,30 @@
 "use client";
 
-import { Info } from 'lucide-react';
-
 interface SidebarAdProps {
   side: 'left' | 'right';
 }
 
+/**
+ * SidebarAd component provides dedicated containers for real advertisements.
+ * Use the provided IDs to target these slots with your ad scripts (AdSense, Carbon, etc).
+ */
 export default function SidebarAd({ side }: SidebarAdProps) {
   return (
     <div className={`hidden xl:flex flex-col gap-4 w-[160px] h-full py-4 ${side === 'left' ? 'items-end' : 'items-start'}`}>
-      <div className="w-full flex-1 glass-panel relative overflow-hidden flex flex-col border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.02] transition-colors group">
-        {/* Ad Label */}
-        <div className="absolute top-0 right-0 p-1 flex items-center gap-1 opacity-20 group-hover:opacity-40 transition-opacity">
-          <span className="text-[8px] uppercase tracking-tighter text-gray-400 font-bold">Advertisement</span>
-          <Info className="w-2 h-2 text-gray-500" />
-        </div>
-
-        {/* Ad Content Placeholder */}
-        <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 flex items-center justify-center mb-3 border border-white/5">
-            <span className="text-xl">✨</span>
-          </div>
-          <div className="space-y-1">
-            <div className="h-2 w-16 bg-white/5 rounded mx-auto" />
-            <div className="h-1.5 w-12 bg-white/[0.03] rounded mx-auto" />
-          </div>
-        </div>
-
-        {/* Bottom Call to Action */}
-        <div className="p-3 border-t border-white/[0.03] bg-black/20">
-          <div className="w-full h-8 rounded-md bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/20 flex items-center justify-center text-[10px] font-black uppercase tracking-wider text-blue-400 hover:from-blue-600/30 transition-all cursor-pointer">
-            Explore
-          </div>
-        </div>
+      {/* Top Ad Slot */}
+      <div 
+        id={`ad-slot-${side}-top`}
+        className="w-full flex-1 rounded-xl border border-white/[0.03] bg-white/[0.01] flex items-center justify-center relative min-h-[400px]"
+      >
+        <span className="absolute top-2 right-2 text-[8px] uppercase tracking-tighter text-gray-700 font-bold select-none">Ad Slot</span>
       </div>
 
-      <div className="w-full h-[250px] glass-panel relative overflow-hidden flex flex-col border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.02] transition-colors group">
-        <div className="absolute top-0 right-0 p-1 flex items-center gap-1 opacity-20">
-          <span className="text-[8px] uppercase tracking-tighter text-gray-400 font-bold">Ad</span>
-        </div>
-        <div className="flex-1 flex flex-col items-center justify-center p-4">
-           <div className="w-full aspect-square rounded-lg bg-gradient-to-tr from-orange-500/5 to-red-500/5 border border-white/5 flex items-center justify-center">
-              <span className="text-2xl grayscale opacity-20 group-hover:grayscale-0 group-hover:opacity-100 transition-all">🎯</span>
-           </div>
-        </div>
+      {/* Bottom Ad Slot (Fixed Height) */}
+      <div 
+        id={`ad-slot-${side}-bottom`}
+        className="w-full h-[250px] rounded-xl border border-white/[0.03] bg-white/[0.01] flex items-center justify-center relative flex-shrink-0"
+      >
+        <span className="absolute top-2 right-2 text-[8px] uppercase tracking-tighter text-gray-700 font-bold select-none">Ad Slot</span>
       </div>
     </div>
   );
