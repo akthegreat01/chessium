@@ -1,13 +1,36 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: "Chessium | Premium Chess Analysis",
-  description: "High-performance, beautifully crafted browser-based chess analysis engine powered by Stockfish WASM.",
+  description: "High-performance, beautifully crafted browser-based chess analysis engine powered by Stockfish WASM. Analyze games, train mistakes, and explore openings — all for free.",
+  keywords: ["chess", "analysis", "stockfish", "engine", "chess.com", "lichess", "game review", "opening explorer"],
+  authors: [{ name: "Chessium" }],
+  openGraph: {
+    title: "Chessium | Premium Chess Analysis",
+    description: "Analyze your chess games with grandmaster-level Stockfish NNUE. Import from Chess.com and Lichess instantly.",
+    type: "website",
+    siteName: "Chessium",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Chessium | Premium Chess Analysis",
+    description: "Free, browser-based chess analysis powered by Stockfish NNUE.",
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#08090a',
 };
 
 export default function RootLayout({

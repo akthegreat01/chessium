@@ -82,20 +82,20 @@ export default function PlayerBar({ color }: { color: 'w' | 'b' }) {
   const playerElo = color === 'w' ? headers.WhiteElo : headers.BlackElo;
   
   return (
-    <div className="flex items-center justify-between h-10 px-1 py-1">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center justify-between h-9 md:h-10 px-1 py-1">
+      <div className="flex items-center gap-2 md:gap-3 min-w-0">
         {/* Avatar Placeholder */}
-        <div className="w-8 h-8 bg-gray-700 rounded flex items-center justify-center overflow-hidden border border-white/10">
-           <span className="text-xl opacity-80">{color === 'w' ? '♙' : '♟'}</span>
+        <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-700 rounded flex items-center justify-center overflow-hidden border border-white/10 shrink-0">
+           <span className="text-lg md:text-xl opacity-80">{color === 'w' ? '♙' : '♟'}</span>
         </div>
         
-        <div className="flex flex-col">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-gray-200">
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <span className="text-xs md:text-sm font-semibold text-gray-200 truncate max-w-[120px] md:max-w-none">
               {playerName}
             </span>
             {playerElo && (
-              <span className="text-xs text-gray-500">({playerElo})</span>
+              <span className="text-[10px] md:text-xs text-gray-500">({playerElo})</span>
             )}
           </div>
           
@@ -105,16 +105,10 @@ export default function PlayerBar({ color }: { color: 'w' | 'b' }) {
               <PieceIcon key={i} type={p} color={oppColor} />
             ))}
             {advantage > 0 && (
-              <span className="text-[11px] text-green-500 font-semibold ml-1">+{advantage}</span>
+              <span className="text-[10px] md:text-[11px] text-green-500 font-semibold ml-1">+{advantage}</span>
             )}
           </div>
         </div>
-      </div>
-      
-      {/* Clock Placeholder */}
-      <div className="bg-[#1a1a1a] border border-white/10 rounded px-3 py-1 flex items-center gap-2 shadow-inner">
-        <span className="text-gray-400 text-xs">⏱</span>
-        <span className="text-gray-200 font-mono text-sm font-bold">10:00</span>
       </div>
     </div>
   );
