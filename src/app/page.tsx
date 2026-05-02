@@ -231,6 +231,9 @@ export default function Home() {
                   <GameImport />
                 </div>
               </>
+            )}
+            
+            {/* Support Link */}
             <div className="mt-auto pt-4 flex justify-center">
               <a 
                 href="/support" 
