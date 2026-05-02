@@ -18,7 +18,7 @@ export default function Header() {
     <header className="w-full border-b border-white/[0.04] bg-[#0a0b0e]/90 backdrop-blur-xl sticky top-0 z-50" style={{ height: 'var(--header-h, 56px)' }}>
       <div className="max-w-[1400px] mx-auto px-6 h-full flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="bg-gradient-to-br from-red-500 via-purple-500 to-blue-500 p-1.5 rounded-lg shadow-lg shadow-red-500/10 group-hover:shadow-blue-500/30 transition-all group-hover:scale-105 flex items-center justify-center w-8 h-8">
+          <div className="bg-blue-600 p-1.5 rounded-lg shadow-lg shadow-blue-500/10 group-hover:shadow-blue-500/30 transition-all group-hover:scale-105 flex items-center justify-center w-8 h-8">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" className="w-5 h-5 fill-white">
               <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" />
               <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" />
@@ -26,7 +26,7 @@ export default function Header() {
           </div>
           <div className="flex flex-col">
             <span className="font-bold text-base md:text-lg tracking-tight text-white leading-none">
-              Chess<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 font-black">ium</span>
+              Chessium
             </span>
             <span className="hidden md:block text-[9px] text-gray-400 font-medium tracking-tight mt-1 opacity-70 uppercase">
               The best move is not always obvious
