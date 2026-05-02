@@ -52,7 +52,7 @@ export default function Header() {
               Chessium
             </span>
             <span className="hidden md:block text-[9px] font-medium tracking-tight mt-0.5 uppercase" style={{ color: 'rgba(212,175,55,0.5)', letterSpacing: '0.05em' }}>
-              The best move is not always obvious
+              Not always the obvious move is the best
             </span>
           </div>
         </Link>

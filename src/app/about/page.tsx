@@ -34,12 +34,12 @@ export default function AboutPage() {
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black mb-6 text-white tracking-tight leading-tight drop-shadow-2xl" style={{ letterSpacing: '-0.02em' }}>
-            Where{' '}
+            Not always the{' '}
             <span style={{ background: 'linear-gradient(135deg, #e8c84a 0%, #d4af37 40%, #b8962e 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              Human Intuition
+              obvious move
             </span>
             <br className="hidden md:block" />
-            Meets Engine Perfection
+            is the best.
           </h1>
 
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-12 font-medium">
