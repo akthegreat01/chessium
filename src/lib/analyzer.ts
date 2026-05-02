@@ -63,15 +63,30 @@ function evalToWhiteScore(score: number, mate: number | null, isWhiteToMove: boo
  * Detect if a move involves a sacrifice (giving up material for positional/tactical gain).
  */
 function isSacrifice(move: Move, evalBeforeForPlayer: number, evalAfterForPlayer: number): boolean {
-  if (!move.captured) return false;
+  // A simple heuristic: if a higher value piece captures a lower value piece, it's NOT a sacrifice.
+  // A sacrifice is usually when you give up a piece for nothing or for a lower value piece
+  // and yet the engine evaluation remains high.
   
   const pieceValues: Record<string, number> = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
-  const capturedValue = pieceValues[move.captured] || 0;
-  const movedValue = pieceValues[move.piece] || 0;
+  const capturedValue = move.captured ? pieceValues[move.captured] : 0;
+  const movedValue = pieceValues[move.piece];
   
-  // It's a sacrifice if you're giving up a higher-value piece for a lower-value piece
-  // or if you're moving into a position where you'll lose material but gain positionally
-  if (movedValue > capturedValue + 100) return true;
+  // Case 1: Capture where you lose the piece (roughly estimated by engine eval not dropping despite material loss)
+  // But wait, we don't have the "after capture" state easily here without another engine call.
+  
+  // Let's use a simpler but more accurate check for "Brilliant":
+  // It's a move that looks like a blunder (material-wise) but is actually the best move.
+  // For now, let's just make it harder to trigger.
+  
+  if (move.captured) {
+    // If you trade a Queen for a Minor piece or Rook
+    if (movedValue === 900 && capturedValue <= 500) return true;
+    // If you trade a Rook for a Minor piece
+    if (movedValue === 500 && capturedValue <= 330) return true;
+  } else {
+    // Giving up a piece for "nothing"
+    if (movedValue >= 320) return true;
+  }
   
   return false;
 }
@@ -106,7 +121,7 @@ function classifyMove(
   isForced: boolean,
   isBestMove: boolean,
   move: Move,
-  winPctLoss: number,
+  winPctLoss: number
 ): MoveClassification {
   const evalBeforeForPlayer = isWhite ? evalBeforeWhite : -evalBeforeWhite;
   const evalAfterForPlayer = isWhite ? evalAfterWhite : -evalAfterWhite;
@@ -114,38 +129,32 @@ function classifyMove(
 
   if (isForced) return 'forced';
 
-  // Opening book detection: first 4 full moves with very small loss
-  if (moveIndex < 8 && cpLoss < 20 && winPctLoss < 2) return 'book';
+  // Opening book detection
+  if (moveIndex < 10 && cpLoss < 15 && winPctLoss < 1.5) return 'book';
 
   if (isBestMove) {
-    // Brilliant: sacrifice that maintains or improves position
-    const wasBehindOrEqual = evalBeforeForPlayer < 100;
-    const nowAhead = evalAfterForPlayer > 100;
+    // Brilliant: A move that is the best move, involves a sacrifice, 
+    // and maintaining a strong position (eval > 100).
     const isCaptureSacrifice = isSacrifice(move, evalBeforeForPlayer, evalAfterForPlayer);
+    if (isCaptureSacrifice && evalAfterForPlayer > 100 && cpLoss < 10) return 'brilliant';
     
-    if (isCaptureSacrifice && nowAhead) return 'brilliant';
-    
-    // Brilliant: turning a losing/equal position into a winning one
-    const wasLosing = evalBeforeForPlayer < -50;
-    const nowWinning = evalAfterForPlayer > 150;
-    if (wasLosing && nowWinning) return 'brilliant';
-    
-    // Great: finding a crushing move from an equal position
+    // Great: Finding a winning move from an equal position
     const wasEqual = Math.abs(evalBeforeForPlayer) < 50;
+    const nowWinning = evalAfterForPlayer > 150;
     if (wasEqual && nowWinning) return 'great';
 
-    // Great: finding a check that wins material significantly
-    if (move.san.includes('+') && evalAfterForPlayer - evalBeforeForPlayer > 200) return 'great';
+    // Great: Finding a crushing blow in a winning position
+    if (evalBeforeForPlayer > 100 && evalAfterForPlayer - evalBeforeForPlayer > 150) return 'great';
 
     return 'best';
   }
 
-  // Use win percentage loss for classification (more perceptually accurate than raw cp)
-  if (winPctLoss < 1) return 'excellent';
-  if (winPctLoss < 2) return 'excellent';
-  if (winPctLoss < 5) return 'good';
-  if (winPctLoss < 10) return 'inaccuracy';
-  if (winPctLoss < 20) return 'mistake';
+  // Non-best moves
+  if (winPctLoss < 0.5) return 'best'; // Practically the same as best
+  if (winPctLoss < 1.5) return 'excellent';
+  if (winPctLoss < 4.0) return 'good';
+  if (winPctLoss < 9.0) return 'inaccuracy';
+  if (winPctLoss < 18.0) return 'mistake';
   return 'blunder';
 }
 

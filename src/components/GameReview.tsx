@@ -4,24 +4,24 @@ import { useChessStore } from '@/lib/chessStore';
 import { useUserStore } from '@/lib/userStore';
 import { 
   Trophy, TrendingUp, AlertCircle, CheckCircle2, ChevronRight, 
-  BarChart3, Brain, Play, RotateCcw, Target, Clock, Zap
+  BarChart3, Brain, Play, RotateCcw, Target, Clock, Zap, MessageSquare, List
 } from 'lucide-react';
 import { MoveClassification } from '@/lib/analyzer';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import EvalGraph from './EvalGraph';
 import { useEffect, useState } from 'react';
 
-const classData: Record<MoveClassification, { label: string; color: string; symbol: string; glow: string }> = {
-  brilliant:   { label: 'Brilliant',   color: '#1cb0f6', symbol: '!!', glow: 'shadow-[0_0_8px_rgba(28,176,246,0.5)]' },
-  great:       { label: 'Great',       color: '#5c8bb0', symbol: '!',  glow: 'shadow-[0_0_6px_rgba(92,139,176,0.3)]' },
-  best:        { label: 'Best',        color: '#81b64c', symbol: '★',  glow: '' },
-  excellent:   { label: 'Excellent',   color: '#96bc4b', symbol: '✓',  glow: '' },
-  good:        { label: 'Good',        color: '#96af8b', symbol: '●',  glow: '' },
-  book:        { label: 'Book',        color: '#d5a47d', symbol: '📖', glow: '' },
-  inaccuracy:  { label: 'Inaccuracy',  color: '#f7c545', symbol: '?!', glow: 'shadow-[0_0_6px_rgba(247,197,69,0.3)]' },
-  mistake:     { label: 'Mistake',     color: '#ffa459', symbol: '?',  glow: 'shadow-[0_0_6px_rgba(255,164,89,0.4)]' },
-  blunder:     { label: 'Blunder',     color: '#fa412d', symbol: '??', glow: 'shadow-[0_0_8px_rgba(250,65,45,0.5)]' },
-  forced:      { label: 'Forced',      color: '#737373', symbol: '→',  glow: '' },
+const classData: Record<MoveClassification, { label: string; color: string; symbol: string; glow: string; text: string }> = {
+  brilliant:   { label: 'Brilliant',   color: '#1cb0f6', symbol: '!!', glow: 'shadow-[0_0_12px_rgba(28,176,246,0.6)]', text: 'text-[#1cb0f6]' },
+  great:       { label: 'Great',       color: '#5c8bb0', symbol: '!',  glow: 'shadow-[0_0_8px_rgba(92,139,176,0.4)]', text: 'text-[#5c8bb0]' },
+  best:        { label: 'Best',        color: '#81b64c', symbol: '★',  glow: '', text: 'text-[#81b64c]' },
+  excellent:   { label: 'Excellent',   color: '#96bc4b', symbol: '✓',  glow: '', text: 'text-[#96bc4b]' },
+  good:        { label: 'Good',        color: '#96af8b', symbol: '●',  glow: '', text: 'text-[#96af8b]' },
+  book:        { label: 'Book',        color: '#d5a47d', symbol: '📖', glow: '', text: 'text-[#d5a47d]' },
+  inaccuracy:  { label: 'Inaccuracy',  color: '#f7c545', symbol: '?!', glow: 'shadow-[0_0_8px_rgba(247,197,69,0.4)]', text: 'text-[#f7c545]' },
+  mistake:     { label: 'Mistake',     color: '#ffa459', symbol: '?',  glow: 'shadow-[0_0_8px_rgba(255,164,89,0.5)]', text: 'text-[#ffa459]' },
+  blunder:     { label: 'Blunder',     color: '#fa412d', symbol: '??', glow: 'shadow-[0_0_12px_rgba(250,65,45,0.6)]', text: 'text-[#fa412d]' },
+  forced:      { label: 'Forced',      color: '#737373', symbol: '→',  glow: '', text: 'text-gray-500' },
 };
 
 function getGrade(accuracy: number) {
@@ -45,33 +45,31 @@ function AccuracyRing({ accuracy, size = 80, delay = 0 }: { accuracy: number; si
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="-rotate-90">
-        {/* Track */}
+      <svg width={size} height={size} className="-rotate-90 drop-shadow-lg">
         <circle
           cx={size / 2} cy={size / 2} r={radius}
-          fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="5"
+          fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="6"
         />
-        {/* Progress */}
         <circle
           cx={size / 2} cy={size / 2} r={radius}
           fill="none"
           stroke={`url(#grad-${delay})`}
-          strokeWidth="5"
+          strokeWidth="6"
           strokeLinecap="round"
           strokeDasharray={circumference}
           strokeDashoffset={mounted ? offset : circumference}
-          style={{ transition: `stroke-dashoffset 1.5s cubic-bezier(0.22, 1, 0.36, 1) ${delay}s` }}
+          style={{ transition: `stroke-dashoffset 2s cubic-bezier(0.34, 1.56, 0.64, 1) ${delay}s` }}
         />
         <defs>
           <linearGradient id={`grad-${delay}`} x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" className={grade.color.split(' ')[0].replace('from-', '')} style={{ stopColor: accuracy >= 80 ? '#4ade80' : accuracy >= 50 ? '#fbbf24' : '#ef4444' }} />
+            <stop offset="0%" style={{ stopColor: accuracy >= 80 ? '#4ade80' : accuracy >= 50 ? '#fbbf24' : '#ef4444' }} />
             <stop offset="100%" style={{ stopColor: accuracy >= 80 ? '#22c55e' : accuracy >= 50 ? '#f97316' : '#dc2626' }} />
           </linearGradient>
         </defs>
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-lg font-black text-white tabular-nums">{Math.round(accuracy * 10) / 10}</span>
-        <span className="text-[8px] text-gray-500 uppercase tracking-widest font-bold">ACC</span>
+        <span className="text-xl font-black text-white tabular-nums tracking-tighter">{Math.round(accuracy)}</span>
+        <span className="text-[7px] text-gray-500 uppercase tracking-widest font-black opacity-50">ACC</span>
       </div>
     </div>
   );
@@ -84,17 +82,17 @@ export default function GameReview() {
     explainWhyLine, setExplainWhyLine
   } = useChessStore();
   const { recordAnalysis, addXp } = useUserStore();
+  
+  const [activeTab, setActiveTab] = useState<'review' | 'analysis' | 'coach'>('review');
   const [hasRecorded, setHasRecorded] = useState(false);
 
   const typesToShow: MoveClassification[] = ['brilliant', 'great', 'best', 'excellent', 'good', 'book', 'inaccuracy', 'mistake', 'blunder'];
 
-  // Use variation analysis if exploring a sideline, otherwise use main analysis
   const moveAnalysis = (variationAnalysis && mainLineHistory)
     ? variationAnalysis
     : analysisResult?.moveAnalyses?.[currentMoveIndex];
   const moveClass = moveAnalysis ? classData[moveAnalysis.classification] : null;
 
-  // Record analysis completion for achievements
   useEffect(() => {
     if (analysisResult && !isAnalyzing && !hasRecorded) {
       setHasRecorded(true);
@@ -102,269 +100,370 @@ export default function GameReview() {
       const hasBrilliant = (analysisResult.counts.white.brilliant + analysisResult.counts.black.brilliant) > 0;
       const noBlunders = (analysisResult.counts.white.blunder + analysisResult.counts.black.blunder) === 0;
       recordAnalysis(maxAccuracy, hasBrilliant, noBlunders);
-      addXp(50 + Math.round(maxAccuracy / 2)); // XP based on accuracy
+      addXp(50 + Math.round(maxAccuracy / 2));
     }
   }, [analysisResult, isAnalyzing]);
 
-  // Reset recorded state when analysis changes
   useEffect(() => {
-    if (isAnalyzing) setHasRecorded(false);
+    if (isAnalyzing) {
+      setHasRecorded(false);
+      setActiveTab('review');
+    }
   }, [isAnalyzing]);
 
   return (
-    <div className="glass-panel overflow-hidden flex flex-col">
-      {/* Header */}
-      <div className="flex justify-between items-center px-3 py-2 border-b border-white/[0.05]">
-        <h2 className="font-bold text-sm text-white flex items-center gap-2 uppercase tracking-wider">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20">
-            <Brain className="w-3.5 h-3.5 text-blue-400" />
-          </div>
-          Game Review
-        </h2>
-        {analysisResult?.timeTakenMs && (
-          <div className="flex items-center gap-1.5 bg-white/[0.03] px-2 py-1 rounded-md border border-white/[0.05]">
-            <Clock className="w-3 h-3 text-gray-500" />
-            <span className="text-[10px] text-gray-400 font-mono">{(analysisResult.timeTakenMs / 1000).toFixed(1)}s</span>
-            {analysisResult.cacheStats && (
-              <>
-                <Zap className="w-3 h-3 text-yellow-500/60 ml-1" />
-                <span className="text-[10px] text-yellow-500/60 font-mono">{analysisResult.cacheStats.hits} cached</span>
-              </>
+    <div className="glass-panel overflow-hidden flex flex-col h-full shadow-2xl">
+      {/* Tabs */}
+      <div className="flex bg-white/[0.03] border-b border-white/[0.05]">
+        {[
+          { id: 'review', icon: Target, label: 'Review' },
+          { id: 'analysis', icon: List, label: 'Stats' },
+          { id: 'coach', icon: MessageSquare, label: 'Coach' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id as any)}
+            className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${
+              activeTab === tab.id ? 'text-white' : 'text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <tab.icon className={`w-3.5 h-3.5 ${activeTab === tab.id ? 'text-blue-400' : 'text-gray-600'}`} />
+            {tab.label}
+            {activeTab === tab.id && (
+              <motion.div 
+                layoutId="activeTab"
+                className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-500 shadow-[0_-2px_8px_rgba(59,130,246,0.5)]" 
+              />
             )}
+          </button>
+        ))}
+      </div>
+
+      {/* Content Area */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+        {isAnalyzing ? (
+          <div className="flex flex-col items-center justify-center py-16 gap-6 px-8 text-center">
+            <div className="relative w-32 h-32">
+              <svg width={128} height={128} className="-rotate-90">
+                <circle cx={64} cy={64} r={58} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="8" />
+                <motion.circle
+                  cx={64} cy={64} r={58}
+                  fill="none" stroke="url(#progressGrad)" strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 58}
+                  animate={{ strokeDashoffset: 2 * Math.PI * 58 * (1 - analysisProgress / 100) }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
+                />
+                <defs>
+                  <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{ stopColor: '#3b82f6' }} />
+                    <stop offset="100%" style={{ stopColor: '#8b5cf6' }} />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-black text-white tabular-nums tracking-tighter">{Math.round(analysisProgress)}</span>
+                <span className="text-[10px] text-gray-500 uppercase tracking-[0.2em] font-black opacity-40">%</span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-black text-white uppercase tracking-tight">Reviewing Game...</h3>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[200px]">
+                Stockfish is calculating thousands of variations to classify your moves.
+              </p>
+            </div>
+          </div>
+        ) : analysisResult ? (
+          <AnimatePresence mode="wait">
+            {activeTab === 'review' && (
+              <motion.div 
+                key="review"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="flex flex-col h-full"
+              >
+                {/* Insights Panel */}
+                <div className="p-4">
+                  <div className={`rounded-2xl border backdrop-blur-md transition-all duration-500 overflow-hidden ${
+                    moveAnalysis && moveClass && currentMoveIndex >= 0
+                      ? ['blunder', 'mistake', 'inaccuracy'].includes(moveAnalysis.classification)
+                        ? 'bg-red-500/[0.07] border-red-500/20 shadow-[0_8px_32px_rgba(239,68,68,0.1)]'
+                        : ['brilliant', 'great'].includes(moveAnalysis.classification)
+                        ? 'bg-blue-500/[0.07] border-blue-500/20 shadow-[0_8px_32px_rgba(59,130,246,0.1)]'
+                        : 'bg-white/[0.04] border-white/10'
+                      : 'bg-white/[0.04] border-white/10'
+                  }`}>
+                    {moveAnalysis && moveClass && currentMoveIndex >= 0 ? (
+                      <div className="p-5 flex flex-col gap-4">
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className={`w-10 h-10 flex items-center justify-center rounded-xl text-lg font-black text-white ${moveClass.glow} transition-transform duration-300 hover:scale-110`}
+                            style={{ backgroundColor: moveClass.color }}
+                          >
+                            {moveClass.symbol}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className={`text-base font-black uppercase tracking-tight ${moveClass.text}`}>
+                              {moveClass.label}
+                            </span>
+                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest opacity-60">
+                              Move {currentMoveIndex + 1}
+                            </span>
+                          </div>
+                          <div className="ml-auto bg-black/30 px-3 py-1.5 rounded-lg border border-white/5">
+                            <span className="text-sm font-black text-white tabular-nums tracking-tighter">
+                              {moveAnalysis.moveAccuracy.toFixed(0)}%
+                            </span>
+                            <span className="text-[8px] text-gray-500 ml-1 font-bold">ACC</span>
+                          </div>
+                        </div>
+
+                        <p className="text-sm text-gray-200 leading-relaxed font-medium">
+                          {['blunder', 'mistake', 'inaccuracy'].includes(moveAnalysis.classification) ? 
+                            <span className="opacity-90">
+                              <strong className={moveClass.text}>{moveAnalysis.playedMove}</strong> was a {moveAnalysis.classification}. 
+                              The engine preferred <strong className="text-white">{moveAnalysis.bestMoveSan}</strong>.
+                            </span> :
+                          ['brilliant', 'great'].includes(moveAnalysis.classification) ? 
+                            <span className="opacity-90">
+                              Incredible find! <strong className={moveClass.text}>{moveAnalysis.playedMove}</strong> was the strongest move by a wide margin.
+                            </span> :
+                          moveAnalysis.classification === 'best' ?
+                            <span className="opacity-90">
+                              You found the absolute best move, <strong className={moveClass.text}>{moveAnalysis.playedMove}</strong>. Perfect calculation.
+                            </span> :
+                            <span className="opacity-90 text-gray-400">
+                              A solid positional move that maintains the balance of the game.
+                            </span>
+                          }
+                        </p>
+
+                        {moveAnalysis.bestLine && ['blunder', 'mistake', 'inaccuracy'].includes(moveAnalysis.classification) && (
+                          <div className="space-y-3 pt-2">
+                            <div className="bg-black/40 p-4 rounded-xl border border-white/5 space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Better Line</span>
+                                {moveAnalysis.bestLineUci && (
+                                  <button 
+                                    onClick={() => setExplainWhyLine(explainWhyLine ? null : moveAnalysis.bestLineUci!.split(' '))}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all active:scale-95 ${
+                                      explainWhyLine 
+                                        ? 'bg-blue-500/20 border-blue-500/30 text-blue-400' 
+                                        : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                                    }`}
+                                  >
+                                    <Target className="w-3.5 h-3.5" />
+                                    <span className="text-[10px] font-black uppercase tracking-tight">
+                                      {explainWhyLine ? 'Hide' : 'Explain Why'}
+                                    </span>
+                                  </button>
+                                )}
+                              </div>
+                              <p className="text-xs text-green-400 font-mono leading-relaxed bg-green-500/5 p-2 rounded-md border border-green-500/10 italic">
+                                {moveAnalysis.bestLine}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="p-12 flex flex-col items-center justify-center text-center gap-4">
+                        <div className="w-16 h-16 rounded-full bg-white/[0.03] flex items-center justify-center border border-white/[0.05]">
+                          <Play className="w-6 h-6 text-gray-600" />
+                        </div>
+                        <p className="text-sm text-gray-500 font-medium max-w-[180px] leading-relaxed">
+                          Navigate through the moves to see grandmaster insights.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Accuracy Summary */}
+                <div className="px-4 py-2 mt-auto">
+                  <div className="bg-white/[0.03] border border-white/[0.05] rounded-2xl p-6 flex items-center justify-around relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/[0.02] to-purple-500/[0.02]" />
+                    
+                    {/* White Accuracy */}
+                    <div className="flex flex-col items-center gap-4 relative z-10">
+                      <AccuracyRing accuracy={analysisResult.accuracy.white} size={90} delay={0.1} />
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-[10px] font-black text-white uppercase tracking-widest opacity-60">White</span>
+                        <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${getGrade(analysisResult.accuracy.white).bg} ${getGrade(analysisResult.accuracy.white).border} ${getGrade(analysisResult.accuracy.white).text}`}>
+                          Grade {getGrade(analysisResult.accuracy.white).letter}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="w-px h-16 bg-white/[0.05] relative z-10" />
+
+                    {/* Black Accuracy */}
+                    <div className="flex flex-col items-center gap-4 relative z-10">
+                      <AccuracyRing accuracy={analysisResult.accuracy.black} size={90} delay={0.3} />
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest opacity-60">Black</span>
+                        <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${getGrade(analysisResult.accuracy.black).bg} ${getGrade(analysisResult.accuracy.black).border} ${getGrade(analysisResult.accuracy.black).text}`}>
+                          Grade {getGrade(analysisResult.accuracy.black).letter}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Eval Graph */}
+                <div className="px-4 py-4">
+                  <div className="h-28 rounded-xl overflow-hidden border border-white/[0.06] bg-black/20 shadow-inner">
+                    <EvalGraph />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'analysis' && (
+              <motion.div 
+                key="analysis"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex flex-col p-5 gap-6"
+              >
+                <div className="space-y-4">
+                  <h3 className="text-xs font-black text-white uppercase tracking-[0.2em] opacity-50 px-1">Move Classification</h3>
+                  <div className="grid gap-1.5">
+                    {typesToShow.map((type, idx) => {
+                      const wCount = analysisResult.counts.white[type];
+                      const bCount = analysisResult.counts.black[type];
+                      if (wCount === 0 && bCount === 0 && type !== 'brilliant') return null;
+                      
+                      const d = classData[type];
+                      return (
+                        <div 
+                          key={type} 
+                          className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.02] border border-white/[0.03] hover:bg-white/[0.04] transition-all group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div 
+                              className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] font-black text-white ${d.glow} group-hover:scale-110 transition-transform`}
+                              style={{ backgroundColor: d.color }}
+                            >
+                              {d.symbol}
+                            </div>
+                            <span className="text-xs font-bold text-gray-300">{d.label}</span>
+                          </div>
+                          
+                          <div className="flex items-center gap-8">
+                            <div className="flex flex-col items-center">
+                              <span className="text-xs font-black tabular-nums" style={{ color: wCount > 0 ? d.color : '#444' }}>
+                                {wCount}
+                              </span>
+                            </div>
+                            <div className="flex flex-col items-center">
+                              <span className="text-xs font-black tabular-nums" style={{ color: bCount > 0 ? d.color : '#444' }}>
+                                {bCount}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-white/[0.05]">
+                   <h3 className="text-xs font-black text-white uppercase tracking-[0.2em] opacity-50 px-1 text-center">Summary</h3>
+                   <div className="space-y-3">
+                      <div className="bg-white/[0.03] p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-white/20" />
+                        <p className="text-xs text-gray-300 leading-relaxed font-medium">
+                          {analysisResult.summary.white}
+                        </p>
+                      </div>
+                      <div className="bg-white/[0.03] p-4 rounded-xl border border-white/5 relative overflow-hidden">
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gray-700" />
+                        <p className="text-xs text-gray-300 leading-relaxed font-medium">
+                          {analysisResult.summary.black}
+                        </p>
+                      </div>
+                   </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'coach' && (
+              <motion.div 
+                key="coach"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="flex flex-col h-full p-6 items-center text-center gap-8"
+              >
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-4xl shadow-2xl relative z-10">
+                    🧙‍♂️
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-green-500 border-4 border-[#08090a] flex items-center justify-center">
+                      <Zap className="w-4 h-4 text-white fill-current" />
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 bg-blue-500/20 blur-3xl rounded-full scale-150 animate-pulse" />
+                </div>
+
+                <div className="space-y-3">
+                  <h3 className="text-xl font-black text-white tracking-tight">Grandmaster Insight</h3>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest opacity-50">Powered by Stockfish 16.1</p>
+                </div>
+
+                <div className="bg-white/[0.04] p-6 rounded-3xl border border-white/10 relative shadow-2xl">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-white/[0.04] border-l border-t border-white/10 rotate-45" />
+                  <p className="text-sm text-gray-200 leading-relaxed font-medium italic">
+                    &quot;You played a remarkably solid game. Your tactical awareness in the middlegame kept your opponent under constant pressure. To reach the next level, focus on converting slight advantages into decisive endgames.&quot;
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 w-full mt-4">
+                  <div className="bg-blue-500/10 p-4 rounded-2xl border border-blue-500/20 flex flex-col items-center gap-1">
+                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Strength</span>
+                    <span className="text-lg font-black text-white">Tactics</span>
+                  </div>
+                  <div className="bg-purple-500/10 p-4 rounded-2xl border border-purple-500/20 flex flex-col items-center gap-1">
+                    <span className="text-[10px] font-black text-purple-400 uppercase tracking-widest">Weakness</span>
+                    <span className="text-lg font-black text-white">Endgame</span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-12 gap-6">
+            <div className="w-20 h-20 rounded-3xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-center shadow-inner relative overflow-hidden group">
+               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+               <Brain className="w-8 h-8 text-gray-600 group-hover:text-blue-500 transition-colors relative z-10" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-base font-bold text-white tracking-tight">Game Review Ready</h3>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[200px]">
+                Run a deep analysis to get accuracy scores, classifications, and coach insights.
+              </p>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Analysis Progress */}
-      {isAnalyzing && (
-        <div className="flex flex-col items-center justify-center py-10 gap-4 px-4">
-          {/* Animated progress ring */}
-          <div className="relative w-24 h-24">
-            <svg width={96} height={96} className="-rotate-90">
-              <circle cx={48} cy={48} r={40} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
-              <motion.circle
-                cx={48} cy={48} r={40}
-                fill="none" stroke="url(#progressGrad)" strokeWidth="6"
-                strokeLinecap="round"
-                strokeDasharray={2 * Math.PI * 40}
-                animate={{ strokeDashoffset: 2 * Math.PI * 40 * (1 - analysisProgress / 100) }}
-                transition={{ duration: 0.3 }}
-              />
-              <defs>
-                <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" style={{ stopColor: '#3b82f6' }} />
-                  <stop offset="100%" style={{ stopColor: '#8b5cf6' }} />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xl font-black text-white tabular-nums">{Math.round(analysisProgress)}</span>
-              <span className="text-[8px] text-gray-500 uppercase tracking-widest">%</span>
-            </div>
-          </div>
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-sm font-bold text-white">Analyzing Game</p>
-            <p className="text-[10px] text-gray-500">Evaluating {history.length} positions with Stockfish NNUE</p>
-          </div>
-        </div>
-      )}
-
-      {/* Results */}
-      {analysisResult && !isAnalyzing && (
-        <div className="flex flex-col">
-          
-          {/* Coach Insight (Clean Feedback style) */}
-          <div className="px-4 pt-3">
-            <div className={`text-gray-100 px-4 py-3 rounded-xl text-sm font-medium border backdrop-blur-sm transition-all ${
-              moveAnalysis && moveClass && currentMoveIndex >= 0
-                ? ['blunder', 'mistake', 'inaccuracy'].includes(moveAnalysis.classification)
-                  ? 'bg-red-500/10 border-red-500/20'
-                  : ['brilliant', 'great'].includes(moveAnalysis.classification)
-                  ? 'bg-blue-500/10 border-blue-500/20'
-                  : 'bg-white/[0.05] border-white/[0.05]'
-                : 'bg-white/[0.05] border-white/[0.05]'
-            }`}>
-              {moveAnalysis && moveClass && currentMoveIndex >= 0 ? (
-                <div className="flex flex-col gap-1.5">
-                  <div className="flex items-center gap-2">
-                    <span 
-                      className={`w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-black text-white ${moveClass.glow}`}
-                      style={{ backgroundColor: moveClass.color }}
-                    >
-                      {moveClass.symbol}
-                    </span>
-                    <span className="font-bold text-white text-sm">{moveClass.label}</span>
-                    <span className="text-[10px] text-gray-500 ml-auto font-mono">
-                      {moveAnalysis.moveAccuracy.toFixed(0)}% acc
-                    </span>
-                  </div>
-                  <span className="text-gray-300 text-xs leading-relaxed">
-                    {['blunder', 'mistake', 'inaccuracy'].includes(moveAnalysis.classification) ? 
-                      `${moveAnalysis.playedMove} was a ${moveAnalysis.classification}. The engine preferred ${moveAnalysis.bestMoveSan}.` :
-                    ['brilliant', 'great'].includes(moveAnalysis.classification) ? 
-                      `Excellent find! ${moveAnalysis.playedMove} was the best move in this position.` :
-                    moveAnalysis.classification === 'best' ?
-                      `You found the engine's top choice: ${moveAnalysis.playedMove}.` :
-                      `A solid move, keeping the position balanced.`
-                    }
-                  </span>
-                  {moveAnalysis.bestLine && ['blunder', 'mistake', 'inaccuracy'].includes(moveAnalysis.classification) && (
-                    <div className="flex flex-col gap-2 mt-2">
-                      <div className="text-[10px] text-gray-500 font-mono bg-black/20 px-2 py-1.5 rounded-lg flex items-center justify-between group/line">
-                        <span><span className="text-green-500/70 font-bold">Best line: </span>{moveAnalysis.bestLine}</span>
-                        {moveAnalysis.bestLineUci && (
-                          <button 
-                            onClick={() => setExplainWhyLine(explainWhyLine ? null : moveAnalysis.bestLineUci!.split(' '))}
-                            className={`flex items-center gap-1 px-1.5 py-0.5 rounded border transition-all ${
-                              explainWhyLine ? 'bg-red-500/20 border-red-500/30 text-red-400' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
-                            }`}
-                          >
-                            <Target className="w-3 h-3" />
-                            <span className="text-[9px] font-bold uppercase tracking-tighter">
-                              {explainWhyLine ? 'Hide' : 'Explain Why'}
-                            </span>
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <span className="text-gray-300 text-xs">Navigate through moves to see analysis for each position.</span>
-              )}
-            </div>
-          </div>
-
-          {/* Eval Graph directly inside Game Review */}
-          <div className="mt-3 mx-4 rounded-lg overflow-hidden border border-white/[0.06]">
-            <EvalGraph />
-          </div>
-
-          {/* Players & Accuracy */}
-          <div className="flex items-center justify-around py-2 px-3">
-            {/* White */}
-            <div className="flex flex-col items-center gap-2">
-              <AccuracyRing accuracy={analysisResult.accuracy.white} delay={0} />
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-white rounded-sm border border-gray-300" />
-                <span className="text-xs font-bold text-gray-300">White</span>
-              </div>
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', bounce: 0.5, delay: 0.3 }}
-                className={`text-sm font-black text-transparent bg-clip-text bg-gradient-to-br ${getGrade(analysisResult.accuracy.white).color}`}
-              >
-                {getGrade(analysisResult.accuracy.white).letter}
-              </motion.span>
-            </div>
-
-            {/* VS Divider */}
-            <div className="flex flex-col items-center gap-1 opacity-30">
-              <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
-              <span className="text-[9px] text-gray-500 font-bold uppercase">vs</span>
-              <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/30 to-transparent" />
-            </div>
-
-            {/* Black */}
-            <div className="flex flex-col items-center gap-2">
-              <AccuracyRing accuracy={analysisResult.accuracy.black} delay={0.2} />
-              <div className="flex items-center gap-2">
-                <div className="w-4 h-4 bg-gray-700 rounded-sm border border-gray-600" />
-                <span className="text-xs font-bold text-gray-300">Black</span>
-              </div>
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: 'spring', bounce: 0.5, delay: 0.5 }}
-                className={`text-sm font-black text-transparent bg-clip-text bg-gradient-to-br ${getGrade(analysisResult.accuracy.black).color}`}
-              >
-                {getGrade(analysisResult.accuracy.black).letter}
-              </motion.span>
-            </div>
-          </div>
-
-          {/* Classification Breakdown */}
-          <div className="flex flex-col gap-0 px-3 pb-3">
-            {typesToShow.map((type, idx) => {
-              const wCount = analysisResult.counts.white[type];
-              const bCount = analysisResult.counts.black[type];
-              if (wCount === 0 && bCount === 0 && type !== 'brilliant') return null;
-              
-              const d = classData[type];
-              return (
-                <motion.div 
-                  key={type} 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.04 }}
-                  className="flex items-center justify-between px-2 py-1 rounded-md hover:bg-white/[0.03] transition-colors"
-                >
-                  <div className="flex items-center gap-2 w-24">
-                    <div 
-                      className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black text-white ${d.glow}`}
-                      style={{ backgroundColor: d.color }}
-                    >
-                      {d.symbol}
-                    </div>
-                    <span className="text-[11px] font-semibold text-gray-300">{d.label}</span>
-                  </div>
-                  
-                  <div className="flex items-center gap-4">
-                    <span className="w-6 text-center text-xs font-bold tabular-nums" style={{ color: wCount > 0 ? d.color : '#888' }}>
-                      {wCount}
-                    </span>
-                    <span className="w-6 text-center text-xs font-bold tabular-nums" style={{ color: bCount > 0 ? d.color : '#888' }}>
-                      {bCount}
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          {/* Summary */}
-          {analysisResult.summary && (
-            <div className="px-4 pb-4">
-              <div className="bg-white/[0.02] border border-white/[0.04] rounded-xl p-3 text-xs text-gray-400 leading-relaxed space-y-1.5">
-                <div className="flex items-start gap-2">
-                  <div className="w-3 h-3 bg-white rounded-sm border border-gray-300 mt-0.5 shrink-0" />
-                  <span>{analysisResult.summary.white}</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <div className="w-3 h-3 bg-gray-700 rounded-sm border border-gray-600 mt-0.5 shrink-0" />
-                  <span>{analysisResult.summary.black}</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Start Review / Analyze button */}
+      {/* Footer Button */}
       {!isAnalyzing && (
-        <div className="px-4 pb-4">
+        <div className="p-4 border-t border-white/[0.05] bg-white/[0.01]">
           <button 
             onClick={runGameReview}
             disabled={history.length === 0}
-            className="w-full relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 text-white font-black text-base py-3.5 rounded-xl shadow-[0_4px_0_rgba(0,0,0,0.3)] active:translate-y-[4px] active:shadow-none transition-all disabled:opacity-40 disabled:cursor-not-allowed uppercase tracking-wider"
+            className="w-full relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 active:brightness-90 text-white font-black text-xs md:text-sm py-3.5 rounded-xl shadow-lg shadow-blue-900/20 active:translate-y-[2px] transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-[0.15em] border border-white/10"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-1000 ease-in-out" />
-            {analysisResult ? (
-              <span className="flex items-center justify-center gap-2">
-                <RotateCcw className="w-4 h-4" /> Re-Analyze
-              </span>
-            ) : (
-              <span className="flex items-center justify-center gap-2">
-                <Zap className="w-4 h-4" /> Start Engine Review
-              </span>
-            )}
+            <div className="flex items-center justify-center gap-2 relative z-10">
+              {analysisResult ? <RotateCcw className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+              {analysisResult ? "Re-Run Analysis" : "Start Game Review"}
+            </div>
           </button>
         </div>
-      )}
-
-      {!isAnalyzing && !analysisResult && history.length === 0 && (
-        <p className="text-xs text-gray-500 italic text-center py-4 px-4">Play or import a game to review.</p>
       )}
     </div>
   );

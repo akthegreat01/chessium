@@ -2,28 +2,25 @@
 
 import { useChessStore } from '@/lib/chessStore';
 import { useMemo } from 'react';
+import { motion } from 'framer-motion';
 
 export default function EvaluationBar() {
   const { analysisResult, currentMoveIndex, boardFlipped, variationAnalysis, mainLineHistory } = useChessStore();
 
-  // Get the eval for the current position from analysis results
   const { targetPercent, scoreText } = useMemo(() => {
     let evalWhite = 0;
     let hasMate = false;
     let mateVal = 0;
 
-    // If exploring a variation, use the variation analysis eval
     if (variationAnalysis && mainLineHistory) {
       evalWhite = variationAnalysis.eval;
     } else if (analysisResult && analysisResult.evals) {
-      // Use the eval at the current position from analysis
-      const evalIndex = currentMoveIndex + 1; // evals[0] = starting pos, evals[1] = after move 0
+      const evalIndex = currentMoveIndex + 1;
       if (evalIndex >= 0 && evalIndex < analysisResult.evals.length) {
         evalWhite = analysisResult.evals[evalIndex];
       }
     }
 
-    // Detect mate scores
     if (Math.abs(evalWhite) > 9000) {
       hasMate = true;
       mateVal = evalWhite > 0 ? (10000 - evalWhite) : -(10000 + evalWhite);
@@ -42,6 +39,7 @@ export default function EvaluationBar() {
       }
     } else {
       const scoreVal = evalWhite / 100;
+      // Chess.com style sigmoidal scaling
       const scaled = (Math.atan(scoreVal / 3) / (Math.PI / 2)) * 48;
       tp = Math.max(2, Math.min(98, 50 + scaled));
       st = (scoreVal > 0 ? "+" : "") + scoreVal.toFixed(1);
@@ -54,29 +52,43 @@ export default function EvaluationBar() {
   const isWhiteAdvantage = targetPercent > 50;
 
   return (
-    <div className="w-7 bg-[#141519] rounded-lg overflow-hidden flex flex-col relative border border-white/[0.04] shadow-lg shadow-black/30 h-full">
+    <div className="w-8 md:w-10 h-full bg-[#141519] rounded-xl overflow-hidden flex flex-col relative border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
       {/* Black section (top) */}
-      <div
-        className={`w-full transition-all duration-500 ease-out ${boardFlipped ? 'bg-gradient-to-b from-[#e8e8e8] to-[#d4d4d4]' : 'bg-gradient-to-b from-[#1a1a1a] to-[#262626]'}`}
-        style={{ height: `${100 - whiteHeight}%` }}
+      <motion.div
+        animate={{ height: `${100 - whiteHeight}%` }}
+        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+        className={`w-full relative z-0 ${boardFlipped ? 'bg-[#e2e2e2]' : 'bg-[#1a1c22]'}`}
       />
-      {/* Divider line */}
-      <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent" style={{ top: `${100 - whiteHeight}%` }} />
+      
+      {/* Dynamic Marker/Arrow */}
+      <motion.div 
+        animate={{ top: `${100 - whiteHeight}%` }}
+        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+        className="absolute left-0 right-0 h-0.5 z-20"
+      >
+        <div className="absolute inset-0 bg-white/20 blur-[2px]" />
+        <div className="absolute inset-0 bg-white shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
+      </motion.div>
+
       {/* White section (bottom) */}
-      <div
-        className={`w-full transition-all duration-500 ease-out ${boardFlipped ? 'bg-gradient-to-b from-[#262626] to-[#1a1a1a]' : 'bg-gradient-to-b from-[#e8e8e8] to-[#d4d4d4]'}`}
-        style={{ height: `${whiteHeight}%` }}
+      <motion.div
+        animate={{ height: `${whiteHeight}%` }}
+        transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+        className={`w-full relative z-0 ${boardFlipped ? 'bg-[#1a1c22]' : 'bg-[#e2e2e2]'}`}
       />
 
-      {/* Score Text */}
-      <div className={`absolute left-0 w-full text-center text-[9px] font-bold z-10 leading-none py-1.5 tracking-tight
-        ${isWhiteAdvantage
-          ? (boardFlipped ? 'top-0 text-[#444]' : 'bottom-0 text-[#444]')
-          : (boardFlipped ? 'bottom-0 text-[#bbb]' : 'top-0 text-[#bbb]')
-        }`}
-      >
-        {scoreText}
+      {/* Score Labels */}
+      <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-1.5 z-30">
+        <div className={`text-[10px] font-black tracking-tighter tabular-nums transition-opacity duration-300 ${!isWhiteAdvantage ? 'opacity-100' : 'opacity-0'}`}>
+          <span className={boardFlipped ? 'text-gray-800' : 'text-gray-400'}>{scoreText}</span>
+        </div>
+        <div className={`text-[10px] font-black tracking-tighter tabular-nums transition-opacity duration-300 ${isWhiteAdvantage ? 'opacity-100' : 'opacity-0'}`}>
+          <span className={boardFlipped ? 'text-gray-400' : 'text-gray-800'}>{scoreText}</span>
+        </div>
       </div>
+      
+      {/* Shimmer Effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.03] to-transparent pointer-events-none" />
     </div>
   );
 }
