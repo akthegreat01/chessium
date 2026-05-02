@@ -97,11 +97,10 @@ export default function Chessboard() {
   const customArrows = useMemo(() => {
     const arrows: any[] = [];
     
-    // Add user arrows
-    if (userArrows && Array.isArray(userArrows)) {
-      userArrows.forEach((a: any) => {
-        arrows.push(a);
-      });
+    if (userArrows && userArrows.length > 0) {
+      for (let i = 0; i < userArrows.length; i++) {
+        arrows.push(userArrows[i]);
+      }
     }
 
     if (showHint && hintMove) {
