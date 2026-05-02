@@ -32,13 +32,13 @@ export default function SupportPage() {
             <div className="relative">
               {/* Glow behind QR */}
               <div className="absolute inset-0 bg-blue-500/30 blur-[40px] rounded-3xl pointer-events-none" />
-              <div className="relative bg-white p-3 rounded-2xl shadow-2xl shadow-black border border-white/20">
+              <div className="relative bg-white p-4 rounded-2xl shadow-2xl shadow-black border border-white/20">
                 <Image 
                   src="/qr2.png" 
                   alt="Support QR Code" 
-                  width={220} 
-                  height={220}
-                  className="rounded-lg mix-blend-multiply"
+                  width={200} 
+                  height={200}
+                  className="rounded-lg"
                 />
               </div>
             </div>
