@@ -102,7 +102,7 @@ export default function Home() {
         )}
 
         {/* Center: Board Column */}
-        <div className={`flex flex-col shrink-0 w-full lg:w-auto mx-auto lg:mx-0 justify-center ${zenMode ? 'items-center' : ''}`} style={{ maxWidth: 'min(100%, calc(100vh - 180px), 800px)' }}>
+        <div className={`flex flex-col shrink-0 w-full mx-auto lg:mx-0 justify-center ${zenMode ? 'items-center' : ''}`} style={{ width: '100%', maxWidth: 'min(100%, calc(100vh - 180px), 800px)' }}>
           
           {/* Top Player */}
           <PlayerBar color={topColor} />
@@ -121,7 +121,7 @@ export default function Home() {
           <PlayerBar color={bottomColor} />
 
           {/* Board toolbar */}
-          <div className="flex items-center justify-between mt-1.5 px-0.5 gap-2">
+          <div className="flex items-center justify-between mt-1.5 px-0.5 gap-2 w-full">
             {/* Navigation Controls */}
             <div className="flex items-center gap-0.5 bg-white/[0.03] rounded-lg p-0.5 border border-white/[0.05]">
               <button onClick={() => goToMove(-1)} disabled={currentMoveIndex === -1}

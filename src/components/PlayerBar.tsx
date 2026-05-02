@@ -96,7 +96,7 @@ export default function PlayerBar({ color }: { color: 'w' | 'b' }) {
   }
 
   return (
-    <div className="flex items-center justify-between h-9 md:h-10 px-1 py-1">
+    <div className="flex items-center justify-between h-9 md:h-10 px-1 py-1 w-full">
       <div className="flex items-center gap-2 md:gap-3 min-w-0">
         {/* Avatar Placeholder */}
         <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-700/50 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 shrink-0 shadow-inner">
