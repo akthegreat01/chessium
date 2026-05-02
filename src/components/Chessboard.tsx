@@ -48,12 +48,10 @@ export default function Chessboard() {
     explainWhyLine, setExplainWhyLine,
     userArrows, userSquares, setUserArrows, toggleUserSquare, clearAnnotations
   } = useChessStore();
+  
   const [showThemes, setShowThemes] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
   const [boardWidth, setBoardWidth] = useState(0);
-
-  // Track arrow drawing state
-  const [arrowStart, setArrowStart] = useState<string | null>(null);
 
   // Track actual rendered board width for icon positioning
   useEffect(() => {
@@ -71,11 +69,9 @@ export default function Chessboard() {
     return () => observer.disconnect();
   }, []);
 
-  function onDrop(args: { piece: { isSparePiece: boolean; position: string; pieceType: string }; sourceSquare: string; targetSquare: string | null }) {
-    if (!args.targetSquare) return false;
-    const pieceType = args.piece?.pieceType || '';
-    const isPromotion = (pieceType === 'P' || pieceType === 'p') &&
-      (args.targetSquare[1] === '8' || args.targetSquare[1] === '1');
+  const onDrop = (args: { sourceSquare: string; targetSquare: string; piece: string }) => {
+    const pieceType = args.piece ? args.piece[1].toLowerCase() : '';
+    const isPromotion = pieceType === 'p' && (args.targetSquare[1] === '8' || args.targetSquare[1] === '1');
     const success = makeMove({
       from: args.sourceSquare,
       to: args.targetSquare,
@@ -83,9 +79,8 @@ export default function Chessboard() {
     });
     if (success) clearAnnotations();
     return success;
-  }
+  };
 
-  // Handle click-to-move via square clicks
   const onSquareClick = (square: string) => {
     selectSquare(square);
     clearAnnotations();
@@ -95,13 +90,20 @@ export default function Chessboard() {
     toggleUserSquare(square, 'rgba(255, 170, 0, 0.4)');
   };
 
-  // Build arrows for analysis best move + user arrows
+  const onArrowsChange = (newArrows: any[]) => {
+    setUserArrows(newArrows);
+  };
+
   const customArrows = useMemo(() => {
-    const arrows = [...userArrows];
+    const arrows: any[] = [];
+    
+    // Add user arrows
+    if (userArrows) {
+      userArrows.forEach(a => arrows.push(a));
+    }
 
     if (showHint && hintMove) {
       arrows.push({ startSquare: hintMove.substring(0, 2), endSquare: hintMove.substring(2, 4), color: 'rgba(16, 185, 129, 0.8)' });
-      return arrows;
     }
 
     if (explainWhyLine && explainWhyLine.length >= 2) {
@@ -139,7 +141,7 @@ export default function Chessboard() {
   const lastMoveSquare = currentMoveIndex >= 0 ? history[currentMoveIndex]?.to : null;
 
   let classification: string | null = null;
-  let classInfo: { color: string; type: string; label: string } | null = null;
+  let classInfo: any = null;
 
   if (variationAnalysis && mainLineHistory) {
     classification = variationAnalysis.classification;
@@ -162,9 +164,8 @@ export default function Chessboard() {
                          classification === 'mistake' ? 'shadow-[0_0_60px_rgba(255,164,89,0.3)]' :
                          'shadow-[0_10px_30px_-5px_rgba(0,0,0,0.5)]';
 
-  const customSquareStyles: Record<string, React.CSSProperties> = {};
+  const customSquareStyles: any = {};
   
-  // Apply user highlights first so they can be overridden by system highlights if necessary
   Object.entries(userSquares).forEach(([sq, style]) => {
     customSquareStyles[sq] = style;
   });
@@ -186,19 +187,13 @@ export default function Chessboard() {
     };
   }
 
-  const orientation: 'white' | 'black' = boardFlipped ? 'black' : 'white';
-
-  const onArrowsChange = (newArrows: any[]) => {
-    setUserArrows(newArrows);
-  };
-
   const boardOptions = useMemo(() => ({
     position: fen,
     onPieceDrop: onDrop,
     onSquareClick: onSquareClick,
     onSquareRightClick: onSquareRightClick,
     onArrowsChange: onArrowsChange,
-    boardOrientation: orientation,
+    boardOrientation: boardFlipped ? 'black' : 'white',
     darkSquareStyle: { backgroundColor: boardTheme.dark },
     lightSquareStyle: { backgroundColor: boardTheme.light },
     squareStyles: customSquareStyles,
@@ -206,7 +201,7 @@ export default function Chessboard() {
     animationDurationInMs: 150,
     boardStyle: { borderRadius: '4px' },
     dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.4)' },
-  }), [fen, onDrop, onSquareClick, onSquareRightClick, orientation, boardTheme, customSquareStyles, customArrows]);
+  }), [fen, boardFlipped, boardTheme, customSquareStyles, customArrows]);
 
   const iconPos = lastMoveSquare && classInfo && boardWidth > 0
     ? squareToPosition(lastMoveSquare, boardWidth, boardFlipped)
@@ -276,40 +271,43 @@ export default function Chessboard() {
           <Palette className="w-4 h-4" />
         </button>
 
-        {showThemes && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, x: 10 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            className="bg-[#1a1b21] border border-white/10 rounded-xl p-2.5 shadow-2xl flex flex-col gap-2 min-w-[160px] backdrop-blur-md"
-          >
-            <div className="flex items-center justify-between px-1">
-              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Board Theme</p>
-              <button onClick={() => setShowThemes(false)}><X className="w-3 h-3 text-gray-500 hover:text-white" /></button>
-            </div>
-            <div className="grid grid-cols-4 gap-1.5">
-              {BOARD_THEMES.map((theme) => (
-                <button
-                  key={theme.id}
-                  onClick={() => { setBoardTheme(theme); setShowThemes(false); }}
-                  className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all group ${
-                    boardTheme.id === theme.id ? 'border-green-500 shadow-lg shadow-green-500/20' : 'border-transparent hover:border-white/20'
-                  }`}
-                  title={theme.name}
-                >
-                  <div className="absolute inset-0 flex flex-col">
-                    <div className="flex-1" style={{ backgroundColor: theme.light }} />
-                    <div className="flex-1" style={{ backgroundColor: theme.dark }} />
-                  </div>
-                  {boardTheme.id === theme.id && (
-                    <div className="absolute inset-0 bg-green-500/10 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+        <AnimatePresence>
+          {showThemes && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, x: 10 }}
+              animate={{ opacity: 1, scale: 1, x: 0 }}
+              exit={{ opacity: 0, scale: 0.95, x: 10 }}
+              className="bg-[#1a1b21] border border-white/10 rounded-xl p-2.5 shadow-2xl flex flex-col gap-2 min-w-[160px] backdrop-blur-md"
+            >
+              <div className="flex items-center justify-between px-1">
+                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Board Theme</p>
+                <button onClick={() => setShowThemes(false)}><X className="w-3 h-3 text-gray-500 hover:text-white" /></button>
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {BOARD_THEMES.map((theme) => (
+                  <button
+                    key={theme.id}
+                    onClick={() => { setBoardTheme(theme); setShowThemes(false); }}
+                    className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all group ${
+                      boardTheme.id === theme.id ? 'border-green-500 shadow-lg shadow-green-500/20' : 'border-transparent hover:border-white/20'
+                    }`}
+                    title={theme.name}
+                  >
+                    <div className="absolute inset-0 flex flex-col">
+                      <div className="flex-1" style={{ backgroundColor: theme.light }} />
+                      <div className="flex-1" style={{ backgroundColor: theme.dark }} />
                     </div>
-                  )}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
+                    {boardTheme.id === theme.id && (
+                      <div className="absolute inset-0 bg-green-500/10 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {explainWhyLine && (
