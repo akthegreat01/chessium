@@ -112,7 +112,7 @@ export default function GameReview() {
   }, [isAnalyzing]);
 
   return (
-    <div className="glass-panel overflow-hidden flex flex-col h-full shadow-2xl">
+    <div className="glass-panel overflow-hidden flex flex-col shadow-2xl min-h-[300px]">
       {/* Tabs */}
       <div className="flex bg-white/[0.03] border-b border-white/[0.05]">
         {[
@@ -434,33 +434,44 @@ export default function GameReview() {
             )}
           </AnimatePresence>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-12 gap-6">
-            <div className="w-20 h-20 rounded-3xl bg-white/[0.02] border border-white/[0.04] flex items-center justify-center shadow-inner relative overflow-hidden group">
-               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-               <Brain className="w-8 h-8 text-gray-600 group-hover:text-blue-500 transition-colors relative z-10" />
+          <div className="flex-1 flex flex-col items-center justify-center text-center p-12 gap-6 min-h-[250px]">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-3xl bg-blue-500/5 border border-blue-500/10 flex items-center justify-center relative z-10">
+                <Brain className="w-10 h-10 text-blue-500/40" />
+              </div>
+              <div className="absolute inset-0 bg-blue-500/10 blur-2xl rounded-full scale-125" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-base font-bold text-white tracking-tight">Game Review Ready</h3>
-              <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[200px]">
-                Run a deep analysis to get accuracy scores, classifications, and coach insights.
+              <h3 className="text-base font-black text-white uppercase tracking-tight">Review Ready</h3>
+              <p className="text-xs text-gray-500 font-medium leading-relaxed max-w-[220px]">
+                {history.length > 0 
+                  ? "Click below to get deep insights, accuracy scores, and coach feedback for this game."
+                  : "Play or import a game to start a deep engine review."}
               </p>
             </div>
+            {history.length > 0 && (
+               <button 
+                 onClick={runGameReview}
+                 className="bg-blue-600/20 text-blue-400 border border-blue-500/20 px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-600/30 transition-all active:scale-95 shadow-lg shadow-blue-500/5"
+               >
+                 Start Analysis
+               </button>
+            )}
           </div>
         )}
       </div>
 
-      {/* Footer Button */}
-      {!isAnalyzing && (
+      {/* Footer Re-analyze Button */}
+      {!isAnalyzing && analysisResult && (
         <div className="p-4 border-t border-white/[0.05] bg-white/[0.01]">
           <button 
             onClick={runGameReview}
-            disabled={history.length === 0}
-            className="w-full relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 active:brightness-90 text-white font-black text-xs md:text-sm py-3.5 rounded-xl shadow-lg shadow-blue-900/20 active:translate-y-[2px] transition-all disabled:opacity-30 disabled:cursor-not-allowed uppercase tracking-[0.15em] border border-white/10"
+            className="w-full relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 active:brightness-90 text-white font-black text-xs md:text-sm py-3.5 rounded-xl shadow-lg shadow-blue-900/20 active:translate-y-[2px] transition-all uppercase tracking-[0.15em] border border-white/10"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-1000 ease-in-out" />
             <div className="flex items-center justify-center gap-2 relative z-10">
-              {analysisResult ? <RotateCcw className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
-              {analysisResult ? "Re-Run Analysis" : "Start Game Review"}
+              <RotateCcw className="w-4 h-4" />
+              Re-Run Analysis
             </div>
           </button>
         </div>

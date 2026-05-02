@@ -143,7 +143,7 @@ export default function MoveList() {
   };
 
   return (
-    <div className="glass-panel flex flex-col h-full overflow-hidden">
+    <div className="glass-panel flex flex-col overflow-hidden min-h-[250px] max-h-[400px]">
       {/* Header */}
       <div className="px-4 py-3 border-b border-white/[0.05] bg-white/[0.02] flex items-center justify-between">
         <div className="flex items-center gap-2">

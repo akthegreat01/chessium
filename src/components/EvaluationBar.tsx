@@ -38,12 +38,11 @@ export default function EvaluationBar() {
         st = `M${Math.abs(mateVal)}`;
       }
     } else {
-      const scoreVal = evalWhite / 100;
-      // Chess.com style sigmoidal scaling
-      const scaled = (Math.atan(scoreVal / 3) / (Math.PI / 2)) * 48;
-      tp = Math.max(2, Math.min(98, 50 + scaled));
-      st = (scoreVal > 0 ? "+" : "") + scoreVal.toFixed(1);
-    }
+    const scoreVal = evalWhite / 100;
+    // Sigmoidal scaling for better visual representation of advantage
+    const scaled = (Math.atan(scoreVal / 3) / (Math.PI / 2)) * 48;
+    tp = Math.max(2, Math.min(98, 50 + scaled));
+    st = (scoreVal > 0 ? "+" : "") + scoreVal.toFixed(1);
 
     return { targetPercent: tp, scoreText: st };
   }, [analysisResult, currentMoveIndex, variationAnalysis, mainLineHistory]);
