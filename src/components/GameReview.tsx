@@ -4,11 +4,13 @@ import { useChessStore } from '@/lib/chessStore';
 import { useUserStore } from '@/lib/userStore';
 import { 
   Trophy, TrendingUp, AlertCircle, CheckCircle2, ChevronRight, 
-  BarChart3, Brain, Play, RotateCcw, Target, Clock, Zap, MessageSquare, List
+  BarChart3, Brain, Play, RotateCcw, Target, Clock, Zap, MessageSquare, List,
+  Share2, RotateCw
 } from 'lucide-react';
 import { MoveClassification } from '@/lib/analyzer';
 import { motion, AnimatePresence } from 'framer-motion';
 import EvalGraph from './EvalGraph';
+import GameSummaryCard from './GameSummaryCard';
 import { useEffect, useState } from 'react';
 
 const classData: Record<MoveClassification, { label: string; color: string; symbol: string; glow: string; text: string }> = {
@@ -85,6 +87,7 @@ export default function GameReview() {
   
   const [activeTab, setActiveTab] = useState<'review' | 'analysis' | 'coach'>('review');
   const [hasRecorded, setHasRecorded] = useState(false);
+  const [showSummaryCard, setShowSummaryCard] = useState(false);
 
   const typesToShow: MoveClassification[] = ['brilliant', 'great', 'best', 'excellent', 'good', 'book', 'inaccuracy', 'mistake', 'blunder'];
 

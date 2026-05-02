@@ -35,10 +35,10 @@ export default function GameSummaryCard({ onClose }: { onClose: () => void }) {
   const result = headers.Result || '*';
 
   const stats = [
-    { label: 'Brilliant', value: analysisResult.counts.brilliant, color: 'text-[#1cb0f6]', icon: Zap },
-    { label: 'Great', value: analysisResult.counts.great, color: 'text-[#5c8bb0]', icon: Star },
-    { label: 'Best', value: analysisResult.counts.best, color: 'text-[#81b64c]', icon: Trophy },
-    { label: 'Blunders', value: analysisResult.counts.blunder, color: 'text-[#fa412d]', icon: Target },
+    { label: 'Brilliant', value: analysisResult.counts.white.brilliant + analysisResult.counts.black.brilliant, color: 'text-[#1cb0f6]', icon: Zap },
+    { label: 'Great', value: analysisResult.counts.white.great + analysisResult.counts.black.great, color: 'text-[#5c8bb0]', icon: Star },
+    { label: 'Best', value: analysisResult.counts.white.best + analysisResult.counts.black.best, color: 'text-[#81b64c]', icon: Trophy },
+    { label: 'Blunders', value: analysisResult.counts.white.blunder + analysisResult.counts.black.blunder, color: 'text-[#fa412d]', icon: Target },
   ];
 
   return (
@@ -99,13 +99,13 @@ export default function GameSummaryCard({ onClose }: { onClose: () => void }) {
                   cx="64" cy="64" r="58"
                   fill="none" stroke="currentColor"
                   strokeWidth="8" strokeDasharray={364}
-                  strokeDashoffset={364 - (364 * analysisResult.accuracy) / 100}
+                  strokeDashoffset={364 - (364 * ((analysisResult.accuracy.white + analysisResult.accuracy.black) / 2)) / 100}
                   strokeLinecap="round"
                   className="text-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.5)] transition-all duration-1000"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-black text-white">{analysisResult.accuracy}%</span>
+                <span className="text-3xl font-black text-white">{Math.round((analysisResult.accuracy.white + analysisResult.accuracy.black) / 2)}%</span>
                 <span className="text-[8px] text-gray-500 font-black uppercase tracking-widest">Accuracy</span>
               </div>
             </div>
