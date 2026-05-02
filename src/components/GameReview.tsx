@@ -112,46 +112,46 @@ export default function GameReview() {
           </div>
 
           {/* Players & Accuracy */}
-          <div className="flex flex-col gap-3 px-2">
-            <div className="flex items-end justify-between px-8">
-              <div className="text-xs font-bold text-gray-400 text-center w-16">Players</div>
-              <div className="flex flex-col items-center gap-1 w-16">
-                <span className="text-xs font-bold text-gray-300 w-24 text-center truncate">White</span>
-                <div className="w-12 h-12 bg-white rounded flex items-center justify-center shadow">
-                  <span className="text-3xl drop-shadow">♙</span>
+          <div className="flex flex-col gap-3 px-0 md:px-2">
+            <div className="flex items-end justify-between px-2 md:px-8">
+              <div className="text-[10px] md:text-xs font-bold text-gray-400 text-center w-12 md:w-16">Players</div>
+              <div className="flex flex-col items-center gap-1 w-16 md:w-20">
+                <span className="text-[10px] md:text-xs font-bold text-gray-300 w-16 md:w-24 text-center truncate">White</span>
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded flex items-center justify-center shadow">
+                  <span className="text-2xl md:text-3xl drop-shadow">♙</span>
                 </div>
               </div>
-              <div className="flex flex-col items-center gap-1 w-16">
-                <span className="text-xs font-bold text-gray-300 w-24 text-center truncate">Black</span>
-                <div className="w-12 h-12 bg-gray-300 rounded flex items-center justify-center shadow">
-                  <span className="text-3xl text-gray-800 drop-shadow">♟</span>
+              <div className="flex flex-col items-center gap-1 w-16 md:w-20">
+                <span className="text-[10px] md:text-xs font-bold text-gray-300 w-16 md:w-24 text-center truncate">Black</span>
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gray-300 rounded flex items-center justify-center shadow">
+                  <span className="text-2xl md:text-3xl text-gray-800 drop-shadow">♟</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between px-8 mt-2">
-              <div className="text-xs font-bold text-gray-400 w-16">Accuracy</div>
-              <div className="w-16 flex flex-col items-center gap-1">
-                <div className="bg-white text-gray-900 font-black text-lg px-2 py-0.5 rounded shadow w-full text-center">
+            <div className="flex items-center justify-between px-2 md:px-8 mt-2">
+              <div className="text-[10px] md:text-xs font-bold text-gray-400 w-12 md:w-16">Accuracy</div>
+              <div className="w-16 md:w-20 flex flex-col items-center gap-1">
+                <div className="bg-white text-gray-900 font-black text-base md:text-lg px-2 py-0.5 rounded shadow w-full text-center">
                   {Math.round(analysisResult.accuracy.white * 10) / 10}
                 </div>
                 {analysisResult.accuracy.white > 0 && (
                   <motion.div 
                     initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", bounce: 0.5 }}
-                    className={`text-sm font-black text-transparent bg-clip-text bg-gradient-to-br ${getGrade(analysisResult.accuracy.white).color}`}
+                    className={`text-xs md:text-sm font-black text-transparent bg-clip-text bg-gradient-to-br ${getGrade(analysisResult.accuracy.white).color}`}
                   >
                     {getGrade(analysisResult.accuracy.white).letter}
                   </motion.div>
                 )}
               </div>
-              <div className="w-16 flex flex-col items-center gap-1">
-                <div className="bg-[#2b2b2b] text-gray-200 border border-white/10 font-black text-lg px-2 py-0.5 rounded shadow w-full text-center">
+              <div className="w-16 md:w-20 flex flex-col items-center gap-1">
+                <div className="bg-[#2b2b2b] text-gray-200 border border-white/10 font-black text-base md:text-lg px-2 py-0.5 rounded shadow w-full text-center">
                   {Math.round(analysisResult.accuracy.black * 10) / 10}
                 </div>
                 {analysisResult.accuracy.black > 0 && (
                   <motion.div 
                     initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", bounce: 0.5, delay: 0.1 }}
-                    className={`text-sm font-black text-transparent bg-clip-text bg-gradient-to-br ${getGrade(analysisResult.accuracy.black).color}`}
+                    className={`text-xs md:text-sm font-black text-transparent bg-clip-text bg-gradient-to-br ${getGrade(analysisResult.accuracy.black).color}`}
                   >
                     {getGrade(analysisResult.accuracy.black).letter}
                   </motion.div>
@@ -161,7 +161,7 @@ export default function GameReview() {
           </div>
 
           {/* Classification Breakdown */}
-          <div className="flex flex-col gap-2 mt-4 px-2">
+          <div className="flex flex-col gap-2 mt-4 px-0 md:px-2">
             {typesToShow.map(type => {
               const wCount = analysisResult.counts.white[type];
               const bCount = analysisResult.counts.black[type];
@@ -169,21 +169,21 @@ export default function GameReview() {
               
               const d = classData[type];
               return (
-                <div key={type} className="flex items-center justify-between px-8 py-0.5">
-                  <div className="w-24 text-sm font-bold text-gray-300">{d.label}</div>
+                <div key={type} className="flex items-center justify-between px-2 md:px-8 py-0.5">
+                  <div className="w-20 md:w-24 text-[11px] md:text-sm font-bold text-gray-300">{d.label}</div>
                   
-                  <div className="w-8 text-center text-sm font-bold" style={{ color: wCount > 0 ? d.color : '#666' }}>
+                  <div className="w-6 md:w-8 text-center text-xs md:text-sm font-bold" style={{ color: wCount > 0 ? d.color : '#666' }}>
                     {wCount}
                   </div>
                   
                   <div className="w-8 flex justify-center">
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center shadow text-white font-black text-[11px]"
+                    <div className="w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center shadow text-white font-black text-[9px] md:text-[11px]"
                          style={{ backgroundColor: d.color }}>
                       {d.symbol}
                     </div>
                   </div>
                   
-                  <div className="w-8 text-center text-sm font-bold" style={{ color: bCount > 0 ? d.color : '#666' }}>
+                  <div className="w-6 md:w-8 text-center text-xs md:text-sm font-bold" style={{ color: bCount > 0 ? d.color : '#666' }}>
                     {bCount}
                   </div>
                 </div>

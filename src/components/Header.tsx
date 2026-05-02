@@ -25,10 +25,10 @@ export default function Header() {
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-lg tracking-tight text-white leading-none">
+            <span className="font-bold text-base md:text-lg tracking-tight text-white leading-none">
               Chess<span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 font-black">ium</span>
             </span>
-            <span className="text-[9px] text-gray-400 font-medium tracking-tight mt-1 opacity-70 uppercase">
+            <span className="hidden md:block text-[9px] text-gray-400 font-medium tracking-tight mt-1 opacity-70 uppercase">
               The best move is not always obvious
             </span>
           </div>

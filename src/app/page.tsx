@@ -65,13 +65,15 @@ export default function Home() {
   const bottomColor = boardFlipped ? 'b' : 'w';
 
   return (
-    <div className="flex justify-center gap-6 p-4 max-w-[1780px] mx-auto w-full" style={{ height: 'calc(100vh - 56px)' }}>
+    <div className="flex flex-col lg:flex-row justify-center gap-4 lg:gap-6 p-2 md:p-4 max-w-[1780px] mx-auto w-full lg:h-[calc(100vh-56px)] overflow-y-auto lg:overflow-visible">
       
-      {/* Left Ad Sidebar */}
-      <SidebarAd side="left" />
+      {/* Left Ad Sidebar - Only on large screens */}
+      <div className="hidden 2xl:block">
+        <SidebarAd side="left" />
+      </div>
 
       {/* Center: Board Column */}
-      <div className="flex flex-col shrink-0" style={{ width: 'calc(100vh - 220px)', maxWidth: 'min(100%, 850px)' }}>
+      <div className="flex flex-col shrink-0 w-full lg:w-auto" style={{ maxWidth: 'min(100%, 850px)' }}>
         {/* Top Player */}
         <PlayerBar color={topColor} />
 
@@ -139,7 +141,7 @@ export default function Home() {
       </div>
 
       {/* Right: Side Panel */}
-      <div className="flex-none w-[420px] max-w-[420px] overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4">
+      <div className="flex-none w-full lg:w-[420px] lg:max-w-[420px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4">
         {history.length === 0 ? (
           <>
             <div className="glass-panel p-5 slide-up">
@@ -170,8 +172,10 @@ export default function Home() {
         )}
       </div>
 
-      {/* Right Ad Sidebar */}
-      <SidebarAd side="right" />
+      {/* Right Ad Sidebar - Only on large screens */}
+      <div className="hidden xl:block">
+        <SidebarAd side="right" />
+      </div>
     </div>
   );
 }
