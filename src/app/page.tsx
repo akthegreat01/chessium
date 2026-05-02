@@ -215,15 +215,21 @@ export default function Home() {
               </>
             ) : (
               <>
-                <div className="shrink-0">
+                <div className="shrink-0 isolate">
                   <GameReview />
                 </div>
-                <div className="flex-1 min-h-0">
+                <div className="flex-1 min-h-0 isolate">
                   <MoveList />
                 </div>
-                <LiveEnginePanel />
-                <GameHistoryPanel />
-                <GameImport />
+                <div className="shrink-0 isolate">
+                  <LiveEnginePanel />
+                </div>
+                <div className="shrink-0 isolate">
+                  <GameHistoryPanel />
+                </div>
+                <div className="shrink-0 isolate">
+                  <GameImport />
+                </div>
               </>
             )}
           </div>
