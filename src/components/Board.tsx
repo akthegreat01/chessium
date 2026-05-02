@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { Board as ReactBoard } from 'react-chessboard';
+import { Chessboard as ReactChessboard } from 'react-chessboard';
 import { useChessStore, BOARD_THEMES } from '@/lib/chessStore';
 import { useUserStore } from '@/lib/userStore';
 import { Palette, Lightbulb, BookOpen, Star, ThumbsUp, Check, X, Target } from 'lucide-react';
@@ -232,7 +232,7 @@ export default function Board() {
   return (
     <div ref={boardRef} className={`relative w-full aspect-square rounded-sm transition-shadow duration-1000 ${boardGlowClass}`}>
       {/* @ts-ignore */}
-      <ReactBoard options={boardOptions} />
+      <ReactChessboard options={boardOptions} />
 
       {iconPos && classInfo && (
         <div
