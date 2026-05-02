@@ -120,7 +120,6 @@ interface ChessState {
   setAnalysisDepth: (depth: number) => void;
   setEngineConfig: (config: Partial<EngineConfig>) => void;
   selectSquare: (square: string | null) => void;
-  toggleZenMode: () => void;
 
   // AI Play
   startAIGame: (level: BotPersonality, color: 'w' | 'b') => void;
@@ -167,6 +166,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
   playerColor: 'w',
   aiEngine: null,
   gameResult: null,
+  botMessage: null,
+  explainWhyLine: null,
   selectedSquare: null,
   legalMovesForSelected: [],
   engineConfig: { depth: 20, multiPv: 3, threads: 1, hash: 16 },

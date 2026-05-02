@@ -400,8 +400,8 @@ export async function analyzeGameFull(
       console.warn("Analyzer: Could not play move", move.san, e);
       moveAnalyses.push({
         classification: 'book',
-        eval: evalBefore,
-        evalBefore: evalBefore,
+        eval: evalBeforeWhite,
+        evalBefore: evalBeforeWhite,
         bestMove: '',
         bestMoveSan: '',
         playedMove: move.san,
@@ -412,7 +412,7 @@ export async function analyzeGameFull(
         bestLine: '',
         bestLineUci: '',
       });
-      evals[i + 1] = evalBefore;
+      evals[i + 1] = evalBeforeWhite;
       classifications[i] = 'book';
       if (progressCallback) progressCallback((i + 1) / history.length);
       continue;
@@ -421,7 +421,7 @@ export async function analyzeGameFull(
     // For forced moves, skip engine eval and just quickly evaluate
     if (isForced) {
       const evaluation = preEval;
-      const winPctBefore = cpToWinPercent(isWhite ? evalBefore : -evalBefore);
+      const winPctBefore = cpToWinPercent(isWhite ? evalBeforeWhite : -evalBeforeWhite);
       
       if (evalGame.isGameOver()) {
         if (evalGame.isCheckmate()) {
@@ -443,7 +443,7 @@ export async function analyzeGameFull(
       moveAnalyses.push({
         classification: 'forced',
         eval: evalAfter,
-        evalBefore,
+        evalBefore: evalBeforeWhite,
         bestMove: evaluation.bestMove,
         bestMoveSan: uciToSan(fenBefore, evaluation.bestMove),
         playedMove: move.san,
