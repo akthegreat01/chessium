@@ -244,27 +244,30 @@ export const useChessStore = create<ChessState>((set, get) => ({
         variationAnalysis: null,
       });
 
-      // Instant variation analysis: if we stepped off an analyzed game, analyze this single move
-      if (evalBeforeWhite !== null && newMainLineHistory !== null) {
-        const fenBefore = game.fen();
-        analyzeInstantMove(fenBefore, newFen, moveObj, moveIndex, evalBeforeWhite)
-          .then(variationResult => {
-            // Only apply if we're still on this move
-            const currentState = get();
-            if (currentState.currentMoveIndex === moveIndex && currentState.mainLineHistory !== null) {
-              set({ variationAnalysis: variationResult });
-              
-              // Trigger bot message if playing AI and it's player's move
-              if (playingAI && moveObj.color === playerColor) {
-                const msg = getBotResponse(aiLevel, variationResult.classification, false);
-                set({ botMessage: { text: msg, type: 'trash' } });
-                setTimeout(() => set({ botMessage: null }), 5000);
-              }
+      // Instant analysis: always try to get an evaluation for the bar if we don't have one
+      const fenBefore = game.fen();
+      analyzeInstantMove(fenBefore, newFen, moveObj, moveIndex, evalBeforeWhite || 0)
+        .then(variationResult => {
+          // Only apply if we're still on this move
+          const currentState = get();
+          if (currentState.currentMoveIndex === moveIndex) {
+            set({ variationAnalysis: variationResult });
+            
+            // Trigger bot message if playing AI and it's player's move
+            if (playingAI && moveObj.color === playerColor && variationResult.classification) {
+              const msg = getBotResponse(aiLevel, variationResult.classification, false);
+              set({ botMessage: { text: msg, type: 'trash' } });
+              setTimeout(() => set({ botMessage: null }), 5000);
             }
-          })
-          .catch(err => {
-            console.warn("Instant variation analysis failed", err);
-          });
+          }
+        })
+        .catch(err => {
+          console.warn("Instant analysis failed", err);
+        });
+
+      // If game is over, trigger a full review automatically
+      if (result && !get().analysisResult && !get().isAnalyzing) {
+        setTimeout(() => get().runGameReview(), 1000);
       }
 
       // Play sound
@@ -351,6 +354,19 @@ export const useChessStore = create<ChessState>((set, get) => ({
       legalMovesForSelected: [],
       variationAnalysis: null,
     });
+
+    // Auto-analyze this position if no full analysis exists
+    const { analysisResult } = get();
+    if (index >= 0 && (!analysisResult || index >= analysisResult.evals.length)) {
+      const fenBefore = new Chess(newFen).history().length > 0 ? (new Chess(newFen).undo(), new Chess(newFen).fen()) : newFen; 
+      // Simplified: just get a fresh eval for the bar
+      analyzeInstantMove(newFen, newFen, history[index], index, 0)
+        .then(result => {
+          if (get().currentMoveIndex === index) {
+            set({ variationAnalysis: result });
+          }
+        });
+    }
   },
 
   goBack: () => {
@@ -692,5 +708,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
     const result = playerColor === 'w' ? '0-1' : '1-0';
     set({ gameResult: result, playingAI: false });
     if (soundEnabled) playGameEndSound();
+    
+    // Auto-analyze on resignation
+    setTimeout(() => get().runGameReview(), 1000);
   },
 }));
