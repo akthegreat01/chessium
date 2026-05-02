@@ -138,6 +138,32 @@ export default function GameReview() {
           </button>
         ))}
       </div>
+      
+      <div className="p-4 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+        <div className="flex items-center gap-2">
+          <Trophy className="w-4 h-4 text-yellow-400" />
+          <h2 className="text-[10px] font-black text-white uppercase tracking-widest">Game Review</h2>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button 
+            onClick={() => setShowSummaryCard(true)}
+            className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all border border-white/5"
+            title="Share Summary Card"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+          </button>
+          <button 
+            onClick={() => runGameReview()}
+            className="p-1.5 rounded-md bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-all border border-white/5"
+            title="Re-run Analysis"
+          >
+            <RotateCw className={`w-3.5 h-3.5 ${isAnalyzing ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Modal */}
+      {showSummaryCard && <GameSummaryCard onClose={() => setShowSummaryCard(false)} />}
 
       {/* Content Area */}
       <div className="flex-1 overflow-y-auto custom-scrollbar flex flex-col">

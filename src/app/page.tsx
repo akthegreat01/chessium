@@ -15,6 +15,7 @@ const GameReview = dynamic(() => import("@/components/GameReview"), { ssr: false
 const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
 const GameHistoryPanel = dynamic(() => import("@/components/GameHistoryPanel"), { ssr: false });
 const TrainMistakesLauncher = dynamic(() => import("@/components/TrainMistakesLauncher"), { ssr: false });
+const OpeningExplorer = dynamic(() => import("@/components/OpeningExplorer"), { ssr: false });
 
 const SidebarAd = dynamic(() => import("@/components/SidebarAd"), { ssr: false });
 const LiveEnginePanel = dynamic(() => import("@/components/LiveEnginePanel"), { ssr: false });
@@ -39,6 +40,27 @@ export default function Home() {
     loadSavedGames();
     checkDailyStreak();
   }, [loadSavedGames, checkDailyStreak]);
+
+  // Coach Voice Effect
+  useEffect(() => {
+    if (botMessage && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      const utterance = new SpeechSynthesisUtterance(botMessage.text);
+      
+      // Try to find a premium-sounding voice
+      const voices = window.speechSynthesis.getVoices();
+      const preferredVoice = voices.find(v => v.name.includes('Google UK English Male') || v.name.includes('Samantha') || v.name.includes('Premium'));
+      if (preferredVoice) utterance.voice = preferredVoice;
+      
+      utterance.rate = 1.05;
+      utterance.pitch = 1.0;
+      utterance.volume = 0.8;
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [botMessage]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -220,6 +242,9 @@ export default function Home() {
                 </div>
                 <div className="flex-1 min-h-0 isolate">
                   <MoveList />
+                </div>
+                <div className="shrink-0 isolate">
+                  <OpeningExplorer />
                 </div>
                 <div className="shrink-0 isolate">
                   <LiveEnginePanel />

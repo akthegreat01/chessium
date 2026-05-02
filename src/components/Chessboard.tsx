@@ -46,10 +46,14 @@ export default function Chessboard() {
     selectedSquare, legalMovesForSelected, selectSquare,
     variationAnalysis, mainLineHistory,
     explainWhyLine, setExplainWhyLine,
+    userArrows, userSquares, setUserArrows, toggleUserSquare, clearAnnotations
   } = useChessStore();
   const [showThemes, setShowThemes] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
   const [boardWidth, setBoardWidth] = useState(0);
+
+  // Track arrow drawing state
+  const [arrowStart, setArrowStart] = useState<string | null>(null);
 
   // Track actual rendered board width for icon positioning
   useEffect(() => {
@@ -58,7 +62,6 @@ export default function Chessboard() {
       for (const entry of entries) {
         const newWidth = entry.contentRect.width;
         setBoardWidth(prev => {
-          // Only update if the width has actually changed significantly
           if (Math.abs(prev - newWidth) < 0.1) return prev;
           return newWidth;
         });
@@ -73,34 +76,34 @@ export default function Chessboard() {
     const pieceType = args.piece?.pieceType || '';
     const isPromotion = (pieceType === 'P' || pieceType === 'p') &&
       (args.targetSquare[1] === '8' || args.targetSquare[1] === '1');
-    return makeMove({
+    const success = makeMove({
       from: args.sourceSquare,
       to: args.targetSquare,
       promotion: isPromotion ? 'q' : undefined,
     });
+    if (success) clearAnnotations();
+    return success;
   }
 
   // Handle click-to-move via square clicks
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSquareClick = (args: any) => {
-    if (args?.square) selectSquare(args.square);
+  const onSquareClick = (square: string) => {
+    selectSquare(square);
+    clearAnnotations();
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onPieceClick = (args: any) => {
-    if (args?.square) selectSquare(args.square);
+  const onSquareRightClick = (square: string) => {
+    toggleUserSquare(square, 'rgba(255, 170, 0, 0.4)');
   };
 
-  // Build arrows for analysis best move
+  // Build arrows for analysis best move + user arrows
   const customArrows = useMemo(() => {
-    const arrows: { startSquare: string; endSquare: string; color: string }[] = [];
+    const arrows: any[] = [...userArrows];
 
     if (showHint && hintMove) {
       arrows.push({ startSquare: hintMove.substring(0, 2), endSquare: hintMove.substring(2, 4), color: 'rgba(16, 185, 129, 0.8)' });
       return arrows;
     }
 
-    // Add Explain Why arrows
     if (explainWhyLine && explainWhyLine.length >= 2) {
       for (let i = 0; i < explainWhyLine.length - 1; i++) {
         arrows.push({
@@ -111,21 +114,18 @@ export default function Chessboard() {
       }
     }
 
-    // Add current variation analysis arrows if exploring
     if (variationAnalysis && !mainLineHistory) {
       arrows.push({ startSquare: variationAnalysis.bestMove.substring(0, 2), endSquare: variationAnalysis.bestMove.substring(2, 4), color: 'rgba(16, 185, 129, 0.5)' });
     }
 
-    // Show the engine's best move arrow for the CURRENT board position.
-    // We only show these if we are on the main analyzed line.
     if (analysisResult && currentMoveIndex >= -1 && !mainLineHistory) {
       const nextIndex = currentMoveIndex + 1;
       if (nextIndex < analysisResult.moveAnalyses.length) {
         const bestMoveUci = analysisResult.moveAnalyses[nextIndex].bestMove;
         if (bestMoveUci && bestMoveUci.length >= 4 && bestMoveUci !== '(none)') {
           arrows.push({
-            startSquare: bestMoveUci.substring(0, 2) as any,
-            endSquare: bestMoveUci.substring(2, 4) as any,
+            startSquare: bestMoveUci.substring(0, 2),
+            endSquare: bestMoveUci.substring(2, 4),
             color: 'rgba(16, 185, 129, 0.6)'
           });
         }
@@ -133,13 +133,11 @@ export default function Chessboard() {
     }
 
     return arrows;
-  }, [showHint, hintMove, analysisResult, currentMoveIndex]);
+  }, [showHint, hintMove, analysisResult, currentMoveIndex, userArrows, explainWhyLine, variationAnalysis, mainLineHistory]);
 
-  // Determine classification for the current move
   const lastMoveFrom = currentMoveIndex >= 0 ? history[currentMoveIndex]?.from : null;
   const lastMoveSquare = currentMoveIndex >= 0 ? history[currentMoveIndex]?.to : null;
 
-  // Use variation analysis if we're in a side line, otherwise use main analysis
   let classification: string | null = null;
   let classInfo: { color: string; type: string; label: string } | null = null;
 
@@ -151,7 +149,6 @@ export default function Chessboard() {
     classInfo = classification ? classData[classification] : null;
   }
 
-  // Trigger celebration on brilliant moves
   const { triggerCelebration } = useUserStore();
   useEffect(() => {
     if (classification === 'brilliant') {
@@ -159,28 +156,31 @@ export default function Chessboard() {
     }
   }, [classification, triggerCelebration]);
 
-  // Dynamic Board Glow based on classification
   const boardGlowClass = classification === 'brilliant' ? 'shadow-[0_0_80px_rgba(28,176,246,0.5)]' :
                          classification === 'great' ? 'shadow-[0_0_60px_rgba(92,139,176,0.3)]' :
                          classification === 'blunder' ? 'shadow-[0_0_80px_rgba(250,65,45,0.4)]' :
                          classification === 'mistake' ? 'shadow-[0_0_60px_rgba(255,164,89,0.3)]' :
                          'shadow-[0_10px_30px_-5px_rgba(0,0,0,0.5)]';
 
-  // Build square styles: highlight selected square + legal moves + last move
   const customSquareStyles: Record<string, React.CSSProperties> = {};
+  
+  // Apply user highlights first so they can be overridden by system highlights if necessary
+  Object.entries(userSquares).forEach(([sq, style]) => {
+    customSquareStyles[sq] = style;
+  });
+
   if (lastMoveFrom) {
-    customSquareStyles[lastMoveFrom] = { backgroundColor: classInfo ? `${classInfo.color}30` : 'rgba(16, 185, 129, 0.25)' };
+    customSquareStyles[lastMoveFrom] = { ...customSquareStyles[lastMoveFrom], backgroundColor: classInfo ? `${classInfo.color}30` : 'rgba(16, 185, 129, 0.25)' };
   }
   if (lastMoveSquare) {
-    customSquareStyles[lastMoveSquare] = { backgroundColor: classInfo ? `${classInfo.color}40` : 'rgba(16, 185, 129, 0.35)' };
+    customSquareStyles[lastMoveSquare] = { ...customSquareStyles[lastMoveSquare], backgroundColor: classInfo ? `${classInfo.color}40` : 'rgba(16, 185, 129, 0.35)' };
   }
-  // Highlight selected square
   if (selectedSquare) {
-    customSquareStyles[selectedSquare] = { backgroundColor: 'rgba(255, 255, 0, 0.4)' };
+    customSquareStyles[selectedSquare] = { ...customSquareStyles[selectedSquare], backgroundColor: 'rgba(255, 255, 0, 0.4)' };
   }
-  // Highlight legal move targets with dots
   for (const sq of legalMovesForSelected) {
     customSquareStyles[sq] = {
+      ...customSquareStyles[sq],
       background: 'radial-gradient(circle, rgba(0,0,0,0.25) 25%, transparent 25%)',
       borderRadius: '50%',
     };
@@ -188,11 +188,16 @@ export default function Chessboard() {
 
   const orientation: 'white' | 'black' = boardFlipped ? 'black' : 'white';
 
+  const onArrowsChange = (newArrows: any[]) => {
+    setUserArrows(newArrows);
+  };
+
   const boardOptions = useMemo(() => ({
     position: fen,
     onPieceDrop: onDrop,
     onSquareClick: onSquareClick,
-    onPieceClick: onPieceClick,
+    onSquareRightClick: onSquareRightClick,
+    onArrowsChange: onArrowsChange,
     boardOrientation: orientation,
     darkSquareStyle: { backgroundColor: boardTheme.dark },
     lightSquareStyle: { backgroundColor: boardTheme.light },
@@ -201,15 +206,13 @@ export default function Chessboard() {
     animationDurationInMs: 150,
     boardStyle: { borderRadius: '4px' },
     dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.4)' },
-  }), [fen, onDrop, onSquareClick, onPieceClick, orientation, boardTheme, customSquareStyles, customArrows]);
+  }), [fen, onDrop, onSquareClick, onSquareRightClick, orientation, boardTheme, customSquareStyles, customArrows]);
 
-  // Calculate icon position on the destination square (top-right corner like chess.com)
   const iconPos = lastMoveSquare && classInfo && boardWidth > 0
     ? squareToPosition(lastMoveSquare, boardWidth, boardFlipped)
     : null;
   const iconSize = boardWidth > 0 ? Math.max(16, boardWidth / 8 * 0.38) : 20;
 
-  // Function to render the specific icon
   const renderIcon = (type: string, size: number) => {
     const iSize = size * 0.6;
     switch (type) {
@@ -233,7 +236,6 @@ export default function Chessboard() {
       {/* @ts-ignore */}
       <ReactChessboard options={boardOptions} />
 
-      {/* Chess.com-style classification icon on the destination square */}
       {iconPos && classInfo && (
         <div
           className="absolute pointer-events-none z-[100]"
@@ -253,7 +255,6 @@ export default function Chessboard() {
         </div>
       )}
 
-      {/* Controls overlay */}
       <div className="absolute top-2 right-2 z-10 flex flex-col items-end gap-1.5">
         <button
           onClick={() => showHint ? hideHint() : showHintMove()}

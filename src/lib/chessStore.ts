@@ -93,6 +93,10 @@ interface ChessState {
   selectedSquare: string | null;
   legalMovesForSelected: string[];
 
+  // Annotations
+  userArrows: { startSquare: string; endSquare: string; color: string }[];
+  userSquares: Record<string, { backgroundColor: string }>;
+
   // Engine config
   engineConfig: EngineConfig;
 
@@ -120,6 +124,11 @@ interface ChessState {
   setAnalysisDepth: (depth: number) => void;
   setEngineConfig: (config: Partial<EngineConfig>) => void;
   selectSquare: (square: string | null) => void;
+  
+  // Annotations
+  setUserArrows: (arrows: { startSquare: string; endSquare: string; color: string }[]) => void;
+  toggleUserSquare: (square: string, color: string) => void;
+  clearAnnotations: () => void;
 
   // AI Play
   startAIGame: (level: BotPersonality, color: 'w' | 'b') => void;
@@ -170,18 +179,31 @@ export const useChessStore = create<ChessState>((set, get) => ({
   explainWhyLine: null,
   selectedSquare: null,
   legalMovesForSelected: [],
+  userArrows: [],
+  userSquares: {},
   engineConfig: { depth: 20, multiPv: 3, threads: 1, hash: 16 },
 
   initEngine: () => {
-    // No-op: we no longer run a persistent live engine
-    // Engine is only created on-demand for analysis
+    // No-op
   },
+
+  setUserArrows: (arrows) => set({ userArrows: arrows }),
+  toggleUserSquare: (square, color) => {
+    const { userSquares } = get();
+    const newSquares = { ...userSquares };
+    if (newSquares[square]) {
+      delete newSquares[square];
+    } else {
+      newSquares[square] = { backgroundColor: color };
+    }
+    set({ userSquares: newSquares });
+  },
+  clearAnnotations: () => set({ userArrows: [], userSquares: {} }),
 
   makeMove: (move) => {
     const { game, currentMoveIndex, history, soundEnabled, playingAI, playerColor, aiLevel, analysisResult } = get();
     try {
       const newGame = new Chess();
-      // Restore headers and history to preserve PGN metadata
       const headers = game.header();
       for (const [key, value] of Object.entries(headers)) {
         if (typeof value === 'string') {
@@ -197,8 +219,6 @@ export const useChessStore = create<ChessState>((set, get) => ({
       const moveObj = newGame.move(move);
 
       const newHistory = history.slice(0, currentMoveIndex + 1);
-
-      // If we are truncating the history (exploring a variation), save the main line
       let newMainLineHistory = get().mainLineHistory;
       let newMainLineAnalysis = get().mainLineAnalysisResult;
 
@@ -208,10 +228,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
       }
 
       newHistory.push(moveObj);
-
       const newFen = newGame.fen();
 
-      // Check game result
       let result: string | null = null;
       if (newGame.isCheckmate()) {
         result = newGame.turn() === 'w' ? '0-1' : '1-0';
@@ -219,7 +237,6 @@ export const useChessStore = create<ChessState>((set, get) => ({
         result = '1/2-1/2';
       }
 
-      // Determine eval before this move (from analysis cache if available)
       const moveIndex = currentMoveIndex + 1;
       const cachedAnalysis = newMainLineAnalysis || analysisResult;
       let evalBeforeWhite: number | null = null;
@@ -242,18 +259,15 @@ export const useChessStore = create<ChessState>((set, get) => ({
         selectedSquare: null,
         legalMovesForSelected: [],
         variationAnalysis: null,
+        userArrows: [], // Clear on move
+        userSquares: {}, // Clear on move
       });
 
-      // Instant analysis: always try to get an evaluation for the bar if we don't have one
-      const fenBefore = game.fen();
-      analyzeInstantMove(fenBefore, newFen, moveObj, moveIndex, evalBeforeWhite || 0)
+      analyzeInstantMove(game.fen(), newFen, moveObj, moveIndex, evalBeforeWhite || 0)
         .then(variationResult => {
-          // Only apply if we're still on this move
           const currentState = get();
           if (currentState.currentMoveIndex === moveIndex) {
             set({ variationAnalysis: variationResult });
-            
-            // Trigger bot message if playing AI and it's player's move
             if (playingAI && moveObj.color === playerColor && variationResult.classification) {
               const msg = getBotResponse(aiLevel, variationResult.classification, false);
               set({ botMessage: { text: msg, type: 'trash' } });
@@ -265,17 +279,14 @@ export const useChessStore = create<ChessState>((set, get) => ({
           console.warn("Instant analysis failed", err);
         });
 
-      // If game is over, trigger a full review automatically
       if (result && !get().analysisResult && !get().isAnalyzing) {
         setTimeout(() => get().runGameReview(), 1000);
       }
 
-      // Play sound
       if (soundEnabled) {
         playMoveAudio(moveObj, newGame);
       }
 
-      // If playing AI and it's now AI's turn
       if (playingAI && !result && newGame.turn() !== playerColor) {
         setTimeout(() => {
           const state = get();
@@ -283,7 +294,6 @@ export const useChessStore = create<ChessState>((set, get) => ({
 
           const aiEng = new Engine();
           aiEng.waitUntilReady().then(() => {
-            // Configure Stockfish using UCI_LimitStrength and UCI_Elo
             if (aiLevel.elo < 3200) {
               aiEng.setOption('UCI_LimitStrength', 'true');
               aiEng.setOption('UCI_Elo', aiLevel.elo.toString());
@@ -291,7 +301,6 @@ export const useChessStore = create<ChessState>((set, get) => ({
               aiEng.setOption('UCI_LimitStrength', 'false');
             }
             
-            // Adjust MultiPV for personality styles
             if (aiLevel.style === 'aggressive') {
               aiEng.setConfig({ multiPv: 3 });
             } else {
@@ -301,16 +310,13 @@ export const useChessStore = create<ChessState>((set, get) => ({
             aiEng.onBestMove((bestMove: string) => {
               const currentState = get();
               if (!currentState.playingAI) { aiEng.destroy(); return; }
-
               const from = bestMove.substring(0, 2);
               const to = bestMove.substring(2, 4);
               const promotion = bestMove.length > 4 ? bestMove[4] : undefined;
-
               aiEng.destroy();
               get().makeMove({ from, to, promotion });
             });
 
-            // Move time scaling: lower ELO bots move faster
             let moveTime = 1000;
             if (aiLevel.elo <= 600) moveTime = 300;
             else if (aiLevel.elo <= 1200) moveTime = 600;
@@ -321,7 +327,6 @@ export const useChessStore = create<ChessState>((set, get) => ({
         }, 300);
       }
 
-      // If game ended during AI play, trigger auto-review
       if (result && playingAI) {
         get().runGameReview();
       }
@@ -353,13 +358,12 @@ export const useChessStore = create<ChessState>((set, get) => ({
       selectedSquare: null,
       legalMovesForSelected: [],
       variationAnalysis: null,
+      userArrows: [],
+      userSquares: {},
     });
 
-    // Auto-analyze this position if no full analysis exists
     const { analysisResult } = get();
     if (index >= 0 && (!analysisResult || index >= analysisResult.evals.length)) {
-      const fenBefore = new Chess(newFen).history().length > 0 ? (new Chess(newFen).undo(), new Chess(newFen).fen()) : newFen; 
-      // Simplified: just get a fresh eval for the bar
       analyzeInstantMove(newFen, newFen, history[index], index, 0)
         .then(result => {
           if (get().currentMoveIndex === index) {
@@ -398,6 +402,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
       analysisResult: mainLineAnalysisResult,
       engineLines: [],
       variationAnalysis: null,
+      userArrows: [],
+      userSquares: {},
     });
   },
 
@@ -419,9 +425,10 @@ export const useChessStore = create<ChessState>((set, get) => ({
         variationAnalysis: null,
         selectedSquare: null,
         legalMovesForSelected: [],
+        userArrows: [],
+        userSquares: {},
       });
 
-      // Auto-analyze imported games
       if (history.length > 0) {
         setTimeout(() => get().runGameReview(), 300);
       }
@@ -445,6 +452,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
         variationAnalysis: null,
         selectedSquare: null,
         legalMovesForSelected: [],
+        userArrows: [],
+        userSquares: {},
       });
     } catch (e) {
       console.error("Failed to load FEN", e);
@@ -467,6 +476,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
       variationAnalysis: null,
       selectedSquare: null,
       legalMovesForSelected: [],
+      userArrows: [],
+      userSquares: {},
     });
   },
 
@@ -516,7 +527,6 @@ export const useChessStore = create<ChessState>((set, get) => ({
       });
       set({ analysisResult: result, isAnalyzing: false });
 
-      // Auto-save to game history
       const headers = game.header();
       const whiteName = headers.White && headers.White !== '?' ? headers.White : 'White';
       const blackName = headers.Black && headers.Black !== '?' ? headers.Black : 'Black';
@@ -559,9 +569,6 @@ export const useChessStore = create<ChessState>((set, get) => ({
   },
 
   showHintMove: () => {
-    // Use analysis result best move for the CURRENT board position.
-    // moveAnalyses[i].bestMove is for the position BEFORE move i.
-    // Current board = position after currentMoveIndex, so use currentMoveIndex + 1.
     const { analysisResult, currentMoveIndex } = get();
     if (analysisResult) {
       const nextIndex = currentMoveIndex + 1;
@@ -600,7 +607,6 @@ export const useChessStore = create<ChessState>((set, get) => ({
     const { selectedSquare, game } = get();
     const sq = square as import('chess.js').Square;
 
-    // If a piece is already selected, try to move to this square
     if (selectedSquare) {
       const prevSq = selectedSquare as import('chess.js').Square;
       const piece = game.get(prevSq);
@@ -614,10 +620,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
       if (success) return;
     }
 
-    // Check if the clicked square has one of the current player's pieces
     const piece = game.get(sq);
     if (piece && piece.color === game.turn()) {
-      // Show legal moves for this piece
       const moves = game.moves({ square: sq, verbose: true });
       set({
         selectedSquare: square,
@@ -629,12 +633,10 @@ export const useChessStore = create<ChessState>((set, get) => ({
   },
 
   toggleZenMode: () => set((state) => ({ zenMode: !state.zenMode })),
-
   setBotMessage: (msg) => set({ botMessage: msg }),
-
   setExplainWhyLine: (line) => set({ explainWhyLine: line }),
 
-  startAIGame: (level: BotPersonality, color: 'w' | 'b') => {
+  startAIGame: (level, color) => {
     const newGame = new Chess();
     newGame.header('White', color === 'w' ? 'You' : level.name);
     newGame.header('Black', color === 'b' ? 'You' : level.name);
@@ -655,12 +657,10 @@ export const useChessStore = create<ChessState>((set, get) => ({
       variationAnalysis: null,
     });
 
-    // If player is black, AI moves first
     if (color === 'b') {
       setTimeout(() => {
         const state = get();
         if (!state.playingAI) return;
-
         const aiEng = new Engine();
         aiEng.waitUntilReady().then(() => {
           if (level.elo < 3200) {
@@ -669,21 +669,15 @@ export const useChessStore = create<ChessState>((set, get) => ({
           } else {
             aiEng.setOption('UCI_LimitStrength', 'false');
           }
-          
-          if (level.style === 'aggressive') {
-            aiEng.setConfig({ multiPv: 3 });
-          } else {
-            aiEng.setConfig({ multiPv: 1 });
-          }
+          if (level.style === 'aggressive') aiEng.setConfig({ multiPv: 3 });
+          else aiEng.setConfig({ multiPv: 1 });
 
           aiEng.onBestMove((bestMove: string) => {
             const currentState = get();
             if (!currentState.playingAI) { aiEng.destroy(); return; }
-
             const from = bestMove.substring(0, 2);
             const to = bestMove.substring(2, 4);
             const promotion = bestMove.length > 4 ? bestMove[4] : undefined;
-
             aiEng.destroy();
             get().makeMove({ from, to, promotion });
           });
@@ -692,24 +686,18 @@ export const useChessStore = create<ChessState>((set, get) => ({
           if (level.elo <= 600) moveTime = 300;
           else if (level.elo <= 1200) moveTime = 600;
           else if (level.elo >= 2500) moveTime = 2000;
-
           aiEng.evaluateWithMoveTime(state.fen, moveTime);
         });
       }, 500);
     }
   },
 
-  stopAIGame: () => {
-    set({ playingAI: false, gameResult: null });
-  },
-
+  stopAIGame: () => set({ playingAI: false, gameResult: null }),
   resignGame: () => {
     const { playerColor, soundEnabled } = get();
     const result = playerColor === 'w' ? '0-1' : '1-0';
     set({ gameResult: result, playingAI: false });
     if (soundEnabled) playGameEndSound();
-    
-    // Auto-analyze on resignation
     setTimeout(() => get().runGameReview(), 1000);
   },
 }));
