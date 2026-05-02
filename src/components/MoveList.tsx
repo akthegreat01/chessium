@@ -3,7 +3,7 @@
 import { useChessStore } from '@/lib/chessStore';
 import { 
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, 
-  Play, Pause, SkipForward, Info, Target, Zap
+  Play, Pause, SkipForward, Info, Target, Zap, RotateCcw, List
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
