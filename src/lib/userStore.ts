@@ -1,5 +1,16 @@
 import { create } from 'zustand';
 
+export type UserRank = 'Bronze' | 'Silver' | 'Gold' | 'Platinum' | 'Diamond' | 'Grandmaster';
+
+export function getRankFromLevel(level: number): { name: UserRank, color: string } {
+  if (level >= 50) return { name: 'Grandmaster', color: 'from-red-500 to-yellow-500' };
+  if (level >= 30) return { name: 'Diamond', color: 'from-cyan-400 to-blue-500' };
+  if (level >= 20) return { name: 'Platinum', color: 'from-teal-400 to-emerald-500' };
+  if (level >= 10) return { name: 'Gold', color: 'from-yellow-400 to-orange-500' };
+  if (level >= 5) return { name: 'Silver', color: 'from-gray-300 to-gray-500' };
+  return { name: 'Bronze', color: 'from-orange-700 to-amber-900' };
+}
+
 export interface Achievement {
   id: string;
   title: string;
@@ -35,7 +46,8 @@ interface UserState {
   totalAnalyses: number;
   totalPuzzlesSolved: number;
   achievements: Achievement[];
-  pendingNotifications: { type: 'xp' | 'level' | 'achievement'; message: string; icon?: string }[];
+  pendingNotifications: { type: 'xp' | 'level' | 'achievement' | 'brilliant'; message: string; icon?: string }[];
+  celebration: 'levelUp' | 'brilliant' | null;
   lastAnalysisDate: string | null;
   dailyStreak: number;
   
@@ -47,6 +59,8 @@ interface UserState {
   recordBotWin: () => void;
   checkDailyStreak: () => void;
   dismissNotification: () => void;
+  clearCelebration: () => void;
+  triggerCelebration: (type: 'levelUp' | 'brilliant') => void;
   getAchievements: () => Achievement[];
 }
 
@@ -122,7 +136,8 @@ export const useUserStore = create<UserState>((set, get) => {
     totalAnalyses: initialTotalAnalyses,
     totalPuzzlesSolved: initialTotalPuzzles,
     achievements: buildAchievements(initialAchievements, initialTotalAnalyses, initialTotalPuzzles, initialDailyStreak, calculateLevel(initialXp)),
-    pendingNotifications: [] as { type: 'xp' | 'level' | 'achievement'; message: string; icon?: string }[],
+    pendingNotifications: [] as { type: 'xp' | 'level' | 'achievement' | 'brilliant'; message: string; icon?: string }[],
+    celebration: null,
     lastAnalysisDate: initialLastDate,
     dailyStreak: initialDailyStreak,
   };
@@ -138,6 +153,7 @@ export const useUserStore = create<UserState>((set, get) => {
 
       if (newLevel > oldLevel) {
         notifications.push({ type: 'level', message: `Level Up! You are now Level ${newLevel}`, icon: '⬆️' });
+        set({ celebration: 'levelUp' });
       }
       
       if (typeof window !== 'undefined') {
@@ -264,6 +280,9 @@ export const useUserStore = create<UserState>((set, get) => {
     dismissNotification: () => set((state) => ({
       pendingNotifications: state.pendingNotifications.slice(1),
     })),
+
+    clearCelebration: () => set({ celebration: null }),
+    triggerCelebration: (type) => set({ celebration: type }),
 
     getAchievements: () => get().achievements,
   };

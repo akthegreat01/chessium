@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Keyboard, Trophy, Flame, Menu, X, Star, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import { useUserStore } from '@/lib/userStore';
+import { useUserStore, getRankFromLevel } from '@/lib/userStore';
 import dynamic from 'next/dynamic';
 
 const AchievementsPanel = dynamic(() => import('./AchievementsPanel'), { ssr: false });
@@ -32,6 +32,7 @@ export default function Header() {
   const nextLevelXp = Math.round(Math.pow(level / 1, 1 / 0.7) * 100);
   const currentLevelXp = Math.round(Math.pow((level - 1) / 1, 1 / 0.7) * 100);
   const levelProgress = Math.max(0, Math.min(100, ((xp - currentLevelXp) / Math.max(1, nextLevelXp - currentLevelXp)) * 100));
+  const rank = getRankFromLevel(level);
 
   return (
     <header className="w-full border-b border-white/[0.04] bg-[#0a0b0e]/90 backdrop-blur-xl sticky top-0 z-50" style={{ height: 'var(--header-h, 56px)' }}>
@@ -87,11 +88,17 @@ export default function Header() {
                   </div>
                 </div>
                 {dailyStreak > 0 && (
-                  <div className="flex items-center gap-1 px-2.5 py-1.5 text-orange-500/90">
+                  <div className="flex items-center gap-1 px-2.5 py-1.5 text-orange-500/90 border-r border-white/[0.06]">
                     <Flame className="w-3.5 h-3.5 fill-current" />
                     <span className="text-[11px] font-black">{dailyStreak}</span>
                   </div>
                 )}
+                
+                {/* Rank Badge */}
+                <div className={`flex items-center gap-1.5 px-2.5 py-1.5 bg-gradient-to-r ${rank.color} bg-opacity-20`}>
+                  <Trophy className="w-3.5 h-3.5 text-white drop-shadow-sm" />
+                  <span className="text-[10px] font-black text-white uppercase tracking-wider drop-shadow-sm">{rank.name}</span>
+                </div>
               </div>
 
               {/* Achievements */}

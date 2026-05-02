@@ -19,13 +19,14 @@ const TrainMistakesLauncher = dynamic(() => import("@/components/TrainMistakesLa
 const SidebarAd = dynamic(() => import("@/components/SidebarAd"), { ssr: false });
 const LiveEnginePanel = dynamic(() => import("@/components/LiveEnginePanel"), { ssr: false });
 const NotificationToast = dynamic(() => import("@/components/NotificationToast"), { ssr: false });
+const CelebrationOverlay = dynamic(() => import("@/components/CelebrationOverlay"), { ssr: false });
 
 export default function Home() {
-  const {
-    loadSavedGames, goBack, goForward, goToMove, resetGame,
-    history, flipBoard, toggleSound, fen, game,
-    showHintMove, hideHint, showHint, currentMoveIndex, boardFlipped,
-    analysisResult, restoreMainLine, mainLineHistory,
+  const { 
+    fen, game, history, currentMoveIndex,
+    resetGame, flipBoard, toggleSound,
+    boardFlipped, analysisResult, mainLineHistory, restoreMainLine,
+    zenMode, toggleZenMode, showHintMove, hideHint, showHint, goToMove, goBack, goForward, loadSavedGames
   } = useChessStore();
 
   const { checkDailyStreak } = useUserStore();
@@ -90,12 +91,15 @@ export default function Home() {
   return (
     <>
       <NotificationToast />
-      <div className="flex flex-col lg:flex-row justify-center items-start gap-4 lg:gap-5 p-2 md:p-4 max-w-[1780px] mx-auto w-full lg:h-[calc(100vh-56px)] overflow-y-auto lg:overflow-hidden">
+      <CelebrationOverlay />
+      <div className={`flex-1 w-full max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-4 p-2 md:p-4 lg:p-6 transition-all duration-500 ${zenMode ? 'items-center justify-center' : ''}`}>
         
-        {/* Left Ad Sidebar - Only on very large screens */}
-        <div className="hidden 2xl:block">
-          <SidebarAd side="left" />
-        </div>
+        {/* Left Ad Sidebar - Only on large screens */}
+        {!zenMode && (
+          <div className="hidden xl:block">
+            <SidebarAd side="left" />
+          </div>
+        )}
 
         {/* Center: Board Column */}
         <div className="flex flex-col shrink-0 w-full lg:w-auto mx-auto lg:mx-0 justify-center" style={{ maxWidth: 'min(100%, calc(100vh - 240px), 720px)' }}>
@@ -168,6 +172,11 @@ export default function Home() {
                 {linkCopied ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />}
               </button>
               <div className="w-px h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
+              <button onClick={toggleZenMode}
+                className={`p-1.5 md:p-2 rounded-md transition-all active:scale-90 group ${zenMode ? 'bg-purple-500/20' : 'hover:bg-white/10'}`} title="Zen Mode">
+                <span className={`w-4 h-4 text-center font-bold ${zenMode ? 'text-purple-400' : 'text-gray-400 group-hover:text-white'}`}>Z</span>
+              </button>
+              <div className="w-px h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
               <button onClick={resetGame}
                 className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="New Game">
                 <RefreshCcw className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
@@ -179,43 +188,47 @@ export default function Home() {
         </div>
 
         {/* Right: Side Panel */}
-        <div className="flex-none w-full lg:w-[420px] lg:max-w-[420px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4 lg:h-full">
-          {history.length === 0 ? (
-            <>
-              <div className="glass-panel p-5 slide-up">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-500/10">
-                    <span className="text-blue-400 text-lg">♛</span>
+        {!zenMode && (
+          <div className="flex-none w-full lg:w-[420px] lg:max-w-[420px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4 lg:h-full">
+            {history.length === 0 ? (
+              <>
+                <div className="glass-panel p-5 slide-up">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-500/10">
+                      <span className="text-blue-400 text-lg">♛</span>
+                    </div>
+                    <div>
+                      <h2 className="text-sm font-bold text-white uppercase tracking-wider">Engine Insights</h2>
+                      <p className="text-[10px] text-gray-500 font-medium">Grandmaster-level Stockfish NNUE</p>
+                    </div>
                   </div>
-                  <div>
-                    <h2 className="text-sm font-bold text-white uppercase tracking-wider">Engine Insights</h2>
-                    <p className="text-[10px] text-gray-500 font-medium">Grandmaster-level Stockfish NNUE</p>
-                  </div>
+                  <p className="text-xs text-gray-400 leading-relaxed font-medium">
+                    Deep-dive into your play with the world&apos;s strongest engine. Import games instantly or start exploring positions manually.
+                  </p>
                 </div>
-                <p className="text-xs text-gray-400 leading-relaxed font-medium">
-                  Deep-dive into your play with the world&apos;s strongest engine. Import games instantly or start exploring positions manually.
-                </p>
-              </div>
-              <TrainMistakesLauncher />
-              <LiveEnginePanel />
-              <GameImport />
-              <GameHistoryPanel />
-            </>
-          ) : (
-            <>
-              <GameReview />
-              <MoveList />
-              <LiveEnginePanel />
-              <GameHistoryPanel />
-              <GameImport />
-            </>
-          )}
-        </div>
+                <TrainMistakesLauncher />
+                <LiveEnginePanel />
+                <GameImport />
+                <GameHistoryPanel />
+              </>
+            ) : (
+              <>
+                <GameReview />
+                <MoveList />
+                <LiveEnginePanel />
+                <GameHistoryPanel />
+                <GameImport />
+              </>
+            )}
+          </div>
+        )}
 
         {/* Right Ad Sidebar - Only on large screens */}
-        <div className="hidden xl:block">
-          <SidebarAd side="right" />
-        </div>
+        {!zenMode && (
+          <div className="hidden xl:block">
+            <SidebarAd side="right" />
+          </div>
+        )}
       </div>
     </>
   );

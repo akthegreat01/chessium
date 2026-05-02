@@ -76,6 +76,7 @@ interface ChessState {
   soundEnabled: boolean;
   showHint: boolean;
   hintMove: string | null;
+  zenMode: boolean;
 
   // AI Play
   playingAI: boolean;
@@ -112,6 +113,7 @@ interface ChessState {
   setAnalysisDepth: (depth: number) => void;
   setEngineConfig: (config: Partial<EngineConfig>) => void;
   selectSquare: (square: string | null) => void;
+  toggleZenMode: () => void;
 
   // AI Play
   startAIGame: (level: BotPersonality, color: 'w' | 'b') => void;
@@ -152,6 +154,7 @@ export const useChessStore = create<ChessState>((set, get) => ({
   soundEnabled: true,
   showHint: false,
   hintMove: null,
+  zenMode: false,
   playingAI: false,
   aiLevel: BOT_PERSONALITIES[3],
   playerColor: 'w',
@@ -593,6 +596,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
       set({ selectedSquare: null, legalMovesForSelected: [] });
     }
   },
+
+  toggleZenMode: () => set((state) => ({ zenMode: !state.zenMode })),
 
   startAIGame: (level: BotPersonality, color: 'w' | 'b') => {
     const newGame = new Chess();

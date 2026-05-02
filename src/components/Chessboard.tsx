@@ -3,6 +3,7 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
 import { Chessboard as ReactChessboard } from 'react-chessboard';
 import { useChessStore, BOARD_THEMES } from '@/lib/chessStore';
+import { useUserStore } from '@/lib/userStore';
 import { Palette, Lightbulb, BookOpen, Star, ThumbsUp, Check, X } from 'lucide-react';
 
 // Classification metadata with chess.com-style icons
@@ -125,13 +126,27 @@ export default function Chessboard() {
   let classInfo: { color: string; type: string; label: string } | null = null;
 
   if (variationAnalysis && mainLineHistory) {
-    // We're exploring a variation - use the instant analysis
     classification = variationAnalysis.classification;
     classInfo = classData[classification] || null;
-  } else if (currentMoveIndex >= 0 && analysisResult) {
+  } else if (currentMoveIndex >= 0 && analysisResult && currentMoveIndex < analysisResult.classifications.length) {
     classification = analysisResult.classifications[currentMoveIndex] || null;
     classInfo = classification ? classData[classification] : null;
   }
+
+  // Trigger celebration on brilliant moves
+  const { triggerCelebration } = useUserStore();
+  useEffect(() => {
+    if (classification === 'brilliant') {
+      triggerCelebration('brilliant');
+    }
+  }, [classification, triggerCelebration]);
+
+  // Dynamic Board Glow based on classification
+  const boardGlowClass = classification === 'brilliant' ? 'shadow-[0_0_80px_rgba(28,176,246,0.5)]' :
+                         classification === 'great' ? 'shadow-[0_0_60px_rgba(92,139,176,0.3)]' :
+                         classification === 'blunder' ? 'shadow-[0_0_80px_rgba(250,65,45,0.4)]' :
+                         classification === 'mistake' ? 'shadow-[0_0_60px_rgba(255,164,89,0.3)]' :
+                         'shadow-[0_10px_30px_-5px_rgba(0,0,0,0.5)]';
 
   // Build square styles: highlight selected square + legal moves + last move
   const customSquareStyles: Record<string, React.CSSProperties> = {};
@@ -196,7 +211,7 @@ export default function Chessboard() {
   };
 
   return (
-    <div ref={boardRef} className="relative w-full aspect-square">
+    <div ref={boardRef} className={`relative w-full aspect-square rounded-sm transition-shadow duration-1000 ${boardGlowClass}`}>
       {/* @ts-ignore */}
       <ReactChessboard options={boardOptions} />
 
