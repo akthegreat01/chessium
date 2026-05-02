@@ -108,10 +108,10 @@ export default function GameHistoryPanel() {
           {history.length > 0 && (
             <button
               onClick={() => setShowTrainer(true)}
-              className="w-full mt-1 bg-gradient-to-r from-red-500/20 to-orange-500/20 hover:from-red-500/30 hover:to-orange-500/30 border border-red-500/20 hover:border-red-500/40 text-red-100 font-medium py-2 rounded-lg transition-all flex items-center justify-center gap-2 text-sm shadow-inner"
+              className="w-full mt-1 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-200 font-black py-1.5 rounded-lg transition-all flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest"
             >
-              <Target className="w-4 h-4 text-red-400" />
-              Train Your Mistakes
+              <Target className="w-3 h-3 text-red-400" />
+              Train Mistakes
             </button>
           )}
 

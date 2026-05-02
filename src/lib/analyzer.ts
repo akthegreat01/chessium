@@ -63,29 +63,14 @@ function evalToWhiteScore(score: number, mate: number | null, isWhiteToMove: boo
  * Detect if a move involves a sacrifice (giving up material for positional/tactical gain).
  */
 function isSacrifice(move: Move, evalBeforeForPlayer: number, evalAfterForPlayer: number): boolean {
-  // A simple heuristic: if a higher value piece captures a lower value piece, it's NOT a sacrifice.
-  // A sacrifice is usually when you give up a piece for nothing or for a lower value piece
-  // and yet the engine evaluation remains high.
-  
   const pieceValues: Record<string, number> = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
   const capturedValue = move.captured ? pieceValues[move.captured] : 0;
   const movedValue = pieceValues[move.piece];
   
-  // Case 1: Capture where you lose the piece (roughly estimated by engine eval not dropping despite material loss)
-  // But wait, we don't have the "after capture" state easily here without another engine call.
-  
-  // Let's use a simpler but more accurate check for "Brilliant":
-  // It's a move that looks like a blunder (material-wise) but is actually the best move.
-  // For now, let's just make it harder to trigger.
-  
   if (move.captured) {
-    // If you trade a Queen for a Minor piece or Rook
+    // Quality trade-down: Queen for anything less than a Queen, or Rook for Minor/Pawn
     if (movedValue === 900 && capturedValue <= 500) return true;
-    // If you trade a Rook for a Minor piece
-    if (movedValue === 500 && capturedValue <= 330) return true;
-  } else {
-    // Giving up a piece for "nothing"
-    if (movedValue >= 320) return true;
+    if (movedValue === 500 && capturedValue <= 100) return true; // Rook for Pawn
   }
   
   return false;
@@ -134,17 +119,17 @@ function classifyMove(
 
   if (isBestMove) {
     // Brilliant: A move that is the best move, involves a sacrifice, 
-    // and maintaining a strong position (eval > 100).
+    // and leads to a clearly winning position (eval > 200).
     const isCaptureSacrifice = isSacrifice(move, evalBeforeForPlayer, evalAfterForPlayer);
-    if (isCaptureSacrifice && evalAfterForPlayer > 100 && cpLoss < 10) return 'brilliant';
+    if (isCaptureSacrifice && evalAfterForPlayer > 200 && cpLoss < 5) return 'brilliant';
     
     // Great: Finding a winning move from an equal position
     const wasEqual = Math.abs(evalBeforeForPlayer) < 50;
-    const nowWinning = evalAfterForPlayer > 150;
+    const nowWinning = evalAfterForPlayer > 180;
     if (wasEqual && nowWinning) return 'great';
 
     // Great: Finding a crushing blow in a winning position
-    if (evalBeforeForPlayer > 100 && evalAfterForPlayer - evalBeforeForPlayer > 150) return 'great';
+    if (evalBeforeForPlayer > 100 && evalAfterForPlayer - evalBeforeForPlayer > 200) return 'great';
 
     return 'best';
   }
