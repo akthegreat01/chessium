@@ -99,6 +99,10 @@ export default function GameReview() {
     : analysisResult?.moveAnalyses?.[currentMoveIndex];
   const moveClass = moveAnalysis ? classData[moveAnalysis.classification] : null;
 
+  const headers = game.header();
+  const whiteName = headers.White || 'White';
+  const blackName = headers.Black || 'Black';
+
   useEffect(() => {
     if (analysisResult && !isAnalyzing && !hasRecorded) {
       setHasRecorded(true);
@@ -125,11 +129,11 @@ export default function GameReview() {
           <div className="flex items-center gap-6">
             <div className="flex flex-col items-center">
               <AccuracyRing accuracy={analysisResult.accuracy.white} size={64} />
-              <span className="text-[9px] font-black text-gray-500 uppercase mt-2">White</span>
+              <span className="text-[9px] font-black text-white uppercase mt-2 truncate max-w-[80px]">{whiteName}</span>
             </div>
             <div className="flex flex-col items-center">
               <AccuracyRing accuracy={analysisResult.accuracy.black} size={64} />
-              <span className="text-[9px] font-black text-gray-500 uppercase mt-2">Black</span>
+              <span className="text-[9px] font-black text-gray-400 uppercase mt-2 truncate max-w-[80px]">{blackName}</span>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
