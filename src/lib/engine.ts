@@ -25,7 +25,7 @@ const DEFAULT_CONFIG: EngineConfig = {
   depth: 20,
   multiPv: 3,
   threads: availableThreads,
-  hash: 64, // Increased from 16 to 64 for faster deep search
+  hash: 256, // Increased to 256MB for faster deep search and better transposition hits
 };
 
 export class Engine {
@@ -125,10 +125,10 @@ export class Engine {
 
       const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
       
-      // Throttle updates to ~10fps to prevent massive React UI lag
+      // Throttle updates to ~12fps to prevent massive React UI lag
       // Also ignore very low depth scores (depth < 4) to prevent the eval bar from going "crazy" 
       // with wildly inaccurate initial centipawn calculations
-      if (now - this.lastUpdate > 100 || depth >= this.config.depth) {
+      if (now - this.lastUpdate > 80 || depth >= this.config.depth) {
         this.lastUpdate = now;
         
         if (multiPv === 1 && this.onEvalCallback && (depth >= 4 || mate !== null)) {

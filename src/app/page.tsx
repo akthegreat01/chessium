@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useChessStore } from "@/lib/chessStore";
+import { useUserStore } from "@/lib/userStore";
 import { RotateCw, Copy, Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, RefreshCcw, Check, Undo2, Share2 } from 'lucide-react';
 import PlayerBar from "@/components/PlayerBar";
 
@@ -14,8 +15,10 @@ const GameReview = dynamic(() => import("@/components/GameReview"), { ssr: false
 const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr: false });
 const GameHistoryPanel = dynamic(() => import("@/components/GameHistoryPanel"), { ssr: false });
 const TrainMistakesLauncher = dynamic(() => import("@/components/TrainMistakesLauncher"), { ssr: false });
-const OpeningExplorer = dynamic(() => import("@/components/OpeningExplorer"), { ssr: false });
+
 const SidebarAd = dynamic(() => import("@/components/SidebarAd"), { ssr: false });
+const LiveEnginePanel = dynamic(() => import("@/components/LiveEnginePanel"), { ssr: false });
+const NotificationToast = dynamic(() => import("@/components/NotificationToast"), { ssr: false });
 
 export default function Home() {
   const {
@@ -25,12 +28,15 @@ export default function Home() {
     analysisResult, restoreMainLine, mainLineHistory,
   } = useChessStore();
 
+  const { checkDailyStreak } = useUserStore();
+
   const [fenCopied, setFenCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     loadSavedGames();
-  }, [loadSavedGames]);
+    checkDailyStreak();
+  }, [loadSavedGames, checkDailyStreak]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -82,132 +88,135 @@ export default function Home() {
   }, [currentMoveIndex, history.length]);
 
   return (
-    <div className="flex flex-col lg:flex-row justify-center items-start gap-4 lg:gap-5 p-2 md:p-4 max-w-[1780px] mx-auto w-full lg:h-[calc(100vh-56px)] overflow-y-auto lg:overflow-hidden">
-      
-      {/* Left Ad Sidebar - Only on very large screens */}
-      <div className="hidden 2xl:block">
-        <SidebarAd side="left" />
-      </div>
-
-      {/* Center: Board Column */}
-      <div className="flex flex-col shrink-0 w-full lg:w-auto mx-auto lg:mx-0 justify-center" style={{ maxWidth: 'min(100%, calc(100vh - 240px), 720px)' }}>
-        {/* Top Player */}
-        <PlayerBar color={topColor} />
-
-        {/* Board row: eval bar + board */}
-        <div className="flex gap-1.5 my-1">
-          <div className="hidden md:block shrink-0">
-            <EvaluationBar />
-          </div>
-          <div className="board-container flex-1 aspect-square">
-            <Chessboard />
-          </div>
+    <>
+      <NotificationToast />
+      <div className="flex flex-col lg:flex-row justify-center items-start gap-4 lg:gap-5 p-2 md:p-4 max-w-[1780px] mx-auto w-full lg:h-[calc(100vh-56px)] overflow-y-auto lg:overflow-hidden">
+        
+        {/* Left Ad Sidebar - Only on very large screens */}
+        <div className="hidden 2xl:block">
+          <SidebarAd side="left" />
         </div>
 
-        {/* Bottom Player */}
-        <PlayerBar color={bottomColor} />
+        {/* Center: Board Column */}
+        <div className="flex flex-col shrink-0 w-full lg:w-auto mx-auto lg:mx-0 justify-center" style={{ maxWidth: 'min(100%, calc(100vh - 240px), 720px)' }}>
+          {/* Top Player */}
+          <PlayerBar color={topColor} />
 
-        {/* Board toolbar */}
-        <div className="flex items-center justify-between mt-1.5 px-0.5 gap-2">
-          {/* Navigation Controls */}
-          <div className="flex items-center gap-0.5 bg-white/[0.03] rounded-lg p-0.5 border border-white/[0.05]">
-            <button onClick={() => goToMove(-1)} disabled={currentMoveIndex === -1}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 disabled:opacity-20 transition-all active:scale-90" title="First (Home)">
-              <ChevronsLeft className="w-4 h-4 text-gray-400" />
-            </button>
-            <button onClick={goBack} disabled={currentMoveIndex === -1}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 disabled:opacity-20 transition-all active:scale-90" title="Back (←)">
-              <ChevronLeft className="w-4 h-4 text-gray-400" />
-            </button>
-
-            {/* Current move indicator */}
-            {moveDisplay && (
-              <span className="text-[10px] text-gray-500 font-mono px-1.5 select-none hidden sm:inline">{moveDisplay}</span>
-            )}
-
-            <button onClick={goForward} disabled={currentMoveIndex === history.length - 1}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 disabled:opacity-20 transition-all active:scale-90" title="Forward (→)">
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-            <button onClick={() => goToMove(history.length - 1)} disabled={currentMoveIndex === history.length - 1}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 disabled:opacity-20 transition-all active:scale-90" title="Last (End)">
-              <ChevronsRight className="w-4 h-4 text-gray-400" />
-            </button>
-          </div>
-
-          {/* Action Controls */}
-          <div className="flex items-center gap-0.5 bg-white/[0.03] rounded-lg p-0.5 border border-white/[0.05]">
-            {mainLineHistory && (
-              <button onClick={restoreMainLine}
-                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Restore Main Line">
-                <Undo2 className="w-4 h-4 text-yellow-400 group-hover:text-yellow-300 transition-colors" />
-              </button>
-            )}
-            <button onClick={flipBoard}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Flip Board (F)">
-              <RotateCw className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-            </button>
-            <button onClick={copyFen}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Copy FEN">
-              {fenCopied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />}
-            </button>
-            <button onClick={downloadPgn}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Download PGN">
-              <Download className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-            </button>
-            <button onClick={shareGame}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Share">
-              {linkCopied ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />}
-            </button>
-            <div className="w-px h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
-            <button onClick={resetGame}
-              className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="New Game">
-              <RefreshCcw className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-            </button>
-            <div className="w-px h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
-            <SettingsPanel />
-          </div>
-        </div>
-      </div>
-
-      {/* Right: Side Panel */}
-      <div className="flex-none w-full lg:w-[420px] lg:max-w-[420px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4 lg:h-full">
-        {history.length === 0 ? (
-          <>
-            <div className="glass-panel p-5 slide-up">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 shadow-sm">
-                  <span className="text-blue-500 text-lg">♛</span>
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">Engine Insights</h2>
-                  <p className="text-[10px] text-gray-500 font-medium">Grandmaster-level Stockfish NNUE</p>
-                </div>
-              </div>
-              <p className="text-xs text-gray-400 leading-relaxed font-medium">
-                Deep-dive into your play with the world&apos;s strongest engine. Import games instantly or start exploring positions manually.
-              </p>
+          {/* Board row: eval bar + board */}
+          <div className="flex gap-1.5 my-1">
+            <div className="hidden md:block shrink-0">
+              <EvaluationBar />
             </div>
-            <TrainMistakesLauncher />
-            <GameImport />
-            <OpeningExplorer />
-            <GameHistoryPanel />
-          </>
-        ) : (
-          <>
-            <GameReview />
-            <MoveList />
-            <OpeningExplorer />
-            <GameHistoryPanel />
-            <GameImport />
-          </>
-        )}
-      </div>
+            <div className="board-container flex-1 aspect-square">
+              <Chessboard />
+            </div>
+          </div>
 
-      {/* Right Ad Sidebar - Only on large screens */}
-      <div className="hidden xl:block">
-        <SidebarAd side="right" />
+          {/* Bottom Player */}
+          <PlayerBar color={bottomColor} />
+
+          {/* Board toolbar */}
+          <div className="flex items-center justify-between mt-1.5 px-0.5 gap-2">
+            {/* Navigation Controls */}
+            <div className="flex items-center gap-0.5 bg-white/[0.03] rounded-lg p-0.5 border border-white/[0.05]">
+              <button onClick={() => goToMove(-1)} disabled={currentMoveIndex === -1}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 disabled:opacity-20 transition-all active:scale-90" title="First (Home)">
+                <ChevronsLeft className="w-4 h-4 text-gray-400" />
+              </button>
+              <button onClick={goBack} disabled={currentMoveIndex === -1}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 disabled:opacity-20 transition-all active:scale-90" title="Back (←)">
+                <ChevronLeft className="w-4 h-4 text-gray-400" />
+              </button>
+
+              {/* Current move indicator */}
+              {moveDisplay && (
+                <span className="text-[10px] text-gray-500 font-mono px-1.5 select-none hidden sm:inline">{moveDisplay}</span>
+              )}
+
+              <button onClick={goForward} disabled={currentMoveIndex === history.length - 1}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 disabled:opacity-20 transition-all active:scale-90" title="Forward (→)">
+                <ChevronRight className="w-4 h-4 text-gray-400" />
+              </button>
+              <button onClick={() => goToMove(history.length - 1)} disabled={currentMoveIndex === history.length - 1}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 disabled:opacity-20 transition-all active:scale-90" title="Last (End)">
+                <ChevronsRight className="w-4 h-4 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Action Controls */}
+            <div className="flex items-center gap-0.5 bg-white/[0.03] rounded-lg p-0.5 border border-white/[0.05]">
+              {mainLineHistory && (
+                <button onClick={restoreMainLine}
+                  className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Restore Main Line">
+                  <Undo2 className="w-4 h-4 text-yellow-400 group-hover:text-yellow-300 transition-colors" />
+                </button>
+              )}
+              <button onClick={flipBoard}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Flip Board (F)">
+                <RotateCw className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+              </button>
+              <button onClick={copyFen}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Copy FEN">
+                {fenCopied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />}
+              </button>
+              <button onClick={downloadPgn}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Download PGN">
+                <Download className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+              </button>
+              <button onClick={shareGame}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="Share">
+                {linkCopied ? <Check className="w-4 h-4 text-green-400" /> : <Share2 className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />}
+              </button>
+              <div className="w-px h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
+              <button onClick={resetGame}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="New Game">
+                <RefreshCcw className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+              </button>
+              <div className="w-px h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
+              <SettingsPanel />
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Side Panel */}
+        <div className="flex-none w-full lg:w-[420px] lg:max-w-[420px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4 lg:h-full">
+          {history.length === 0 ? (
+            <>
+              <div className="glass-panel p-5 slide-up">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-500/10">
+                    <span className="text-blue-400 text-lg">♛</span>
+                  </div>
+                  <div>
+                    <h2 className="text-sm font-bold text-white uppercase tracking-wider">Engine Insights</h2>
+                    <p className="text-[10px] text-gray-500 font-medium">Grandmaster-level Stockfish NNUE</p>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400 leading-relaxed font-medium">
+                  Deep-dive into your play with the world&apos;s strongest engine. Import games instantly or start exploring positions manually.
+                </p>
+              </div>
+              <TrainMistakesLauncher />
+              <LiveEnginePanel />
+              <GameImport />
+              <GameHistoryPanel />
+            </>
+          ) : (
+            <>
+              <GameReview />
+              <MoveList />
+              <LiveEnginePanel />
+              <GameHistoryPanel />
+              <GameImport />
+            </>
+          )}
+        </div>
+
+        {/* Right Ad Sidebar - Only on large screens */}
+        <div className="hidden xl:block">
+          <SidebarAd side="right" />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

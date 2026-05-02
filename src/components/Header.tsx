@@ -1,14 +1,17 @@
 "use client";
 
 import Link from 'next/link';
-import { Keyboard, Trophy, Flame, Menu, X } from 'lucide-react';
+import { Keyboard, Trophy, Flame, Menu, X, Star, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useUserStore } from '@/lib/userStore';
+import dynamic from 'next/dynamic';
+
+const AchievementsPanel = dynamic(() => import('./AchievementsPanel'), { ssr: false });
 
 export default function Header() {
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { level, xp, streak } = useUserStore();
+  const { level, xp, streak, dailyStreak } = useUserStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -23,6 +26,12 @@ export default function Header() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Calculate XP progress percentage
+  const calculateLevel = (xp: number) => Math.floor(Math.pow(xp / 100, 0.7)) + 1;
+  const nextLevelXp = Math.round(Math.pow(level / 1, 1 / 0.7) * 100);
+  const currentLevelXp = Math.round(Math.pow((level - 1) / 1, 1 / 0.7) * 100);
+  const levelProgress = Math.max(0, Math.min(100, ((xp - currentLevelXp) / Math.max(1, nextLevelXp - currentLevelXp)) * 100));
 
   return (
     <header className="w-full border-b border-white/[0.04] bg-[#0a0b0e]/90 backdrop-blur-xl sticky top-0 z-50" style={{ height: 'var(--header-h, 56px)' }}>
@@ -60,26 +69,39 @@ export default function Header() {
           <div className="w-px h-5 bg-white/10 mx-2" />
           
           {mounted && (
-            <div className="flex items-center gap-2 mr-3 group cursor-default">
-              <div className="flex items-center gap-2 bg-white/[0.03] px-2.5 py-1 rounded-md border border-white/[0.05] hover:bg-white/[0.06] transition-colors">
-                <div className="flex items-center gap-1.5 border-r border-white/10 pr-2 mr-0.5">
-                  <Trophy className="w-3 h-3 text-yellow-500/80" />
-                  <span className="text-[11px] font-bold text-gray-300">Level {level}</span>
+            <div className="flex items-center gap-2">
+              {/* Level & XP Badge */}
+              <div className="flex items-center gap-0 bg-white/[0.03] rounded-lg border border-white/[0.05] overflow-hidden">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 border-r border-white/[0.06]">
+                  <div className="w-5 h-5 rounded-md bg-gradient-to-br from-blue-500/30 to-purple-500/30 flex items-center justify-center border border-blue-500/20">
+                    <Zap className="w-3 h-3 text-blue-400" />
+                  </div>
+                  <span className="text-[11px] font-black text-white">Lv.{level}</span>
                 </div>
-                <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">{xp} XP</span>
-                {streak > 0 && (
-                  <div className="flex items-center gap-1 ml-1 pl-2 border-l border-white/10 text-orange-500/90">
-                    <Flame className="w-3 h-3 fill-current" />
-                    <span className="text-[11px] font-bold">{streak}</span>
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 border-r border-white/[0.06]">
+                  <Star className="w-3 h-3 text-yellow-500/70 fill-yellow-500/70" />
+                  <span className="text-[10px] font-bold text-gray-400 tabular-nums">{xp}</span>
+                  {/* Mini level progress */}
+                  <div className="w-12 h-1 bg-white/[0.06] rounded-full overflow-hidden ml-0.5">
+                    <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500" style={{ width: `${levelProgress}%` }} />
+                  </div>
+                </div>
+                {dailyStreak > 0 && (
+                  <div className="flex items-center gap-1 px-2.5 py-1.5 text-orange-500/90">
+                    <Flame className="w-3.5 h-3.5 fill-current" />
+                    <span className="text-[11px] font-black">{dailyStreak}</span>
                   </div>
                 )}
               </div>
+
+              {/* Achievements */}
+              <AchievementsPanel />
             </div>
           )}
 
           <button 
             onClick={() => setShowShortcuts(!showShortcuts)}
-            className="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-gray-500 hover:text-gray-300 relative"
+            className="p-1.5 rounded-lg hover:bg-white/5 transition-colors text-gray-500 hover:text-gray-300 relative ml-1"
             title="Keyboard Shortcuts"
           >
             <Keyboard className="w-4 h-4" />
@@ -90,7 +112,7 @@ export default function Header() {
               <div className="fixed inset-0 z-[90]" onClick={() => setShowShortcuts(false)} />
               <div className="absolute right-4 top-14 z-[100] glass-panel p-4 w-64 scale-in">
                 <h3 className="text-xs font-bold text-white uppercase tracking-wider mb-3 flex items-center gap-2">
-                  <Keyboard className="w-3.5 h-3.5 text-green-500" />
+                  <Keyboard className="w-3.5 h-3.5 text-blue-500" />
                   Shortcuts
                 </h3>
                 <div className="flex flex-col gap-2 text-xs">
@@ -116,12 +138,12 @@ export default function Header() {
         <div className="flex md:hidden items-center gap-2">
           {mounted && (
             <div className="flex items-center gap-1.5 bg-white/[0.03] px-2 py-1 rounded-md border border-white/[0.05] text-[10px]">
-              <Trophy className="w-3 h-3 text-yellow-500/80" />
+              <Zap className="w-3 h-3 text-blue-400" />
               <span className="font-bold text-gray-300">Lv{level}</span>
-              {streak > 0 && (
+              {dailyStreak > 0 && (
                 <>
                   <Flame className="w-3 h-3 text-orange-500 fill-current" />
-                  <span className="font-bold text-orange-400">{streak}</span>
+                  <span className="font-bold text-orange-400">{dailyStreak}</span>
                 </>
               )}
             </div>

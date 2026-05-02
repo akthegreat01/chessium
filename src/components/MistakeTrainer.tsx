@@ -29,7 +29,7 @@ export default function MistakeTrainer({ onClose }: { onClose: () => void }) {
   const [showHint, setShowHint] = useState(false);
   const [shake, setShake] = useState(false);
   
-  const { xp, level, streak, addXp, incrementStreak, resetStreak } = useUserStore();
+  const { xp, level, streak, addXp, incrementStreak, resetStreak, recordPuzzleSolved } = useUserStore();
   const [xpGained, setXpGained] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -134,6 +134,7 @@ export default function MistakeTrainer({ onClose }: { onClose: () => void }) {
         setXpGained(totalXp);
         addXp(totalXp);
         incrementStreak();
+        recordPuzzleSolved();
         
         return true;
       } else {

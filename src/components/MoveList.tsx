@@ -27,9 +27,18 @@ export default function MoveList() {
   // Auto-scroll to current move
   useEffect(() => {
     if (scrollRef.current) {
-      const activeEl = scrollRef.current.querySelector('.active-move');
+      const container = scrollRef.current;
+      const activeEl = container.querySelector('.active-move') as HTMLElement;
       if (activeEl) {
-        activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        const containerRect = container.getBoundingClientRect();
+        const elRect = activeEl.getBoundingClientRect();
+        
+        if (elRect.top < containerRect.top || elRect.bottom > containerRect.bottom) {
+          container.scrollTo({
+            top: activeEl.offsetTop - container.offsetTop - container.clientHeight / 2,
+            behavior: 'smooth'
+          });
+        }
       }
     }
   }, [currentMoveIndex]);

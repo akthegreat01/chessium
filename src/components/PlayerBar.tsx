@@ -67,7 +67,7 @@ const PieceIcon = ({ type, color }: { type: string, color: 'w'|'b' }) => {
 }
 
 export default function PlayerBar({ color }: { color: 'w' | 'b' }) {
-  const { fen, game } = useChessStore();
+  const { fen, game, playingAI, aiLevel, playerColor } = useChessStore();
   const material = getMaterial(fen);
   
   const advantage = color === 'w' ? material.wAdvantage : material.bAdvantage;
@@ -75,27 +75,41 @@ export default function PlayerBar({ color }: { color: 'w' | 'b' }) {
   const oppColor = color === 'w' ? 'b' : 'w';
   
   const headers = game.header();
-  const whiteName = headers.White && headers.White !== '?' ? headers.White : 'White Player';
-  const blackName = headers.Black && headers.Black !== '?' ? headers.Black : 'Black Player';
   
-  const playerName = color === 'w' ? whiteName : blackName;
-  const playerElo = color === 'w' ? headers.WhiteElo : headers.BlackElo;
-  
+  let playerName = color === 'w' 
+    ? (headers.White && headers.White !== '?' ? headers.White : 'White') 
+    : (headers.Black && headers.Black !== '?' ? headers.Black : 'Black');
+    
+  let playerElo: string | undefined | null = color === 'w' ? headers.WhiteElo : headers.BlackElo;
+  let avatar = color === 'w' ? '♙' : '♟';
+
+  if (playingAI && aiLevel) {
+    if (color === playerColor) {
+      playerName = 'You';
+      playerElo = undefined;
+      avatar = '👤';
+    } else {
+      playerName = aiLevel.name;
+      playerElo = aiLevel.elo?.toString();
+      avatar = aiLevel.avatar;
+    }
+  }
+
   return (
     <div className="flex items-center justify-between h-9 md:h-10 px-1 py-1">
       <div className="flex items-center gap-2 md:gap-3 min-w-0">
         {/* Avatar Placeholder */}
-        <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-700 rounded flex items-center justify-center overflow-hidden border border-white/10 shrink-0">
-           <span className="text-lg md:text-xl opacity-80">{color === 'w' ? '♙' : '♟'}</span>
+        <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-700/50 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 shrink-0 shadow-inner">
+           <span className="text-lg md:text-xl opacity-90 leading-none pb-0.5">{avatar}</span>
         </div>
         
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1.5 md:gap-2">
-            <span className="text-xs md:text-sm font-semibold text-gray-200 truncate max-w-[120px] md:max-w-none">
+            <span className="text-xs md:text-sm font-bold text-gray-200 truncate max-w-[120px] md:max-w-none">
               {playerName}
             </span>
-            {playerElo && (
-              <span className="text-[10px] md:text-xs text-gray-500">({playerElo})</span>
+            {playerElo && playerElo !== '?' && (
+              <span className="text-[10px] md:text-xs text-gray-500 font-mono">({playerElo})</span>
             )}
           </div>
           

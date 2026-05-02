@@ -16,6 +16,8 @@ export interface MoveAnalysis {
   moveAccuracy: number;   // Move accuracy (0-100)
   depth: number;          // Analysis depth used
   bestLine: string;       // Engine's best line (SAN)
+  threat?: string;        // Threat description if any
+  alternatives?: { san: string; eval: number }[]; // Top alternative moves
 }
 
 export interface AnalysisResult {
@@ -32,6 +34,7 @@ export interface AnalysisResult {
     black: string;
   };
   cacheStats?: { hits: number; misses: number; totalPositions: number };
+  timeTakenMs?: number;
 }
 
 // Win percentage formula: Lichess/Chess.com standard
@@ -55,6 +58,45 @@ function evalToWhiteScore(score: number, mate: number | null, isWhiteToMove: boo
   return isWhiteToMove ? score : -score;
 }
 
+/**
+ * Detect if a move involves a sacrifice (giving up material for positional/tactical gain).
+ */
+function isSacrifice(move: Move, evalBeforeForPlayer: number, evalAfterForPlayer: number): boolean {
+  if (!move.captured) return false;
+  
+  const pieceValues: Record<string, number> = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
+  const capturedValue = pieceValues[move.captured] || 0;
+  const movedValue = pieceValues[move.piece] || 0;
+  
+  // It's a sacrifice if you're giving up a higher-value piece for a lower-value piece
+  // or if you're moving into a position where you'll lose material but gain positionally
+  if (movedValue > capturedValue + 100) return true;
+  
+  return false;
+}
+
+/**
+ * Adaptive move time based on position complexity.
+ * Complex positions (many pieces, tactical tension) get more time.
+ */
+function getAdaptiveMoveTime(fen: string, baseTimeMs: number): number {
+  const parts = fen.split(' ');
+  const position = parts[0];
+  
+  // Count pieces for complexity estimation
+  let pieceCount = 0;
+  for (const c of position) {
+    if (c.match(/[pnbrqkPNBRQK]/)) pieceCount++;
+  }
+  
+  // Simpler positions (fewer pieces) need less time
+  if (pieceCount <= 6) return Math.round(baseTimeMs * 0.3);
+  if (pieceCount <= 10) return Math.round(baseTimeMs * 0.5);
+  if (pieceCount >= 28) return Math.round(baseTimeMs * 0.6); // Opening positions are well-cached
+  
+  return baseTimeMs;
+}
+
 function classifyMove(
   evalBeforeWhite: number,
   evalAfterWhite: number,
@@ -75,6 +117,13 @@ function classifyMove(
   if (moveIndex < 8 && cpLoss < 20 && winPctLoss < 2) return 'book';
 
   if (isBestMove) {
+    // Brilliant: sacrifice that maintains or improves position
+    const wasBehindOrEqual = evalBeforeForPlayer < 100;
+    const nowAhead = evalAfterForPlayer > 100;
+    const isCaptureSacrifice = isSacrifice(move, evalBeforeForPlayer, evalAfterForPlayer);
+    
+    if (isCaptureSacrifice && nowAhead) return 'brilliant';
+    
     // Brilliant: turning a losing/equal position into a winning one
     const wasLosing = evalBeforeForPlayer < -50;
     const nowWinning = evalAfterForPlayer > 150;
@@ -83,6 +132,9 @@ function classifyMove(
     // Great: finding a crushing move from an equal position
     const wasEqual = Math.abs(evalBeforeForPlayer) < 50;
     if (wasEqual && nowWinning) return 'great';
+
+    // Great: finding a check that wins material significantly
+    if (move.san.includes('+') && evalAfterForPlayer - evalBeforeForPlayer > 200) return 'great';
 
     return 'best';
   }
@@ -100,15 +152,19 @@ function generateSummary(accuracy: number, counts: Record<MoveClassification, nu
   const blunders = counts.blunder;
   const mistakes = counts.mistake;
   const brilliancies = counts.brilliant;
+  const bestMoves = counts.best;
 
   if (accuracy >= 95) {
     return brilliancies > 0
       ? `Masterclass performance with ${brilliancies} brilliant move${brilliancies > 1 ? 's' : ''}! Near-perfect accuracy.`
       : 'Engine-level accuracy. Virtually flawless play throughout.';
-  } else if (accuracy >= 85) {
+  } else if (accuracy >= 90) {
+    const extra = bestMoves > 5 ? ` Found ${bestMoves} best moves.` : '';
     return blunders === 0
-      ? 'Excellent game with very precise calculation.'
+      ? `Excellent game with very precise calculation.${extra}`
       : `Strong play overall, but ${blunders} blunder${blunders > 1 ? 's' : ''} cost material.`;
+  } else if (accuracy >= 80) {
+    return `Very good play. ${mistakes + blunders} notable error${(mistakes + blunders) > 1 ? 's' : ''}. Strong positional understanding.`;
   } else if (accuracy >= 70) {
     return `Solid play with ${mistakes + blunders} notable error${(mistakes + blunders) > 1 ? 's' : ''}. Room for tactical improvement.`;
   } else if (accuracy >= 50) {
@@ -159,6 +215,11 @@ type EvalResult = { score: number; mate: number | null; bestMove: string; depth:
  * Main analysis function with position cache integration.
  * Positions that have been analyzed before are recalled instantly,
  * making re-analyses and common opening positions blazing fast.
+ * 
+ * Optimizations:
+ * - Adaptive move time based on position complexity
+ * - Position cache with depth-aware lookups
+ * - Faster time allocation for simple/forced positions
  */
 export async function analyzeGameFull(
   pgn: string,
@@ -167,6 +228,7 @@ export async function analyzeGameFull(
   cachedResult?: AnalysisResult | null,
   cachedHistoryLength?: number
 ): Promise<AnalysisResult> {
+  const startTime = Date.now();
   const game = new Chess();
   game.loadPgn(pgn);
   const history = game.history({ verbose: true });
@@ -195,12 +257,12 @@ export async function analyzeGameFull(
 
   if (progressCallback) progressCallback(0.01);
 
-  // Time allocation per move
-  let moveTimeMs = 1500;
-  if (analysisDepth <= 10) moveTimeMs = 500;
-  else if (analysisDepth <= 14) moveTimeMs = 1000;
-  else if (analysisDepth <= 18) moveTimeMs = 1500;
-  else moveTimeMs = 2500;
+  // Base time allocation per move (Optimized for speed while maintaining quality)
+  let baseMoveTimeMs = 600;
+  if (analysisDepth <= 10) baseMoveTimeMs = 150;
+  else if (analysisDepth <= 14) baseMoveTimeMs = 300;
+  else if (analysisDepth <= 18) baseMoveTimeMs = 600;
+  else baseMoveTimeMs = 1000;
 
   // Minimum depth required to use a cached eval
   const minCacheDepth = Math.max(8, analysisDepth - 4);
@@ -224,6 +286,9 @@ export async function analyzeGameFull(
     }
 
     cacheMisses++;
+
+    // Adaptive move time based on position complexity
+    const moveTimeMs = getAdaptiveMoveTime(fen, baseMoveTimeMs);
 
     // Engine evaluation with promise
     return new Promise((resolve) => {
@@ -351,6 +416,44 @@ export async function analyzeGameFull(
       continue;
     }
 
+    // For forced moves, skip engine eval and just quickly evaluate
+    if (isForced) {
+      if (evalGame.isGameOver()) {
+        if (evalGame.isCheckmate()) {
+          preEval = { score: 0, mate: -1, bestMove: '(none)', depth: 0, pv: '' };
+        } else {
+          preEval = { score: 0, mate: null, bestMove: '(none)', depth: 0, pv: '' };
+        }
+      } else {
+        preEval = await evaluatePosition(evalGame.fen());
+      }
+
+      const isWhiteToMoveAfter = evalGame.turn() === 'w';
+      const evalAfterWhite = evalToWhiteScore(preEval.score, preEval.mate, isWhiteToMoveAfter);
+      evals[i + 1] = evalAfterWhite;
+
+      classifications[i] = 'forced';
+      moveAnalyses.push({
+        classification: 'forced',
+        eval: evalAfterWhite,
+        evalBefore: evalBeforeWhite,
+        bestMove: engineBestMove,
+        bestMoveSan: engineBestSan,
+        playedMove: move.san,
+        cpLoss: 0,
+        winPctLoss: 0,
+        moveAccuracy: 100,
+        depth: preEval.depth,
+        bestLine: engineBestLineSan,
+      });
+
+      if (isWhite) { whiteAccuracySum += 100; whiteMovesCount++; }
+      else { blackAccuracySum += 100; blackMovesCount++; }
+
+      if (progressCallback) progressCallback((i + 1) / history.length);
+      continue;
+    }
+
     // Evaluate position AFTER the move
     if (evalGame.isGameOver()) {
       if (evalGame.isCheckmate()) {
@@ -450,6 +553,7 @@ export async function analyzeGameFull(
       misses: cacheMisses,
       totalPositions: positionCache.stats().size,
     },
+    timeTakenMs: Date.now() - startTime,
   };
 }
 
@@ -498,7 +602,7 @@ export async function analyzeInstantMove(
   };
 
   // Get best move from position before
-  const preResult = await evaluateOnce(fenBefore, 1000);
+  const preResult = await evaluateOnce(fenBefore, 800);
 
   // Get eval after the played move
   const postGame = new Chess(fenAfter);
@@ -507,7 +611,7 @@ export async function analyzeInstantMove(
   if (postGame.isGameOver()) {
     postResult = { score: 0, mate: postGame.isCheckmate() ? -1 : null, bestMove: '(none)', depth: 0, pv: '' };
   } else {
-    postResult = await evaluateOnce(fenAfter, 1000);
+    postResult = await evaluateOnce(fenAfter, 800);
   }
 
   engine.stop();
