@@ -97,7 +97,7 @@ export default function Chessboard() {
 
   // Build arrows for analysis best move + user arrows
   const customArrows = useMemo(() => {
-    const arrows: any[] = [...userArrows];
+    const arrows = [...userArrows];
 
     if (showHint && hintMove) {
       arrows.push({ startSquare: hintMove.substring(0, 2), endSquare: hintMove.substring(2, 4), color: 'rgba(16, 185, 129, 0.8)' });
