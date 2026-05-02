@@ -73,7 +73,7 @@ export default function Home() {
       </div>
 
       {/* Center: Board Column */}
-      <div className="flex flex-col shrink-0 w-full lg:w-auto" style={{ maxWidth: 'min(100%, 850px)' }}>
+      <div className="flex flex-col shrink-0 w-full lg:w-auto justify-center" style={{ maxWidth: 'min(100%, calc(100vh - 240px), 720px)' }}>
         {/* Top Player */}
         <PlayerBar color={topColor} />
 
