@@ -102,16 +102,17 @@ export default function Home() {
         )}
 
         {/* Center: Board Column */}
-        <div className="flex flex-col shrink-0 w-full lg:w-auto mx-auto lg:mx-0 justify-center" style={{ maxWidth: 'min(100%, calc(100vh - 240px), 720px)' }}>
+        <div className={`flex flex-col shrink-0 w-full lg:w-auto mx-auto lg:mx-0 justify-center ${zenMode ? 'items-center' : ''}`} style={{ maxWidth: 'min(100%, calc(100vh - 180px), 800px)' }}>
+          
           {/* Top Player */}
           <PlayerBar color={topColor} />
 
           {/* Board row: eval bar + board */}
-          <div className="flex gap-1.5 my-1">
+          <div className="flex gap-1.5 my-1 w-full">
             <div className="hidden md:block shrink-0">
               <EvaluationBar />
             </div>
-            <div className="board-container flex-1 aspect-square">
+            <div className="relative flex-1 aspect-square w-full">
               <Chessboard />
             </div>
           </div>
@@ -189,7 +190,7 @@ export default function Home() {
 
         {/* Right: Side Panel */}
         {!zenMode && (
-          <div className="flex-none w-full lg:w-[420px] lg:max-w-[420px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4 lg:h-full">
+          <div className="flex-none w-full lg:w-[360px] lg:max-w-[360px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4 lg:h-full">
             {history.length === 0 ? (
               <>
                 <div className="glass-panel p-5 slide-up">
