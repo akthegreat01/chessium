@@ -231,7 +231,15 @@ export default function Home() {
                   <GameImport />
                 </div>
               </>
-            )}
+            <div className="mt-auto pt-4 flex justify-center">
+              <a 
+                href="/support" 
+                className="text-[10px] text-gray-600 hover:text-blue-400 transition-colors uppercase tracking-widest font-black flex items-center gap-2"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500/20" />
+                Support Chessium
+              </a>
+            </div>
           </div>
         )}
 
