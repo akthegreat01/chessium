@@ -1,4 +1,4 @@
-import { Sparkles, Cpu, Zap, Shield, Globe, BarChart3, Hexagon, Target, Crown } from 'lucide-react';
+import { Sparkles, Cpu, Zap, Shield, Globe, BarChart3, Hexagon, Target, Crown, Heart } from 'lucide-react';
 
 export default function AboutPage() {
   const features = [
@@ -74,6 +74,26 @@ export default function AboutPage() {
         </div>
       </div>
 
+      {/* CTA Section */}
+      <div className="max-w-4xl mx-auto px-4 pb-32 w-full relative z-10 text-center">
+        <div className="glass-panel p-10 rounded-3xl border border-white/5 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-600/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-4 relative z-10">Help Keep Chessium Free</h2>
+          <p className="text-gray-400 mb-8 max-w-xl mx-auto relative z-10 font-medium">
+            Developing and maintaining a high-performance chess engine is a labor of love. 
+            If you find value in Chessium, consider supporting its continued growth.
+          </p>
+          <a 
+            href="/support"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-white text-black font-black text-sm uppercase tracking-widest hover:bg-gray-100 transition-all hover:scale-105 active:scale-95 shadow-2xl relative z-10"
+          >
+            <Heart className="w-4 h-4 fill-black" />
+            Support Project
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
+
+
