@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { Chessboard as ReactChessboard } from 'react-chessboard';
+import { Board as ReactBoard } from 'react-chessboard';
 import { useChessStore, BOARD_THEMES } from '@/lib/chessStore';
 import { useUserStore } from '@/lib/userStore';
 import { Palette, Lightbulb, BookOpen, Star, ThumbsUp, Check, X, Target } from 'lucide-react';
@@ -38,7 +38,7 @@ function squareToPosition(square: string, boardWidth: number, flipped: boolean) 
   };
 }
 
-export default function Chessboard() {
+export default function Board() {
   const {
     fen, makeMove, history, currentMoveIndex,
     analysisResult, boardTheme, setBoardTheme, boardFlipped,
@@ -232,7 +232,7 @@ export default function Chessboard() {
   return (
     <div ref={boardRef} className={`relative w-full aspect-square rounded-sm transition-shadow duration-1000 ${boardGlowClass}`}>
       {/* @ts-ignore */}
-      <ReactChessboard options={boardOptions} />
+      <ReactBoard options={boardOptions} />
 
       {iconPos && classInfo && (
         <div

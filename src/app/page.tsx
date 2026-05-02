@@ -7,7 +7,7 @@ import { useUserStore } from "@/lib/userStore";
 import { RotateCw, Copy, Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, RefreshCcw, Check, Undo2, Share2 } from 'lucide-react';
 import PlayerBar from "@/components/PlayerBar";
 
-const Chessboard = dynamic(() => import("@/components/Chessboard"), { ssr: false });
+const Chessboard = dynamic(() => import("@/components/Board"), { ssr: false });
 const EvaluationBar = dynamic(() => import("@/components/EvaluationBar"), { ssr: false });
 const MoveList = dynamic(() => import("@/components/MoveList"), { ssr: false });
 const GameImport = dynamic(() => import("@/components/GameImport"), { ssr: false });
