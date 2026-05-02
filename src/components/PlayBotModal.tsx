@@ -32,16 +32,16 @@ export default function PlayBotModal({ onClose }: { onClose: () => void }) {
       <motion.div 
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="glass-panel w-full max-w-4xl flex flex-col md:flex-row overflow-hidden shadow-2xl"
+        className="glass-panel w-full max-w-4xl flex flex-col md:flex-row overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto md:overflow-visible"
       >
         {/* Left Sidebar: Select Bot */}
-        <div className="w-full md:w-[45%] bg-black/40 border-r border-white/5 flex flex-col max-h-[80vh]">
-          <div className="p-4 border-b border-white/5 flex items-center gap-2">
+        <div className="w-full md:w-[45%] bg-black/40 border-r border-white/5 flex flex-col md:max-h-[80vh]">
+          <div className="p-4 border-b border-white/5 flex items-center gap-2 sticky top-0 bg-[#08090a] z-10">
             <MonitorPlay className="w-5 h-5 text-blue-400" />
-            <h2 className="font-bold text-white text-lg">Choose Your Opponent</h2>
+            <h2 className="font-bold text-white text-lg">Choose Opponent</h2>
           </div>
           
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
+          <div className="flex-1 md:overflow-y-auto custom-scrollbar p-2 space-y-1">
             {BOT_PERSONALITIES.map(bot => (
               <button
                 key={bot.id}
@@ -65,24 +65,24 @@ export default function PlayBotModal({ onClose }: { onClose: () => void }) {
         </div>
 
         {/* Right Content: Bot Details & Start */}
-        <div className="flex-1 p-6 flex flex-col relative">
-          <button onClick={onClose} className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors">
+        <div className="flex-1 p-4 md:p-8 flex flex-col relative">
+          <button onClick={onClose} className="absolute top-2 right-2 md:top-4 md:right-4 p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10 transition-colors z-20">
             <X className="w-5 h-5" />
           </button>
 
-          <div className="flex flex-col items-center text-center mt-8 mb-6">
-            <div className="text-8xl filter drop-shadow-2xl mb-4 animate-bounce-slow">
+          <div className="flex flex-col items-center text-center mt-4 md:mt-8 mb-4 md:mb-6">
+            <div className="text-6xl md:text-8xl filter drop-shadow-2xl mb-2 md:mb-4 animate-bounce-slow">
               {selectedBot.avatar}
             </div>
-            <h3 className="text-3xl font-black text-white tracking-tight">{selectedBot.name}</h3>
+            <h3 className="text-2xl md:text-3xl font-black text-white tracking-tight">{selectedBot.name}</h3>
             <div className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-white/5 rounded-full border border-white/10">
               <Crown className="w-4 h-4 text-yellow-500" />
               <span className="text-sm font-bold text-gray-300">{selectedBot.elo} ELO</span>
             </div>
           </div>
 
-          <p className="text-gray-300 text-center max-w-md mx-auto mb-8 text-lg">
-            {selectedBot.description}
+          <p className="text-gray-400 text-center max-w-md mx-auto mb-6 md:mb-8 text-sm md:text-lg italic px-4">
+            "{selectedBot.description}"
           </p>
 
           <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto w-full mb-8">
