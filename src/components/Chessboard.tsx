@@ -4,7 +4,8 @@ import { useMemo, useState, useEffect, useRef } from 'react';
 import { Chessboard as ReactChessboard } from 'react-chessboard';
 import { useChessStore, BOARD_THEMES } from '@/lib/chessStore';
 import { useUserStore } from '@/lib/userStore';
-import { Palette, Lightbulb, BookOpen, Star, ThumbsUp, Check, X } from 'lucide-react';
+import { Palette, Lightbulb, BookOpen, Star, ThumbsUp, Check, X, Target } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Classification metadata with chess.com-style icons
 const classData: Record<string, { color: string; type: string; label: string }> = {
@@ -44,6 +45,7 @@ export default function Chessboard() {
     showHint, hintMove, showHintMove, hideHint,
     selectedSquare, legalMovesForSelected, selectSquare,
     variationAnalysis, mainLineHistory,
+    explainWhyLine, setExplainWhyLine,
   } = useChessStore();
   const [showThemes, setShowThemes] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -96,6 +98,22 @@ export default function Chessboard() {
     if (showHint && hintMove) {
       arrows.push({ startSquare: hintMove.substring(0, 2), endSquare: hintMove.substring(2, 4), color: 'rgba(16, 185, 129, 0.8)' });
       return arrows;
+    }
+
+    // Add Explain Why arrows
+    if (explainWhyLine && explainWhyLine.length >= 2) {
+      for (let i = 0; i < explainWhyLine.length - 1; i++) {
+        arrows.push({
+          startSquare: explainWhyLine[i].substring(0, 2),
+          endSquare: explainWhyLine[i].substring(2, 4),
+          color: i === 0 ? 'rgba(250, 65, 45, 0.8)' : 'rgba(255, 255, 255, 0.5)'
+        });
+      }
+    }
+
+    // Add current variation analysis arrows if exploring
+    if (variationAnalysis && !mainLineHistory) {
+      arrows.push({ startSquare: variationAnalysis.bestMove.substring(0, 2), endSquare: variationAnalysis.bestMove.substring(2, 4), color: 'rgba(16, 185, 129, 0.5)' });
     }
 
     // Show the engine's best move arrow for the CURRENT board position.
@@ -258,24 +276,55 @@ export default function Chessboard() {
         </button>
 
         {showThemes && (
-          <div className="bg-[#121318] border border-white/10 rounded-lg p-2 shadow-xl flex flex-col gap-1 min-w-[140px]">
-            <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider mb-0.5">Theme</p>
-            {BOARD_THEMES.map((theme) => (
-              <button
-                key={theme.id}
-                onClick={() => { setBoardTheme(theme); setShowThemes(false); }}
-                className={`flex items-center gap-2 w-full text-left p-1.5 rounded hover:bg-white/5 transition-colors text-xs ${boardTheme.id === theme.id ? 'bg-white/10 text-white' : 'text-gray-400'}`}
-              >
-                <div className="flex w-5 h-5 rounded overflow-hidden border border-white/15">
-                  <div className="w-1/2 h-full" style={{ backgroundColor: theme.light }} />
-                  <div className="w-1/2 h-full" style={{ backgroundColor: theme.dark }} />
-                </div>
-                {theme.name}
-              </button>
-            ))}
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, x: 10 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            className="bg-[#1a1b21] border border-white/10 rounded-xl p-2.5 shadow-2xl flex flex-col gap-2 min-w-[160px] backdrop-blur-md"
+          >
+            <div className="flex items-center justify-between px-1">
+              <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Board Theme</p>
+              <button onClick={() => setShowThemes(false)}><X className="w-3 h-3 text-gray-500 hover:text-white" /></button>
+            </div>
+            <div className="grid grid-cols-4 gap-1.5">
+              {BOARD_THEMES.map((theme) => (
+                <button
+                  key={theme.id}
+                  onClick={() => { setBoardTheme(theme); setShowThemes(false); }}
+                  className={`relative aspect-square rounded-md overflow-hidden border-2 transition-all group ${
+                    boardTheme.id === theme.id ? 'border-green-500 shadow-lg shadow-green-500/20' : 'border-transparent hover:border-white/20'
+                  }`}
+                  title={theme.name}
+                >
+                  <div className="absolute inset-0 flex flex-col">
+                    <div className="flex-1" style={{ backgroundColor: theme.light }} />
+                    <div className="flex-1" style={{ backgroundColor: theme.dark }} />
+                  </div>
+                  {boardTheme.id === theme.id && (
+                    <div className="absolute inset-0 bg-green-500/10 flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
         )}
       </div>
+
+      {explainWhyLine && (
+        <div className="absolute top-2 left-2 z-10 flex items-center gap-2">
+          <div className="bg-red-500/20 border border-red-500/30 rounded-lg px-2 py-1 flex items-center gap-1.5 backdrop-blur-md animate-pulse">
+            <Target className="w-3 h-3 text-red-400" />
+            <span className="text-[10px] font-black text-red-100 uppercase tracking-tighter">Explaining why...</span>
+          </div>
+          <button 
+            onClick={() => setExplainWhyLine(null)}
+            className="p-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-white/50 hover:text-white transition-all"
+          >
+            <X className="w-3 h-3" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

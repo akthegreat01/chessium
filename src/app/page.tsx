@@ -26,7 +26,8 @@ export default function Home() {
     fen, game, history, currentMoveIndex,
     resetGame, flipBoard, toggleSound,
     boardFlipped, analysisResult, mainLineHistory, restoreMainLine,
-    zenMode, toggleZenMode, showHintMove, hideHint, showHint, goToMove, goBack, goForward, loadSavedGames
+    zenMode, toggleZenMode, showHintMove, hideHint, showHint, goToMove, goBack, goForward, loadSavedGames,
+    botMessage, playingAI
   } = useChessStore();
 
   const { checkDailyStreak } = useUserStore();
@@ -105,7 +106,7 @@ export default function Home() {
         <div className={`flex flex-col shrink-0 w-full mx-auto lg:mx-0 justify-start ${zenMode ? 'items-center pt-8' : 'lg:pt-2'}`} style={{ width: '100%', maxWidth: 'min(100%, calc(100vh - 180px), 800px)' }}>
           
           {/* Top Player */}
-          <PlayerBar color={topColor} />
+          <PlayerBar color={topColor} isTop />
 
           {/* Board row: eval bar + board */}
           <div className="flex gap-1.5 my-0.5 w-full">

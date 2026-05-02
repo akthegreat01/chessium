@@ -16,6 +16,7 @@ export interface MoveAnalysis {
   moveAccuracy: number;   // Move accuracy (0-100)
   depth: number;          // Analysis depth used
   bestLine: string;       // Engine's best line (SAN)
+  bestLineUci?: string;   // Engine's best line (UCI)
   threat?: string;        // Threat description if any
   alternatives?: { san: string; eval: number }[]; // Top alternative moves
 }
@@ -399,18 +400,19 @@ export async function analyzeGameFull(
       console.warn("Analyzer: Could not play move", move.san, e);
       moveAnalyses.push({
         classification: 'book',
-        eval: evalBeforeWhite,
-        evalBefore: evalBeforeWhite,
-        bestMove: engineBestMove,
-        bestMoveSan: engineBestSan,
+        eval: evalBefore,
+        evalBefore: evalBefore,
+        bestMove: '',
+        bestMoveSan: '',
         playedMove: move.san,
         cpLoss: 0,
         winPctLoss: 0,
         moveAccuracy: 100,
         depth: 0,
-        bestLine: engineBestLineSan,
+        bestLine: '',
+        bestLineUci: '',
       });
-      evals[i + 1] = evalBeforeWhite;
+      evals[i + 1] = evalBefore;
       classifications[i] = 'book';
       if (progressCallback) progressCallback((i + 1) / history.length);
       continue;
@@ -418,6 +420,9 @@ export async function analyzeGameFull(
 
     // For forced moves, skip engine eval and just quickly evaluate
     if (isForced) {
+      const evaluation = preEval;
+      const winPctBefore = cpToWinPercent(isWhite ? evalBefore : -evalBefore);
+      
       if (evalGame.isGameOver()) {
         if (evalGame.isCheckmate()) {
           preEval = { score: 0, mate: -1, bestMove: '(none)', depth: 0, pv: '' };
@@ -429,22 +434,25 @@ export async function analyzeGameFull(
       }
 
       const isWhiteToMoveAfter = evalGame.turn() === 'w';
-      const evalAfterWhite = evalToWhiteScore(preEval.score, preEval.mate, isWhiteToMoveAfter);
-      evals[i + 1] = evalAfterWhite;
+      const evalAfter = evalToWhiteScore(preEval.score, preEval.mate, isWhiteToMoveAfter);
+      evals[i + 1] = evalAfter;
+      
+      const winPctAfter = cpToWinPercent(isWhite ? evalAfter : -evalAfter);
+      const bestLineSan = pvToSan(fenBefore, evaluation.pv);
 
-      classifications[i] = 'forced';
       moveAnalyses.push({
         classification: 'forced',
-        eval: evalAfterWhite,
-        evalBefore: evalBeforeWhite,
-        bestMove: engineBestMove,
-        bestMoveSan: engineBestSan,
+        eval: evalAfter,
+        evalBefore,
+        bestMove: evaluation.bestMove,
+        bestMoveSan: uciToSan(fenBefore, evaluation.bestMove),
         playedMove: move.san,
         cpLoss: 0,
         winPctLoss: 0,
         moveAccuracy: 100,
-        depth: preEval.depth,
-        bestLine: engineBestLineSan,
+        depth: evaluation.depth,
+        bestLine: bestLineSan,
+        bestLineUci: evaluation.pv,
       });
 
       if (isWhite) { whiteAccuracySum += 100; whiteMovesCount++; }
@@ -653,5 +661,6 @@ export async function analyzeInstantMove(
     moveAccuracy,
     depth: postResult.depth,
     bestLine: pvToSan(fenBefore, preResult.pv),
+    bestLineUci: preResult.pv,
   };
 }

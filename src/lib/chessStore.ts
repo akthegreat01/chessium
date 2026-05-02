@@ -4,6 +4,7 @@ import { Engine, EngineLine, EngineConfig } from './engine';
 import { AnalysisResult, MoveAnalysis, analyzeGameFull, analyzeInstantMove } from './analyzer';
 import { playMoveSound, playCaptureSound, playCheckSound, playCastleSound, playGameEndSound } from './sounds';
 import { saveGameToHistory, generateGameId } from './gameHistory';
+import { getBotResponse } from './botMessages';
 
 export type GameData = {
   id?: string;
@@ -25,10 +26,11 @@ export const BOARD_THEMES: BoardTheme[] = [
   { id: 'green', name: 'Classic Green', light: '#ebecd0', dark: '#739552' },
   { id: 'blue', name: 'Ocean Blue', light: '#dee3e6', dark: '#6992c2' },
   { id: 'wood', name: 'Natural Wood', light: '#f0d9b5', dark: '#b58863' },
-  { id: 'coral', name: 'Coral Red', light: '#e6d1c4', dark: '#b2827e' },
-  { id: 'purple', name: 'Royal Purple', light: '#9f90b0', dark: '#6f4e8c' },
-  { id: 'ice', name: 'Arctic Ice', light: '#d6e6f2', dark: '#547d9e' },
+  { id: 'cyber', name: 'Cyberpunk', light: '#323232', dark: '#00ff41' },
+  { id: 'glass', name: 'Glassmorphism', light: 'rgba(255,255,255,0.2)', dark: 'rgba(0,0,0,0.3)' },
+  { id: 'emerald', name: 'Emerald', light: '#d2f4d3', dark: '#2d5a27' },
   { id: 'midnight', name: 'Midnight', light: '#c8c8d0', dark: '#3a3a52' },
+  { id: 'crimson', name: 'Crimson', light: '#f8d7da', dark: '#721c24' },
 ];
 
 export type BotPersonality = {
@@ -84,6 +86,8 @@ interface ChessState {
   playerColor: 'w' | 'b';
   aiEngine: Engine | null;
   gameResult: string | null;
+  botMessage: { text: string; type: 'trash' | 'coach' } | null;
+  explainWhyLine: string[] | null; // For the "ghost" moves
 
   // Click-to-move state
   selectedSquare: string | null;
@@ -101,6 +105,9 @@ interface ChessState {
   loadPgn: (pgn: string) => void;
   loadFen: (fen: string) => void;
   resetGame: () => void;
+  toggleZenMode: () => void;
+  setBotMessage: (msg: { text: string; type: 'trash' | 'coach' } | null) => void;
+  setExplainWhyLine: (line: string[] | null) => void;
   saveGame: (data: GameData) => void;
   loadSavedGames: () => void;
   runGameReview: () => Promise<void>;
@@ -245,6 +252,13 @@ export const useChessStore = create<ChessState>((set, get) => ({
             const currentState = get();
             if (currentState.currentMoveIndex === moveIndex && currentState.mainLineHistory !== null) {
               set({ variationAnalysis: variationResult });
+              
+              // Trigger bot message if playing AI and it's player's move
+              if (playingAI && moveObj.color === playerColor) {
+                const msg = getBotResponse(aiLevel, variationResult.classification, false);
+                set({ botMessage: { text: msg, type: 'trash' } });
+                setTimeout(() => set({ botMessage: null }), 5000);
+              }
             }
           })
           .catch(err => {
@@ -598,6 +612,10 @@ export const useChessStore = create<ChessState>((set, get) => ({
   },
 
   toggleZenMode: () => set((state) => ({ zenMode: !state.zenMode })),
+
+  setBotMessage: (msg) => set({ botMessage: msg }),
+
+  setExplainWhyLine: (line) => set({ explainWhyLine: line }),
 
   startAIGame: (level: BotPersonality, color: 'w' | 'b') => {
     const newGame = new Chess();

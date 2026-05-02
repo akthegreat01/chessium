@@ -2,7 +2,10 @@
 
 import { useChessStore } from '@/lib/chessStore';
 import { useUserStore } from '@/lib/userStore';
-import { Activity, Play, RotateCw, ZoomIn, Star, Clock, Zap, TrendingUp, Brain } from 'lucide-react';
+import { 
+  Trophy, TrendingUp, AlertCircle, CheckCircle2, ChevronRight, 
+  BarChart3, Brain, Play, RotateCcw, Target, Clock, Zap
+} from 'lucide-react';
 import { MoveClassification } from '@/lib/analyzer';
 import { motion } from 'framer-motion';
 import EvalGraph from './EvalGraph';
@@ -75,7 +78,11 @@ function AccuracyRing({ accuracy, size = 80, delay = 0 }: { accuracy: number; si
 }
 
 export default function GameReview() {
-  const { runGameReview, isAnalyzing, analysisProgress, analysisResult, history, currentMoveIndex, variationAnalysis, mainLineHistory } = useChessStore();
+  const { 
+    analysisResult, isAnalyzing, analysisProgress, runGameReview,
+    currentMoveIndex, history, variationAnalysis, mainLineHistory,
+    explainWhyLine, setExplainWhyLine
+  } = useChessStore();
   const { recordAnalysis, addXp } = useUserStore();
   const [hasRecorded, setHasRecorded] = useState(false);
 
@@ -202,8 +209,23 @@ export default function GameReview() {
                     }
                   </span>
                   {moveAnalysis.bestLine && ['blunder', 'mistake', 'inaccuracy'].includes(moveAnalysis.classification) && (
-                    <div className="text-[10px] text-gray-500 font-mono mt-1 bg-black/20 px-2 py-1 rounded-lg">
-                      <span className="text-green-500/70 font-bold">Best line: </span>{moveAnalysis.bestLine}
+                    <div className="flex flex-col gap-2 mt-2">
+                      <div className="text-[10px] text-gray-500 font-mono bg-black/20 px-2 py-1.5 rounded-lg flex items-center justify-between group/line">
+                        <span><span className="text-green-500/70 font-bold">Best line: </span>{moveAnalysis.bestLine}</span>
+                        {moveAnalysis.bestLineUci && (
+                          <button 
+                            onClick={() => setExplainWhyLine(explainWhyLine ? null : moveAnalysis.bestLineUci!.split(' '))}
+                            className={`flex items-center gap-1 px-1.5 py-0.5 rounded border transition-all ${
+                              explainWhyLine ? 'bg-red-500/20 border-red-500/30 text-red-400' : 'bg-white/5 border-white/10 text-gray-400 hover:text-white hover:bg-white/10'
+                            }`}
+                          >
+                            <Target className="w-3 h-3" />
+                            <span className="text-[9px] font-bold uppercase tracking-tighter">
+                              {explainWhyLine ? 'Hide' : 'Explain Why'}
+                            </span>
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

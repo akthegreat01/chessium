@@ -2,6 +2,7 @@
 
 import { useChessStore } from "@/lib/chessStore";
 import { Chess } from "chess.js";
+import BotChat from "./BotChat";
 
 function getMaterial(fen: string) {
   const chess = new Chess(fen);
@@ -66,7 +67,7 @@ const PieceIcon = ({ type, color }: { type: string, color: 'w'|'b' }) => {
   return <span className={`text-[15px] leading-none ${color === 'w' ? 'text-white drop-shadow-sm' : 'text-gray-900 drop-shadow-[0_1px_1px_rgba(255,255,255,0.5)]'}`}>{iconMap[type]}</span>;
 }
 
-export default function PlayerBar({ color }: { color: 'w' | 'b' }) {
+export default function PlayerBar({ color, isTop }: { color: 'w' | 'b', isTop?: boolean }) {
   const { fen, game, playingAI, aiLevel, playerColor } = useChessStore();
   const material = getMaterial(fen);
   
@@ -96,11 +97,14 @@ export default function PlayerBar({ color }: { color: 'w' | 'b' }) {
   }
 
   return (
-    <div className="flex items-center justify-between h-9 md:h-10 px-1 py-1 w-full">
+    <div className="flex items-center justify-between h-9 md:h-10 px-1 py-1 w-full relative">
       <div className="flex items-center gap-2 md:gap-3 min-w-0">
         {/* Avatar Placeholder */}
-        <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-700/50 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 shrink-0 shadow-inner">
+        <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-700/50 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 shrink-0 shadow-inner relative">
            <span className="text-lg md:text-xl opacity-90 leading-none pb-0.5">{avatar}</span>
+           
+           {/* Bot chat bubble anchor */}
+           {playingAI && color !== playerColor && <BotChat isTop={isTop} />}
         </div>
         
         <div className="flex flex-col min-w-0">
