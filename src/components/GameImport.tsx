@@ -94,13 +94,14 @@ export default function GameImport() {
       {/* Play vs Computer Button */}
       <button 
         onClick={() => setShowBotModal(true)}
-        className="w-full relative overflow-hidden group bg-gradient-to-r from-red-600/20 via-purple-600/20 to-blue-600/20 hover:from-red-600/30 hover:to-blue-600/30 border border-red-500/20 text-white font-black py-3 rounded-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.01] shadow-lg"
+        className="w-full relative overflow-hidden group text-white font-black py-3.5 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-[0.99] shadow-lg"
+        style={{ background: 'linear-gradient(135deg, #d4af37 0%, #b8962e 50%, #a8882a 100%)', boxShadow: '0 4px 24px rgba(212,175,55,0.3)', border: '1px solid rgba(212,175,55,0.4)', color: '#0a0a0a' }}
       >
-        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-1000 ease-in-out skew-x-12" />
-        <div className="w-6 h-6 rounded-md bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
-          <Bot className="w-4 h-4 text-red-400" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/15 to-white/0 opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-700 ease-in-out" />
+        <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.15)' }}>
+          <Bot className="w-4 h-4" style={{ color: 'rgba(0,0,0,0.7)' }} />
         </div>
-        <span className="tracking-wider uppercase text-sm">Challenge Stockfish</span>
+        <span className="tracking-wider uppercase text-sm font-black" style={{ color: '#0a0a0a' }}>Challenge Stockfish</span>
       </button>
 
       <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.1)] pb-1.5 mt-1">

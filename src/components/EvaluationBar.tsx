@@ -51,7 +51,7 @@ export default function EvaluationBar() {
   const isWhiteAdvantage = targetPercent > 50;
 
   return (
-    <div className="w-8 md:w-10 h-full bg-[#141519] rounded-xl overflow-hidden flex flex-col relative border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+    <div className="w-8 md:w-10 h-full bg-[#0e0f12] rounded-xl overflow-hidden flex flex-col relative border border-white/[0.06] shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_0_1px_rgba(212,175,55,0.04)]">
       {/* Black section (top) */}
       <motion.div
         animate={{ height: `${100 - whiteHeight}%` }}

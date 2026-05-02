@@ -157,33 +157,30 @@ export default function LiveEnginePanel() {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-1.5">
-          {isActive && (
-            <select
-              value={multiPv}
-              onChange={(e) => setMultiPv(parseInt(e.target.value))}
-              className="bg-white/[0.05] border border-white/[0.08] rounded-md px-2 py-1 text-[10px] text-gray-300 font-mono"
+          <div className="flex items-center gap-1.5">
+            {isActive && (
+              <select
+                value={multiPv}
+                onChange={(e) => setMultiPv(parseInt(e.target.value))}
+                className="bg-white/[0.05] border border-white/[0.08] rounded-md px-2 py-1 text-[10px] text-gray-300 font-mono"
+              >
+                <option value={1}>1 line</option>
+                <option value={2}>2 lines</option>
+                <option value={3}>3 lines</option>
+                <option value={5}>5 lines</option>
+              </select>
+            )}
+            <button
+              onClick={toggleEngine}
+              title={isActive ? "Stop Engine" : "Start Live Engine"}
+              aria-label="Toggle Live Engine"
+              className={`p-2 rounded-lg transition-all flex items-center gap-2 ${isActive ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25' : 'hover:scale-105 active:scale-95'}`}
+              style={!isActive ? { background: 'linear-gradient(135deg, #d4af37, #a8882a)', color: '#0a0a0a', boxShadow: '0 2px 12px rgba(212,175,55,0.3)', border: '1px solid rgba(212,175,55,0.4)', padding: '6px 12px' } : {}}
             >
-              <option value={1}>1 line</option>
-              <option value={2}>2 lines</option>
-              <option value={3}>3 lines</option>
-              <option value={5}>5 lines</option>
-            </select>
-          )}
-          <button
-            onClick={toggleEngine}
-            title={isActive ? "Stop Engine" : "Start Live Engine"}
-            aria-label="Toggle Live Engine"
-            className={`p-2 rounded-lg transition-all flex items-center gap-2 ${
-              isActive 
-                ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' 
-                : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-            }`}
-          >
-            <Power className="w-4 h-4" />
-            <span className="text-xs font-bold">{isActive ? "Stop" : "Start Engine"}</span>
-          </button>
-        </div>
+              <Power className="w-4 h-4" />
+              <span className="text-xs font-black">{isActive ? 'Stop' : 'Start Engine'}</span>
+            </button>
+          </div>
       </div>
 
       {/* Engine Lines */}

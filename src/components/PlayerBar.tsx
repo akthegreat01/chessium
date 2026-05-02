@@ -97,11 +97,11 @@ export default function PlayerBar({ color, isTop }: { color: 'w' | 'b', isTop?: 
   }
 
   return (
-    <div className="flex items-center justify-between h-9 md:h-10 px-1 py-1 w-full relative">
+    <div className="flex items-center justify-between h-10 md:h-11 px-1 py-1 w-full relative">
       <div className="flex items-center gap-2 md:gap-3 min-w-0">
-        {/* Avatar Placeholder */}
-        <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-700/50 rounded-lg flex items-center justify-center overflow-hidden border border-white/10 shrink-0 shadow-inner relative">
-           <span className="text-lg md:text-xl opacity-90 leading-none pb-0.5">{avatar}</span>
+        {/* Avatar */}
+        <div className="w-8 h-8 md:w-9 md:h-9 rounded-lg flex items-center justify-center overflow-hidden shrink-0 relative" style={{ background: 'rgba(20,21,25,0.9)', border: '1px solid rgba(255,255,255,0.07)', boxShadow: '0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)' }}>
+           <span className="text-xl md:text-2xl opacity-90 leading-none pb-0.5">{avatar}</span>
            
            {/* Bot chat bubble anchor */}
            {playingAI && color !== playerColor && <BotChat isTop={isTop} />}
@@ -109,11 +109,11 @@ export default function PlayerBar({ color, isTop }: { color: 'w' | 'b', isTop?: 
         
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1.5 md:gap-2">
-            <span className="text-xs md:text-sm font-bold text-gray-200 truncate max-w-[120px] md:max-w-none">
+            <span className="text-xs md:text-sm font-black text-gray-100 truncate max-w-[120px] md:max-w-none" style={{ letterSpacing: '-0.01em' }}>
               {playerName}
             </span>
             {playerElo && playerElo !== '?' && (
-              <span className="text-[10px] md:text-xs text-gray-500 font-mono">({playerElo})</span>
+              <span className="text-[10px] md:text-xs text-gray-500 font-mono px-1.5 py-0.5 rounded" style={{ background: 'rgba(255,255,255,0.04)' }}>({playerElo})</span>
             )}
           </div>
           
@@ -123,7 +123,7 @@ export default function PlayerBar({ color, isTop }: { color: 'w' | 'b', isTop?: 
               <PieceIcon key={i} type={p} color={oppColor} />
             ))}
             {advantage > 0 && (
-              <span className="text-[10px] md:text-[11px] text-green-500 font-semibold ml-1">+{advantage}</span>
+              <span className="text-[10px] md:text-[11px] font-black ml-1" style={{ color: '#81b64c' }}>+{advantage}</span>
             )}
           </div>
         </div>

@@ -6,7 +6,9 @@ import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ 
   subsets: ["latin"],
+  weight: ['400', '500', '600', '700', '800', '900'],
   display: 'swap',
+  variable: '--font-inter',
 });
 
 export const metadata: Metadata = {
@@ -31,7 +33,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
-  themeColor: '#08090a',
+  themeColor: '#0a0a0a',
 };
 
 export default function RootLayout({
@@ -44,8 +46,14 @@ export default function RootLayout({
       <body suppressHydrationWarning className={`${inter.className} bg-background text-gray-200 min-h-screen flex flex-col relative overflow-x-hidden`}>
         {/* Professional Background Layer */}
         <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,#3b82f610,transparent_50%)]"></div>
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:44px_44px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+          {/* Deep dark base */}
+          <div className="absolute inset-0" style={{ background: '#0a0a0a' }} />
+          {/* Subtle gold warmth at top center */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px]" style={{ background: 'radial-gradient(ellipse at center, rgba(212,175,55,0.06) 0%, transparent 70%)' }} />
+          {/* Purple depth accent bottom right */}
+          <div className="absolute bottom-0 right-0 w-[600px] h-[400px]" style={{ background: 'radial-gradient(ellipse at bottom right, rgba(139,92,246,0.04) 0%, transparent 60%)' }} />
+          {/* Subtle grid */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:48px_48px] [mask-image:radial-gradient(ellipse_70%_50%_at_50%_0%,#000_60%,transparent_100%)]" />
         </div>
 
         <Header />

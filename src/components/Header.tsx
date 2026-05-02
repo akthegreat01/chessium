@@ -35,36 +35,41 @@ export default function Header() {
   const rank = getRankFromLevel(level);
 
   return (
-    <header className="w-full border-b border-white/[0.04] bg-[#0a0b0e]/90 backdrop-blur-xl sticky top-0 z-50" style={{ height: 'var(--header-h, 56px)' }}>
+    <header className="w-full border-b border-white/[0.04] bg-[#0a0a0a]/92 backdrop-blur-2xl sticky top-0 z-50" style={{ height: 'var(--header-h, 56px)' }}>
+      {/* Subtle gold accent line at very top */}
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[rgba(212,175,55,0.3)] to-transparent" />
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-full flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="transition-transform group-hover:scale-105 flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" className="w-7 h-7 md:w-8 md:h-8 fill-white drop-shadow-md">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="transition-transform group-hover:scale-105 flex items-center justify-center drop-shadow-[0_0_8px_rgba(212,175,55,0.3)]">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" className="w-7 h-7 md:w-8 md:h-8 fill-[#d4af37] drop-shadow-md">
               <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" />
               <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" />
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="font-bold text-base md:text-lg tracking-tight text-white leading-none">
+            <span className="font-black text-base md:text-lg tracking-tight text-white leading-none" style={{ letterSpacing: '-0.01em' }}>
               Chessium
             </span>
-            <span className="hidden md:block text-[9px] text-gray-400 font-medium tracking-tight mt-0.5 opacity-70 uppercase">
+            <span className="hidden md:block text-[9px] font-medium tracking-tight mt-0.5 uppercase" style={{ color: 'rgba(212,175,55,0.5)', letterSpacing: '0.05em' }}>
               The best move is not always obvious
             </span>
           </div>
         </Link>
         
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
+        <nav className="hidden md:flex items-center gap-0.5">
+          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">
             Analysis
           </Link>
-          <Link href="/about" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
+          <Link href="/about" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">
             About
           </Link>
-          <Link href="/support" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
-            Support
+          <Link href="/support" className="text-sm transition-colors px-3 py-1.5 rounded-lg font-semibold" style={{ color: 'rgba(212,175,55,0.8)' }}
+            onMouseEnter={e => (e.currentTarget.style.color = '#d4af37', e.currentTarget.style.background = 'rgba(212,175,55,0.06)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(212,175,55,0.8)', e.currentTarget.style.background = 'transparent')}
+          >
+            ♥ Support
           </Link>
           
           <div className="w-px h-5 bg-white/10 mx-2" />
@@ -74,17 +79,17 @@ export default function Header() {
               {/* Level & XP Badge */}
               <div className="flex items-center gap-0 bg-white/[0.03] rounded-lg border border-white/[0.05] overflow-hidden">
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 border-r border-white/[0.06]">
-                  <div className="w-5 h-5 rounded-md bg-gradient-to-br from-blue-500/30 to-purple-500/30 flex items-center justify-center border border-blue-500/20">
-                    <Zap className="w-3 h-3 text-blue-400" />
+                  <div className="w-5 h-5 rounded-md flex items-center justify-center border" style={{ background: 'rgba(212,175,55,0.15)', borderColor: 'rgba(212,175,55,0.25)' }}>
+                    <Zap className="w-3 h-3" style={{ color: '#d4af37' }} />
                   </div>
                   <span className="text-[11px] font-black text-white">Lv.{level}</span>
                 </div>
                 <div className="flex items-center gap-1.5 px-2.5 py-1.5 border-r border-white/[0.06]">
-                  <Star className="w-3 h-3 text-yellow-500/70 fill-yellow-500/70" />
+                  <Star className="w-3 h-3" style={{ color: 'rgba(212,175,55,0.7)' }} fill="rgba(212,175,55,0.7)" />
                   <span className="text-[10px] font-bold text-gray-400 tabular-nums">{xp}</span>
-                  {/* Mini level progress */}
+                  {/* Mini level progress - gold */}
                   <div className="w-12 h-1 bg-white/[0.06] rounded-full overflow-hidden ml-0.5">
-                    <div className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-500" style={{ width: `${levelProgress}%` }} />
+                    <div className="h-full rounded-full transition-all duration-500" style={{ width: `${levelProgress}%`, background: 'linear-gradient(to right, #d4af37, #e8c84a)' }} />
                   </div>
                 </div>
                 {dailyStreak > 0 && (

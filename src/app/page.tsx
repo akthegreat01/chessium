@@ -216,13 +216,13 @@ export default function Home() {
           <div className="flex-none w-full lg:w-[360px] lg:max-w-[360px] lg:h-[calc(100vh-100px)] lg:overflow-y-auto custom-scrollbar flex flex-col gap-2 pb-4">
             {history.length === 0 ? (
               <>
-                <div className="glass-panel p-2 flex flex-col gap-1.5">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-500/10">
-                      <span className="text-blue-400 text-sm">♛</span>
+                <div className="glass-panel p-3 flex flex-col gap-2">
+                  <div className="flex items-center gap-3 mb-1">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center border" style={{ background: 'rgba(212,175,55,0.1)', borderColor: 'rgba(212,175,55,0.2)' }}>
+                      <span className="text-sm" style={{ color: '#d4af37' }}>♛</span>
                     </div>
                     <div>
-                      <h2 className="text-xs font-bold text-white uppercase tracking-wider">Engine Insights</h2>
+                      <h2 className="text-xs font-black text-white uppercase tracking-wider">Engine Insights</h2>
                       <p className="text-[9px] text-gray-500 font-medium">Grandmaster-level Stockfish NNUE</p>
                     </div>
                   </div>
@@ -259,12 +259,15 @@ export default function Home() {
             )}
             
             {/* Support Link */}
-            <div className="mt-auto pt-4 flex justify-center">
+            <div className="mt-auto pt-5 flex justify-center">
               <a 
                 href="/support" 
-                className="text-[10px] text-gray-600 hover:text-blue-400 transition-colors uppercase tracking-widest font-black flex items-center gap-2"
+                className="text-[10px] font-black flex items-center gap-2 px-3 py-1.5 rounded-full transition-all hover:scale-105 uppercase tracking-widest"
+                style={{ color: 'rgba(212,175,55,0.6)', border: '1px solid rgba(212,175,55,0.12)', background: 'rgba(212,175,55,0.04)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#d4af37', e.currentTarget.style.background = 'rgba(212,175,55,0.08)', e.currentTarget.style.borderColor = 'rgba(212,175,55,0.25)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(212,175,55,0.6)', e.currentTarget.style.background = 'rgba(212,175,55,0.04)', e.currentTarget.style.borderColor = 'rgba(212,175,55,0.12)')}
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-blue-500/20" />
+                <span>♥</span>
                 Support Chessium
               </a>
             </div>
