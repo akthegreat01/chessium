@@ -98,15 +98,17 @@ export default function Chessboard() {
     const arrows: any[] = [];
     
     // Add user arrows
-    if (userArrows) {
-      userArrows.forEach(a => arrows.push(a));
+    if (userArrows && Array.isArray(userArrows)) {
+      userArrows.forEach((a: any) => {
+        arrows.push(a);
+      });
     }
 
     if (showHint && hintMove) {
       arrows.push({ startSquare: hintMove.substring(0, 2), endSquare: hintMove.substring(2, 4), color: 'rgba(16, 185, 129, 0.8)' });
     }
 
-    if (explainWhyLine && explainWhyLine.length >= 2) {
+    if (explainWhyLine && Array.isArray(explainWhyLine) && explainWhyLine.length >= 2) {
       for (let i = 0; i < explainWhyLine.length - 1; i++) {
         arrows.push({
           startSquare: explainWhyLine[i].substring(0, 2),
@@ -166,9 +168,11 @@ export default function Chessboard() {
 
   const customSquareStyles: any = {};
   
-  Object.entries(userSquares).forEach(([sq, style]) => {
-    customSquareStyles[sq] = style;
-  });
+  if (userSquares) {
+    Object.entries(userSquares).forEach(([sq, style]: [string, any]) => {
+      customSquareStyles[sq] = style;
+    });
+  }
 
   if (lastMoveFrom) {
     customSquareStyles[lastMoveFrom] = { ...customSquareStyles[lastMoveFrom], backgroundColor: classInfo ? `${classInfo.color}30` : 'rgba(16, 185, 129, 0.25)' };
