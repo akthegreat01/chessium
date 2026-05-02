@@ -38,6 +38,7 @@ export default function Board() {
     selectedSquare, legalMovesForSelected, selectSquare,
     variationAnalysis, mainLineHistory,
     explainWhyLine, setExplainWhyLine,
+    openingName,
     userArrows, userSquares, setUserArrows, toggleUserSquare, clearAnnotations
   } = useChessStore();
   
@@ -187,6 +188,17 @@ export default function Board() {
 
   return (
     <div ref={boardRef} className="relative w-full aspect-square rounded-sm shadow-2xl">
+      {openingName && (
+        <div className="absolute -top-10 left-0 right-0 flex items-center justify-center">
+          <motion.div 
+            initial={{ opacity: 0, y: 5 }} 
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10 shadow-xl"
+          >
+            <span className="text-[11px] font-black text-[#d4af37] uppercase tracking-[0.15em]">{openingName}</span>
+          </motion.div>
+        </div>
+      )}
       {/* @ts-ignore */}
       <ReactChessboard options={boardOptions} />
       {iconPos && classInfo && (

@@ -58,6 +58,7 @@ interface ChessState {
   fen: string;
   history: Move[];
   currentMoveIndex: number; // -1 means starting position
+  openingName: string | null;
   engineLines: EngineLine[];
   savedGames: GameData[];
 
@@ -124,6 +125,7 @@ interface ChessState {
   setAnalysisDepth: (depth: number) => void;
   setEngineConfig: (config: Partial<EngineConfig>) => void;
   selectSquare: (square: string | null) => void;
+  setOpeningName: (name: string | null) => void;
   
   // Annotations
   setUserArrows: (arrows: { startSquare: string; endSquare: string; color: string }[]) => void;
@@ -155,6 +157,7 @@ export const useChessStore = create<ChessState>((set, get) => ({
   fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
   history: [],
   currentMoveIndex: -1,
+  openingName: null,
   engineLines: [],
   savedGames: [],
   analysisResult: null,
@@ -286,6 +289,11 @@ export const useChessStore = create<ChessState>((set, get) => ({
       if (soundEnabled) {
         playMoveAudio(moveObj, newGame);
       }
+
+      // Check opening name
+      const { getOpeningName } = require('./openings');
+      const opName = getOpeningName(newFen);
+      if (opName) set({ openingName: opName });
 
       if (playingAI && !result && newGame.turn() !== playerColor) {
         setTimeout(() => {
@@ -635,6 +643,7 @@ export const useChessStore = create<ChessState>((set, get) => ({
   toggleZenMode: () => set((state) => ({ zenMode: !state.zenMode })),
   setBotMessage: (msg) => set({ botMessage: msg }),
   setExplainWhyLine: (line) => set({ explainWhyLine: line }),
+  setOpeningName: (name) => set({ openingName: name }),
 
   startAIGame: (level, color) => {
     const newGame = new Chess();
