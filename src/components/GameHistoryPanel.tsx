@@ -64,7 +64,7 @@ export default function GameHistoryPanel() {
   if (history.length === 0 && cacheSize === 0) return null;
 
   return (
-    <div className="glass-panel p-4 flex flex-col gap-3">
+    <div className="glass-panel p-3 flex flex-col gap-2">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}

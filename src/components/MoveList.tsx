@@ -143,10 +143,10 @@ export default function MoveList() {
   };
 
   return (
-    <div className="bg-[#262421] rounded-lg p-4 flex flex-col gap-4 max-h-[360px]">
-      <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.1)] pb-2">
-        <div className="flex items-center gap-3">
-          <h2 className="font-semibold text-lg text-gray-200">Move List</h2>
+    <div className="bg-[#262421] rounded-lg p-3 flex flex-col gap-2 max-h-[320px]">
+      <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.1)] pb-1.5">
+        <div className="flex items-center gap-2">
+          <h2 className="font-semibold text-sm text-gray-200 uppercase tracking-wider">Move List</h2>
           {mainLineHistory && (
             <button 
               onClick={restoreMainLine}

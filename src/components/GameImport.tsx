@@ -90,22 +90,22 @@ export default function GameImport() {
   };
 
   return (
-    <div className="glass-panel p-4 flex flex-col gap-4">
+    <div className="glass-panel p-3 flex flex-col gap-3">
       {/* Play vs Computer Button */}
       <button 
         onClick={() => setShowBotModal(true)}
-        className="w-full relative overflow-hidden group bg-gradient-to-r from-red-600/20 via-purple-600/20 to-blue-600/20 hover:from-red-600/30 hover:to-blue-600/30 border border-red-500/20 text-white font-black py-4 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-[1.01] shadow-lg"
+        className="w-full relative overflow-hidden group bg-gradient-to-r from-red-600/20 via-purple-600/20 to-blue-600/20 hover:from-red-600/30 hover:to-blue-600/30 border border-red-500/20 text-white font-black py-3 rounded-lg flex items-center justify-center gap-3 transition-all hover:scale-[1.01] shadow-lg"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover:opacity-100 group-hover:translate-x-full transition-all duration-1000 ease-in-out skew-x-12" />
-        <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
-          <Bot className="w-5 h-5 text-red-400" />
+        <div className="w-6 h-6 rounded-md bg-red-500/10 flex items-center justify-center group-hover:bg-red-500/20 transition-colors">
+          <Bot className="w-4 h-4 text-red-400" />
         </div>
         <span className="tracking-wider uppercase text-sm">Challenge Stockfish</span>
       </button>
 
-      <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.1)] pb-2 mt-2">
-        <h2 className="font-semibold text-lg text-gray-200 flex items-center gap-2">
-          <Download className="w-5 h-5 text-green-500" />
+      <div className="flex justify-between items-center border-b border-[rgba(255,255,255,0.1)] pb-1.5 mt-1">
+        <h2 className="font-semibold text-sm text-gray-200 uppercase tracking-wider flex items-center gap-2">
+          <Download className="w-4 h-4 text-green-500" />
           Import Games
         </h2>
         <div className="flex items-center gap-1">

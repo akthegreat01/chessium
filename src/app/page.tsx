@@ -108,7 +108,7 @@ export default function Home() {
           <PlayerBar color={topColor} />
 
           {/* Board row: eval bar + board */}
-          <div className="flex gap-1.5 my-1 w-full">
+          <div className="flex gap-1.5 my-0.5 w-full">
             <div className="hidden md:block shrink-0">
               <EvaluationBar />
             </div>
@@ -193,17 +193,17 @@ export default function Home() {
           <div className="flex-none w-full lg:w-[360px] lg:max-w-[360px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4 lg:h-full">
             {history.length === 0 ? (
               <>
-                <div className="glass-panel p-5 slide-up">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-500/10">
-                      <span className="text-blue-400 text-lg">♛</span>
+                <div className="glass-panel p-3 slide-up">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-500/10">
+                      <span className="text-blue-400 text-sm">♛</span>
                     </div>
                     <div>
-                      <h2 className="text-sm font-bold text-white uppercase tracking-wider">Engine Insights</h2>
-                      <p className="text-[10px] text-gray-500 font-medium">Grandmaster-level Stockfish NNUE</p>
+                      <h2 className="text-xs font-bold text-white uppercase tracking-wider">Engine Insights</h2>
+                      <p className="text-[9px] text-gray-500 font-medium">Grandmaster-level Stockfish NNUE</p>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-400 leading-relaxed font-medium">
+                  <p className="text-[11px] text-gray-400 leading-snug font-medium">
                     Deep-dive into your play with the world&apos;s strongest engine. Import games instantly or start exploring positions manually.
                   </p>
                 </div>

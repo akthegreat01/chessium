@@ -107,7 +107,7 @@ export default function GameReview() {
   return (
     <div className="glass-panel overflow-hidden flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center px-4 py-3 border-b border-white/[0.05]">
+      <div className="flex justify-between items-center px-3 py-2 border-b border-white/[0.05]">
         <h2 className="font-bold text-sm text-white flex items-center gap-2 uppercase tracking-wider">
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20">
             <Brain className="w-3.5 h-3.5 text-blue-400" />
@@ -219,7 +219,7 @@ export default function GameReview() {
           </div>
 
           {/* Players & Accuracy */}
-          <div className="flex items-center justify-around py-4 px-4">
+          <div className="flex items-center justify-around py-2 px-3">
             {/* White */}
             <div className="flex flex-col items-center gap-2">
               <AccuracyRing accuracy={analysisResult.accuracy.white} delay={0} />
@@ -263,7 +263,7 @@ export default function GameReview() {
           </div>
 
           {/* Classification Breakdown */}
-          <div className="flex flex-col gap-0.5 px-4 pb-4">
+          <div className="flex flex-col gap-0 px-3 pb-3">
             {typesToShow.map((type, idx) => {
               const wCount = analysisResult.counts.white[type];
               const bCount = analysisResult.counts.black[type];
@@ -276,7 +276,7 @@ export default function GameReview() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.04 }}
-                  className="flex items-center justify-between px-3 py-1.5 rounded-lg hover:bg-white/[0.03] transition-colors"
+                  className="flex items-center justify-between px-2 py-1 rounded-md hover:bg-white/[0.03] transition-colors"
                 >
                   <div className="flex items-center gap-2 w-24">
                     <div 

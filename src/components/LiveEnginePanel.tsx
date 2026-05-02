@@ -137,7 +137,7 @@ export default function LiveEnginePanel() {
   return (
     <div className="glass-panel overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.05]">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.05]">
         <div className="flex items-center gap-2.5">
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
             isActive 
@@ -198,9 +198,9 @@ export default function LiveEnginePanel() {
             const isPositive = line.mate !== null ? (isWhiteTurn ? line.mate > 0 : line.mate < 0) : (isWhiteTurn ? line.score > 0 : line.score < 0);
             
             return (
-              <div key={i} className="flex items-center gap-2.5 px-4 py-2 hover:bg-white/[0.02] transition-colors group">
-                <div className={`w-12 text-right font-mono text-xs font-bold tabular-nums ${
-                  isPositive ? 'text-white bg-white/10 px-1.5 py-0.5 rounded' : 'text-gray-500 bg-black/20 px-1.5 py-0.5 rounded'
+              <div key={i} className="flex items-center gap-2 px-3 py-1.5 hover:bg-white/[0.02] transition-colors group">
+                <div className={`w-11 text-right font-mono text-[11px] font-bold tabular-nums ${
+                  isPositive ? 'text-white bg-white/10 px-1 py-0.5 rounded' : 'text-gray-500 bg-black/20 px-1 py-0.5 rounded'
                 }`}>
                   {scoreStr}
                 </div>
