@@ -102,7 +102,7 @@ export default function Home() {
         )}
 
         {/* Center: Board Column */}
-        <div className={`flex flex-col shrink-0 w-full mx-auto lg:mx-0 justify-center ${zenMode ? 'items-center' : ''}`} style={{ width: '100%', maxWidth: 'min(100%, calc(100vh - 180px), 800px)' }}>
+        <div className={`flex flex-col shrink-0 w-full mx-auto lg:mx-0 justify-start ${zenMode ? 'items-center pt-8' : 'lg:pt-2'}`} style={{ width: '100%', maxWidth: 'min(100%, calc(100vh - 180px), 800px)' }}>
           
           {/* Top Player */}
           <PlayerBar color={topColor} />
@@ -190,10 +190,10 @@ export default function Home() {
 
         {/* Right: Side Panel */}
         {!zenMode && (
-          <div className="flex-none w-full lg:w-[360px] lg:max-w-[360px] lg:overflow-y-auto custom-scrollbar flex flex-col gap-3 pb-4 lg:h-full">
+          <div className="flex-none w-full lg:w-[360px] lg:max-w-[360px] lg:h-[calc(100vh-100px)] lg:overflow-y-auto custom-scrollbar flex flex-col gap-2 pb-4">
             {history.length === 0 ? (
               <>
-                <div className="glass-panel p-3 slide-up">
+                <div className="glass-panel p-2 flex flex-col gap-1.5">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-purple-500/20 flex items-center justify-center border border-blue-500/20 shadow-lg shadow-blue-500/10">
                       <span className="text-blue-400 text-sm">♛</span>

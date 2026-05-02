@@ -64,7 +64,7 @@ export default function GameHistoryPanel() {
   if (history.length === 0 && cacheSize === 0) return null;
 
   return (
-    <div className="glass-panel p-3 flex flex-col gap-2">
+    <div className="glass-panel p-2 flex flex-col gap-1.5">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
@@ -121,7 +121,7 @@ export default function GameHistoryPanel() {
               {history.map((entry) => (
                 <div
                   key={entry.id}
-                  className="group flex items-center gap-2 bg-white/[0.03] hover:bg-white/[0.06] rounded-lg p-2.5 cursor-pointer transition-all border border-white/[0.04] hover:border-white/[0.08]"
+                  className="group flex items-center gap-2 bg-white/[0.03] hover:bg-white/[0.06] rounded-lg p-2 cursor-pointer transition-all border border-white/[0.04] hover:border-white/[0.08]"
                   onClick={() => handleLoadGame(entry)}
                 >
                   <div className="flex-1 min-w-0">

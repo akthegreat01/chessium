@@ -231,7 +231,7 @@ export default function GameImport() {
                 <button
                   key={i}
                   onClick={() => loadPgn(g.pgn)}
-                  className="text-left bg-[rgba(255,255,255,0.03)] hover:bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.05)] p-2.5 rounded-lg transition-colors flex flex-col gap-1"
+                  className="text-left bg-[rgba(255,255,255,0.03)] hover:bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.05)] p-2 rounded-lg transition-colors flex flex-col gap-0.5"
                 >
                   <div className="flex justify-between text-xs text-gray-300">
                     <span className="truncate max-w-[120px] font-medium text-white">{g.white}</span>
