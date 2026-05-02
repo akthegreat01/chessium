@@ -34,10 +34,7 @@ export default function MoveList() {
         const elRect = activeEl.getBoundingClientRect();
         
         if (elRect.top < containerRect.top || elRect.bottom > containerRect.bottom) {
-          container.scrollTo({
-            top: activeEl.offsetTop - container.offsetTop - container.clientHeight / 2,
-            behavior: 'smooth'
-          });
+          container.scrollTop = activeEl.offsetTop - container.offsetTop - container.clientHeight / 2;
         }
       }
     }

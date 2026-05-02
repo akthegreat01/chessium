@@ -289,10 +289,10 @@ export default function GameReview() {
                   </div>
                   
                   <div className="flex items-center gap-4">
-                    <span className="w-6 text-center text-xs font-bold tabular-nums" style={{ color: wCount > 0 ? d.color : '#444' }}>
+                    <span className="w-6 text-center text-xs font-bold tabular-nums" style={{ color: wCount > 0 ? d.color : '#888' }}>
                       {wCount}
                     </span>
-                    <span className="w-6 text-center text-xs font-bold tabular-nums" style={{ color: bCount > 0 ? d.color : '#444' }}>
+                    <span className="w-6 text-center text-xs font-bold tabular-nums" style={{ color: bCount > 0 ? d.color : '#888' }}>
                       {bCount}
                     </span>
                   </div>

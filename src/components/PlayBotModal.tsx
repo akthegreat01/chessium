@@ -5,6 +5,18 @@ import { useChessStore, BOT_PERSONALITIES, BotPersonality } from '@/lib/chessSto
 import { X, User, Crown, MonitorPlay, Zap, ArrowRight, Activity, ShieldAlert } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const PawnIcon = ({ color }: { color: 'white' | 'black' }) => (
+  <svg viewBox="0 0 45 45" className="w-10 h-10 drop-shadow-lg">
+    <path
+      d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z"
+      fill={color === 'white' ? '#f9f9f9' : '#1f1f1f'}
+      stroke={color === 'white' ? '#444' : '#000'}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
 export default function PlayBotModal({ onClose }: { onClose: () => void }) {
   const { startAIGame } = useChessStore();
   const [selectedBot, setSelectedBot] = useState<BotPersonality>(BOT_PERSONALITIES[3]);
@@ -99,8 +111,8 @@ export default function PlayBotModal({ onClose }: { onClose: () => void }) {
                   color === 'w' ? 'border-white bg-white/10 shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'border-white/10 hover:border-white/30'
                 }`}
               >
-                <div className="w-12 h-12 bg-white rounded flex items-center justify-center shadow-lg mb-2">
-                  <span className="text-3xl text-gray-900 drop-shadow">♙</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-300 rounded flex items-center justify-center shadow-lg mb-2 border border-white/20">
+                  <PawnIcon color="white" />
                 </div>
                 <span className="text-xs font-bold text-gray-300">Play White</span>
               </button>
@@ -110,8 +122,8 @@ export default function PlayBotModal({ onClose }: { onClose: () => void }) {
                   color === 'b' ? 'border-gray-500 bg-white/5 shadow-[0_0_20px_rgba(0,0,0,0.5)]' : 'border-white/10 hover:border-white/30'
                 }`}
               >
-                <div className="w-12 h-12 bg-gray-800 rounded flex items-center justify-center shadow-lg mb-2 border border-white/10">
-                  <span className="text-3xl text-white drop-shadow">♟</span>
+                <div className="w-12 h-12 bg-gradient-to-br from-gray-700 to-gray-900 rounded flex items-center justify-center shadow-lg mb-2 border border-white/10">
+                  <PawnIcon color="black" />
                 </div>
                 <span className="text-xs font-bold text-gray-300">Play Black</span>
               </button>
