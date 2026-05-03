@@ -57,21 +57,30 @@ export default function Board() {
     return () => observer.disconnect();
   }, []);
 
-  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
-    const pieceType = piece ? piece[1].toLowerCase() : '';
-    const isPromotion = pieceType === 'p' && (targetSquare[1] === '8' || targetSquare[1] === '1');
+  // v5.10 API: onPieceDrop receives { piece, sourceSquare, targetSquare }
+  const onDrop = ({ piece, sourceSquare, targetSquare }: any) => {
+    if (!targetSquare) return false;
+    const pType = piece?.pieceType ? piece.pieceType[1].toLowerCase() : '';
+    const isPromotion = pType === 'p' && (targetSquare[1] === '8' || targetSquare[1] === '1');
     const success = makeMove({ from: sourceSquare, to: targetSquare, promotion: isPromotion ? 'q' : undefined });
     if (success) clearAnnotations();
     return success;
   };
 
-  const onSquareClick = (square: string) => {
+  // v5.10 API: onSquareClick receives { piece, square }
+  const onSquareClick = ({ square }: any) => {
     selectSquare(square);
     clearAnnotations();
   };
 
-  const onSquareRightClick = (square: string) => {
+  // v5.10 API: onSquareRightClick receives { piece, square }
+  const onSquareRightClick = ({ square }: any) => {
     toggleUserSquare(square, 'rgba(255, 170, 0, 0.4)');
+  };
+
+  // v5.10 API: onArrowsChange receives { arrows }
+  const onArrowsChange = ({ arrows }: any) => {
+    setUserArrows(arrows);
   };
 
   const customArrows = useMemo(() => {
@@ -145,6 +154,25 @@ export default function Board() {
     customSquareStyles[sq] = Object.assign({}, base, { background: 'radial-gradient(circle, rgba(0,0,0,0.25) 25%, transparent 25%)', borderRadius: '50%' });
   }
 
+  // Build options object for react-chessboard v5.10
+  const boardOptions = useMemo(() => ({
+    position: fen,
+    onPieceDrop: onDrop,
+    onSquareClick: onSquareClick,
+    onSquareRightClick: onSquareRightClick,
+    onArrowsChange: onArrowsChange,
+    boardOrientation: boardFlipped ? 'black' as const : 'white' as const,
+    darkSquareStyle: { backgroundColor: boardTheme.dark },
+    lightSquareStyle: { backgroundColor: boardTheme.light },
+    squareStyles: customSquareStyles,
+    arrows: customArrows,
+    animationDurationInMs: 150,
+    boardStyle: { borderRadius: '4px' },
+    dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.4)' },
+    allowDragging: true,
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }), [fen, boardFlipped, boardTheme, customSquareStyles, customArrows]);
+
   const iconPos = lastMoveSquare && classInfo && boardWidth > 0 ? squareToPosition(lastMoveSquare, boardWidth, boardFlipped) : null;
   const iconSize = boardWidth > 0 ? Math.max(16, boardWidth / 8 * 0.38) : 20;
 
@@ -179,21 +207,8 @@ export default function Board() {
           </motion.div>
         </div>
       )}
-      <ReactChessboard 
-        position={fen}
-        onPieceDrop={onDrop}
-        onSquareClick={onSquareClick}
-        onSquareRightClick={onSquareRightClick}
-        onArrowsChange={setUserArrows}
-        boardOrientation={boardFlipped ? 'black' : 'white'}
-        customDarkSquareStyle={{ backgroundColor: boardTheme.dark }}
-        customLightSquareStyle={{ backgroundColor: boardTheme.light }}
-        customSquareStyles={customSquareStyles}
-        customArrows={customArrows}
-        animationDuration={150}
-        customBoardStyle={{ borderRadius: '4px' }}
-        customDropSquareStyle={{ boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.4)' }}
-      />
+      {/* @ts-ignore - react-chessboard v5.10 uses options prop */}
+      <ReactChessboard options={boardOptions} />
       {iconPos && classInfo && (
         <div className="absolute pointer-events-none z-[100]" style={{ left: iconPos.left + iconPos.squareSize - iconSize / 2, top: iconPos.top - iconSize / 2, width: iconSize, height: iconSize }}>
           <div className="w-full h-full rounded-full flex items-center justify-center shadow-lg border-2 border-white/80" style={{ backgroundColor: classInfo.color }}>

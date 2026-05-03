@@ -76,19 +76,33 @@ export default function LandingPage({ onStart }: LandingPageProps) {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-16"
         >
-          <h1 
-            className="text-7xl md:text-9xl font-black tracking-tighter mb-4 uppercase"
-            style={{ filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.1))' }}
-          >
-            <ShinyText 
-              text="Chessium" 
-              speed={3} 
-              color="#b5b5b5" 
-              shineColor="#ffffff" 
-              spread={120}
-              className="font-black"
-            />
-          </h1>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="relative w-24 h-24 md:w-32 md:h-32"
+            >
+              <img 
+                src="/horse.png" 
+                alt="Chessium Knight" 
+                className="w-full h-full object-contain filter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]"
+              />
+            </motion.div>
+            <h1 
+              className="text-7xl md:text-9xl font-black tracking-tighter uppercase"
+              style={{ filter: 'drop-shadow(0 0 30px rgba(255,255,255,0.1))' }}
+            >
+              <ShinyText 
+                text="Chessium" 
+                speed={3} 
+                color="#b5b5b5" 
+                shineColor="#ffffff" 
+                spread={120}
+                className="font-black"
+              />
+            </h1>
+          </div>
           <p className="text-gray-400 text-lg md:text-xl font-medium tracking-wide max-w-2xl mx-auto">
             The next generation of chess analysis and gameplay. 
             Powered by Stockfish 16 NNUE.
