@@ -57,10 +57,10 @@ export default function Board() {
     return () => observer.disconnect();
   }, []);
 
-  const onDrop = (args: any) => {
-    const pieceType = args.piece ? args.piece[1].toLowerCase() : '';
-    const isPromotion = pieceType === 'p' && (args.targetSquare[1] === '8' || args.targetSquare[1] === '1');
-    const success = makeMove({ from: args.sourceSquare, to: args.targetSquare, promotion: isPromotion ? 'q' : undefined });
+  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
+    const pieceType = piece ? piece[1].toLowerCase() : '';
+    const isPromotion = pieceType === 'p' && (targetSquare[1] === '8' || targetSquare[1] === '1');
+    const success = makeMove({ from: sourceSquare, to: targetSquare, promotion: isPromotion ? 'q' : undefined });
     if (success) clearAnnotations();
     return success;
   };
@@ -72,10 +72,6 @@ export default function Board() {
 
   const onSquareRightClick = (square: string) => {
     toggleUserSquare(square, 'rgba(255, 170, 0, 0.4)');
-  };
-
-  const onArrowsChange = (newArrows: any[]) => {
-    setUserArrows(newArrows);
   };
 
   const customArrows = useMemo(() => {
@@ -149,22 +145,6 @@ export default function Board() {
     customSquareStyles[sq] = Object.assign({}, base, { background: 'radial-gradient(circle, rgba(0,0,0,0.25) 25%, transparent 25%)', borderRadius: '50%' });
   }
 
-  const boardOptions = useMemo(() => ({
-    position: fen,
-    onPieceDrop: onDrop,
-    onSquareClick: onSquareClick,
-    onSquareRightClick: onSquareRightClick,
-    onArrowsChange: onArrowsChange,
-    boardOrientation: boardFlipped ? 'black' : 'white',
-    darkSquareStyle: { backgroundColor: boardTheme.dark },
-    lightSquareStyle: { backgroundColor: boardTheme.light },
-    squareStyles: customSquareStyles,
-    arrows: customArrows,
-    animationDurationInMs: 150,
-    boardStyle: { borderRadius: '4px' },
-    dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.4)' },
-  }), [fen, boardFlipped, boardTheme, customSquareStyles, customArrows]);
-
   const iconPos = lastMoveSquare && classInfo && boardWidth > 0 ? squareToPosition(lastMoveSquare, boardWidth, boardFlipped) : null;
   const iconSize = boardWidth > 0 ? Math.max(16, boardWidth / 8 * 0.38) : 20;
 
@@ -199,8 +179,21 @@ export default function Board() {
           </motion.div>
         </div>
       )}
-      {/* @ts-ignore */}
-      <ReactChessboard options={boardOptions} />
+      <ReactChessboard 
+        position={fen}
+        onPieceDrop={onDrop}
+        onSquareClick={onSquareClick}
+        onSquareRightClick={onSquareRightClick}
+        onArrowsChange={setUserArrows}
+        boardOrientation={boardFlipped ? 'black' : 'white'}
+        customDarkSquareStyle={{ backgroundColor: boardTheme.dark }}
+        customLightSquareStyle={{ backgroundColor: boardTheme.light }}
+        customSquareStyles={customSquareStyles}
+        customArrows={customArrows}
+        animationDuration={150}
+        customBoardStyle={{ borderRadius: '4px' }}
+        customDropSquareStyle={{ boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.4)' }}
+      />
       {iconPos && classInfo && (
         <div className="absolute pointer-events-none z-[100]" style={{ left: iconPos.left + iconPos.squareSize - iconSize / 2, top: iconPos.top - iconSize / 2, width: iconSize, height: iconSize }}>
           <div className="w-full h-full rounded-full flex items-center justify-center shadow-lg border-2 border-white/80" style={{ backgroundColor: classInfo.color }}>

@@ -16,6 +16,8 @@ const SettingsPanel = dynamic(() => import("@/components/SettingsPanel"), { ssr:
 const GameHistoryPanel = dynamic(() => import("@/components/GameHistoryPanel"), { ssr: false });
 const TrainMistakesLauncher = dynamic(() => import("@/components/TrainMistakesLauncher"), { ssr: false });
 const OpeningExplorer = dynamic(() => import("@/components/OpeningExplorer"), { ssr: false });
+const PlayBotModal = dynamic(() => import("@/components/PlayBotModal"), { ssr: false });
+const LandingPage = dynamic(() => import("@/components/LandingPage"), { ssr: false });
 
 const SidebarAd = dynamic(() => import("@/components/SidebarAd"), { ssr: false });
 const LiveEnginePanel = dynamic(() => import("@/components/LiveEnginePanel"), { ssr: false });
@@ -35,11 +37,18 @@ export default function Home() {
 
   const [fenCopied, setFenCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
+  const [showBotModal, setShowBotModal] = useState(false);
 
   useEffect(() => {
     loadSavedGames();
     checkDailyStreak();
-  }, [loadSavedGames, checkDailyStreak]);
+    
+    // If there's already history, assume we started
+    if (history.length > 0) {
+      setHasStarted(true);
+    }
+  }, [loadSavedGames, checkDailyStreak, history.length]);
 
   // Coach Voice Effect
   useEffect(() => {
@@ -64,6 +73,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (!hasStarted) return;
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       switch (e.key) {
         case "ArrowLeft": e.preventDefault(); goBack(); break;
@@ -77,7 +87,7 @@ export default function Home() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goBack, goForward, goToMove, flipBoard, toggleSound, showHintMove, hideHint, showHint, history.length]);
+  }, [goBack, goForward, goToMove, flipBoard, toggleSound, showHintMove, hideHint, showHint, history.length, hasStarted]);
 
   const copyFen = () => {
     navigator.clipboard.writeText(fen);
@@ -111,10 +121,22 @@ export default function Home() {
     return `Move ${moveNum}${isWhite ? '.' : '...'}`;
   }, [currentMoveIndex, history.length]);
 
+  const handleLandingStart = (mode: 'ai' | 'analysis') => {
+    setHasStarted(true);
+    if (mode === 'ai') {
+      setShowBotModal(true);
+    }
+  };
+
+  if (!hasStarted) {
+    return <LandingPage onStart={handleLandingStart} />;
+  }
+
   return (
     <>
       <NotificationToast />
       <CelebrationOverlay />
+      {showBotModal && <PlayBotModal onClose={() => setShowBotModal(false)} />}
       <div className={`flex-1 w-full max-w-[1400px] mx-auto flex flex-col lg:flex-row gap-4 p-2 md:p-4 lg:p-6 transition-all duration-500 ${zenMode ? 'items-center justify-center' : ''}`}>
         
         {/* Left Ad Sidebar - Only on large screens */}
@@ -201,8 +223,8 @@ export default function Home() {
                 <span className={`w-4 h-4 text-center font-bold ${zenMode ? 'text-purple-400' : 'text-gray-400 group-hover:text-white'}`}>Z</span>
               </button>
               <div className="w-px h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
-              <button onClick={resetGame}
-                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="New Game">
+              <button onClick={() => { resetGame(); setHasStarted(false); }}
+                className="p-1.5 md:p-2 rounded-md hover:bg-white/10 transition-all active:scale-90 group" title="New Game / Intro">
                 <RefreshCcw className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
               </button>
               <div className="w-px h-5 bg-white/[0.08] mx-0.5 hidden sm:block" />
@@ -210,6 +232,7 @@ export default function Home() {
             </div>
           </div>
         </div>
+
 
         {/* Right: Side Panel */}
         {!zenMode && (
