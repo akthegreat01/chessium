@@ -162,16 +162,17 @@ function classifyMove(
 
   if (isBestMove) {
     // Brilliant: A move that is the best move, involves a sacrifice, 
-    // and leads to a clearly winning position (eval > 150).
-    if (isSac && evalAfterForPlayer > 150 && cpLoss < 10) return 'brilliant';
+    // and leads to a clearly winning position from a non-crushing one.
+    // Must be very precise (cpLoss < 5) and lead to a solid advantage (> +2.0).
+    if (isSac && evalAfterForPlayer > 200 && cpLoss < 5 && evalBeforeForPlayer < 600) return 'brilliant';
     
     // Great: Finding a winning move from an equal position
-    const wasEqual = Math.abs(evalBeforeForPlayer) < 50;
-    const nowWinning = evalAfterForPlayer > 180;
+    const wasEqual = Math.abs(evalBeforeForPlayer) < 60;
+    const nowWinning = evalAfterForPlayer > 160;
     if (wasEqual && nowWinning) return 'great';
 
     // Great: Finding a crushing blow in a winning position
-    if (evalBeforeForPlayer > 100 && evalAfterForPlayer - evalBeforeForPlayer > 200) return 'great';
+    if (evalBeforeForPlayer > 100 && evalAfterForPlayer - evalBeforeForPlayer > 150 && evalAfterForPlayer > 300) return 'great';
 
     return 'best';
   }
