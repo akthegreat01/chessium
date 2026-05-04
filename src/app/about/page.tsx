@@ -1,4 +1,10 @@
+import { Metadata } from 'next';
 import { Sparkles, Cpu, Zap, Shield, Globe, BarChart3, Target, Heart, ChevronRight, Crown } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: "About Chessium",
+  description: "Learn about the technology behind Chessium - the professional chess analysis engine powered by Stockfish 16.1 WebAssembly.",
+};
 
 export default function AboutPage() {
   const features = [

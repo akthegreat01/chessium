@@ -84,7 +84,7 @@ export default function GameReview() {
   const { 
     analysisResult, isAnalyzing, analysisProgress, runGameReview,
     currentMoveIndex, history, variationAnalysis, mainLineHistory,
-    explainWhyLine, setExplainWhyLine
+    explainWhyLine, setExplainWhyLine, game
   } = useChessStore();
   const { recordAnalysis, addXp } = useUserStore();
   

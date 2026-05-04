@@ -1,4 +1,10 @@
+import { Metadata } from 'next';
 import { Heart, Star, Code, Coffee, Shield } from 'lucide-react';
+
+export const metadata: Metadata = {
+  title: "Support Chessium",
+  description: "Help keep Chessium free and independent. Support the development of grandmaster-level chess analysis software.",
+};
 import Image from 'next/image';
 
 export default function SupportPage() {

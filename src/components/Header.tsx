@@ -59,7 +59,7 @@ export default function Header() {
         
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-0.5">
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">
+          <Link href="/analysis" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">
             Analysis
           </Link>
           <Link href="/about" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">
@@ -173,7 +173,7 @@ export default function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden absolute top-full left-0 right-0 bg-[#0a0b0e]/98 backdrop-blur-xl border-b border-white/[0.04] slide-up z-40">
           <div className="flex flex-col p-4 gap-1">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
+            <Link href="/analysis" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
               Analysis
             </Link>
             <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">

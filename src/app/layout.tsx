@@ -12,20 +12,52 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Chessium | Premium Chess Analysis",
+  metadataBase: new URL('https://underpromotion.vercel.app'),
+  title: {
+    default: "Chessium | Premium Chess Analysis",
+    template: "%s | Chessium"
+  },
   description: "High-performance, beautifully crafted browser-based chess analysis engine powered by Stockfish WASM. Analyze games, train mistakes, and explore openings — all for free.",
-  keywords: ["chess", "analysis", "stockfish", "engine", "chess.com", "lichess", "game review", "opening explorer"],
-  authors: [{ name: "Chessium" }],
+  keywords: ["chess", "analysis", "stockfish", "engine", "chess.com", "lichess", "game review", "opening explorer", "grandmaster", "tactics"],
+  authors: [{ name: "Akshath Kataria" }],
+  creator: "Akshath Kataria",
+  publisher: "Chessium",
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: "Chessium | Premium Chess Analysis",
     description: "Analyze your chess games with grandmaster-level Stockfish NNUE. Import from Chess.com and Lichess instantly.",
-    type: "website",
-    siteName: "Chessium",
+    url: 'https://underpromotion.vercel.app',
+    siteName: 'Chessium',
+    images: [
+      {
+        url: '/og-image.png', // Assume we might add this later or it uses default
+        width: 1200,
+        height: 630,
+        alt: 'Chessium - Professional Chess Analysis',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
   },
   twitter: {
-    card: "summary_large_image",
-    title: "Chessium | Premium Chess Analysis",
-    description: "Free, browser-based chess analysis powered by Stockfish NNUE.",
+    card: 'summary_large_image',
+    title: 'Chessium | Premium Chess Analysis',
+    description: 'Free, browser-based chess analysis powered by Stockfish NNUE.',
+    creator: '@akshath_kataria',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 

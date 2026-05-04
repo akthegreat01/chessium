@@ -61,19 +61,61 @@ function evalToWhiteScore(score: number, mate: number | null, isWhiteToMove: boo
 
 /**
  * Detect if a move involves a sacrifice (giving up material for positional/tactical gain).
+ * A sacrifice is detected if the material balance after the opponent's best response
+ * is worse than before the move was played.
  */
-function isSacrifice(move: Move, evalBeforeForPlayer: number, evalAfterForPlayer: number): boolean {
+function isSacrifice(
+  fenBefore: string,
+  move: Move,
+  enginePv: string,
+  isWhite: boolean
+): boolean {
   const pieceValues: Record<string, number> = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
-  const capturedValue = move.captured ? pieceValues[move.captured] : 0;
-  const movedValue = pieceValues[move.piece];
   
-  if (move.captured) {
-    // Quality trade-down: Queen for anything less than a Queen, or Rook for Minor/Pawn
-    if (movedValue === 900 && capturedValue <= 500) return true;
-    if (movedValue === 500 && capturedValue <= 100) return true; // Rook for Pawn
+  const getMaterial = (fen: string) => {
+    const board = fen.split(' ')[0];
+    let white = 0;
+    let black = 0;
+    for (const char of board) {
+      const val = pieceValues[char.toLowerCase()] || 0;
+      if (char === char.toUpperCase()) white += val;
+      else black += val;
+    }
+    return { white, black };
+  };
+
+  const materialBefore = getMaterial(fenBefore);
+  const myMaterialBefore = isWhite ? materialBefore.white : materialBefore.black;
+  const opponentMaterialBefore = isWhite ? materialBefore.black : materialBefore.white;
+
+  try {
+    const game = new Chess(fenBefore);
+    const moveResult = game.move(move.san);
+    if (!moveResult) return false;
+    
+    // Apply opponent's best response from PV if available
+    const pvMoves = enginePv.split(' ').filter(Boolean);
+    if (pvMoves.length > 0 && pvMoves[0].length >= 4) {
+      const uci = pvMoves[0];
+      const from = uci.substring(0, 2);
+      const to = uci.substring(2, 4);
+      const promotion = uci.length > 4 ? uci[4] : undefined;
+      game.move({ from, to, promotion });
+    }
+
+    const materialAfter = getMaterial(game.fen());
+    const myMaterialAfter = isWhite ? materialAfter.white : materialAfter.black;
+    const opponentMaterialAfter = isWhite ? materialAfter.black : materialAfter.white;
+
+    const myLoss = myMaterialBefore - myMaterialAfter;
+    const opponentLoss = opponentMaterialBefore - opponentMaterialAfter;
+    
+    // Net material change for the player. If negative, it's a sacrifice.
+    // We use a threshold of 100 (one pawn) to avoid counting tiny differences.
+    return (myLoss - opponentLoss) >= 100;
+  } catch (e) {
+    return false;
   }
-  
-  return false;
 }
 
 /**
@@ -106,7 +148,8 @@ function classifyMove(
   isForced: boolean,
   isBestMove: boolean,
   move: Move,
-  winPctLoss: number
+  winPctLoss: number,
+  isSac: boolean
 ): MoveClassification {
   const evalBeforeForPlayer = isWhite ? evalBeforeWhite : -evalBeforeWhite;
   const evalAfterForPlayer = isWhite ? evalAfterWhite : -evalAfterWhite;
@@ -119,9 +162,8 @@ function classifyMove(
 
   if (isBestMove) {
     // Brilliant: A move that is the best move, involves a sacrifice, 
-    // and leads to a clearly winning position (eval > 200).
-    const isCaptureSacrifice = isSacrifice(move, evalBeforeForPlayer, evalAfterForPlayer);
-    if (isCaptureSacrifice && evalAfterForPlayer > 200 && cpLoss < 5) return 'brilliant';
+    // and leads to a clearly winning position (eval > 150).
+    if (isSac && evalAfterForPlayer > 150 && cpLoss < 10) return 'brilliant';
     
     // Great: Finding a winning move from an equal position
     const wasEqual = Math.abs(evalBeforeForPlayer) < 50;
@@ -492,9 +534,12 @@ export async function analyzeGameFull(
     const playedUci = move.from + move.to + (move.promotion || '');
     const isBestMove = playedUci === engineBestMove;
 
+    // Detect sacrifice using the board state and engine PV
+    const isSac = isSacrifice(fenBefore, move, preEval.pv, isWhite);
+
     const classification = classifyMove(
       evalBeforeWhite, evalAfterWhite, isWhite, i,
-      isForced, isBestMove, move, winPctLoss
+      isForced, isBestMove, move, winPctLoss, isSac
     );
 
     classifications[i] = classification;
@@ -638,9 +683,12 @@ export async function analyzeInstantMove(
   const legalMoves = new Chess(fenBefore).moves();
   const isForced = legalMoves.length === 1;
 
+  // Detect sacrifice using the board state and engine PV
+  const isSac = isSacrifice(fenBefore, move, postResult.pv, isWhite);
+
   const classification = classifyMove(
     evalBeforeWhite, evalAfterWhite, isWhite, moveIndex,
-    isForced, isBestMove, move, winPctLoss
+    isForced, isBestMove, move, winPctLoss, isSac
   );
 
   return {

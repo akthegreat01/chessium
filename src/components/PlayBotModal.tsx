@@ -35,13 +35,13 @@ export default function PlayBotModal({ onClose }: { onClose: () => void }) {
         className="glass-panel w-full max-w-4xl flex flex-col md:flex-row overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto md:overflow-visible"
       >
         {/* Left Sidebar: Select Bot */}
-        <div className="w-full md:w-[45%] bg-black/40 border-r border-white/5 flex flex-col md:max-h-[80vh]">
-          <div className="p-4 border-b border-white/5 flex items-center gap-2 sticky top-0 bg-[#08090a] z-10">
+        <div className="w-full md:w-[45%] bg-black/40 border-r border-white/5 flex flex-col h-[300px] md:h-auto md:max-h-[80vh]">
+          <div className="p-4 border-b border-white/5 flex items-center gap-2 sticky top-0 bg-[#08090a] z-10 shrink-0">
             <MonitorPlay className="w-5 h-5 text-blue-400" />
             <h2 className="font-bold text-white text-lg">Choose Opponent</h2>
           </div>
           
-          <div className="flex-1 md:overflow-y-auto custom-scrollbar p-2 space-y-1">
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-1">
             {BOT_PERSONALITIES.map(bot => (
               <button
                 key={bot.id}
@@ -52,12 +52,12 @@ export default function PlayBotModal({ onClose }: { onClose: () => void }) {
                     : 'hover:bg-white/5 border border-transparent'
                 }`}
               >
-                <div className="text-3xl filter drop-shadow-md">{bot.avatar}</div>
-                <div className="flex flex-col">
-                  <span className={`font-bold ${selectedBot.id === bot.id ? 'text-blue-400' : 'text-gray-200'}`}>
+                <div className="text-3xl filter drop-shadow-md shrink-0">{bot.avatar}</div>
+                <div className="flex flex-col min-w-0">
+                  <span className={`font-bold truncate ${selectedBot.id === bot.id ? 'text-blue-400' : 'text-gray-200'}`}>
                     {bot.name}
                   </span>
-                  <span className="text-xs text-gray-500 font-mono">ELO {bot.elo}</span>
+                  <span className="text-[10px] text-gray-500 font-mono">ELO {bot.elo}</span>
                 </div>
               </button>
             ))}
