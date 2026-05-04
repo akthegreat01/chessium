@@ -352,17 +352,25 @@ export const useChessStore = create<ChessState>((set, get) => ({
 
       // Handle premove execution after a short delay
       const nextState = get();
-      if (nextState.premove && nextState.game.turn() === nextState.playerColor && !result) {
+      if (nextState.premovesEnabled && nextState.premove && nextState.game.turn() === nextState.playerColor && !result) {
         const pm = nextState.premove;
         // Check if the premove is legal in the NEW position
         const legalMoves = newGame.moves({ verbose: true });
-        const isLegal = legalMoves.some(m => m.from === pm.from && m.to === pm.to);
+        const isLegal = legalMoves.some(m => 
+          m.from === pm.from && 
+          m.to === pm.to && 
+          (!pm.promotion || m.promotion === pm.promotion)
+        );
         
         if (isLegal) {
           setTimeout(() => {
-            set({ premove: null });
-            get().makeMove(pm);
-          }, 100);
+            // Re-verify it's still our turn and no result before executing
+            const latestState = get();
+            if (latestState.game.turn() === latestState.playerColor && !latestState.gameResult) {
+              set({ premove: null });
+              get().makeMove(pm);
+            }
+          }, 200);
         } else {
           set({ premove: null });
         }

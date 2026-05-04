@@ -61,11 +61,19 @@ export default function Board() {
   // v5.10 API: onPieceDrop receives { piece, sourceSquare, targetSquare }
   const onDrop = ({ piece, sourceSquare, targetSquare }: any) => {
     if (!targetSquare) return false;
-    const pType = piece?.pieceType ? piece.pieceType[1].toLowerCase() : '';
-    const isPromotion = pType === 'p' && (targetSquare[1] === '8' || targetSquare[1] === '1');
+    
+    // piece is a string like "wP", "bK"
+    const pieceColor = piece[0];
+    const pieceType = piece[1].toLowerCase();
+    
+    const { game, playerColor, playingAI } = useChessStore.getState();
+    
+    // Prevent moving bot pieces
+    if (playingAI && pieceColor !== playerColor) return false;
+
+    const isPromotion = pieceType === 'p' && (targetSquare[1] === '8' || targetSquare[1] === '1');
     const move = { from: sourceSquare, to: targetSquare, promotion: isPromotion ? 'q' : undefined };
 
-    const { game, playerColor, playingAI } = useChessStore.getState();
     const isMyTurn = !playingAI || game.turn() === playerColor;
 
     if (!isMyTurn && premovesEnabled) {
@@ -194,8 +202,12 @@ export default function Board() {
     boardStyle: { borderRadius: '4px' },
     dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.4)' },
     allowDragging: true,
+    isDraggablePiece: ({ piece }: any) => {
+      if (!playingAI) return true;
+      return piece[0] === playerColor;
+    },
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [fen, boardFlipped, boardTheme, customSquareStyles, customArrows]);
+  }), [fen, boardFlipped, boardTheme, customSquareStyles, customArrows, playingAI, playerColor]);
 
   const iconPos = lastMoveSquare && classInfo && boardWidth > 0 ? squareToPosition(lastMoveSquare, boardWidth, boardFlipped) : null;
   const iconSize = boardWidth > 0 ? Math.max(16, boardWidth / 8 * 0.38) : 20;
