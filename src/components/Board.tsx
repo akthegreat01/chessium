@@ -39,7 +39,8 @@ export default function Board() {
     variationAnalysis, mainLineHistory,
     explainWhyLine, setExplainWhyLine,
     openingName,
-    userArrows, userSquares, setUserArrows, toggleUserSquare, clearAnnotations
+    userArrows, userSquares, setUserArrows, toggleUserSquare, clearAnnotations,
+    premove, setPremove, clearPremove, premovesEnabled
   } = useChessStore();
   
   const [showThemes, setShowThemes] = useState(false);
@@ -62,8 +63,21 @@ export default function Board() {
     if (!targetSquare) return false;
     const pType = piece?.pieceType ? piece.pieceType[1].toLowerCase() : '';
     const isPromotion = pType === 'p' && (targetSquare[1] === '8' || targetSquare[1] === '1');
-    const success = makeMove({ from: sourceSquare, to: targetSquare, promotion: isPromotion ? 'q' : undefined });
-    if (success) clearAnnotations();
+    const move = { from: sourceSquare, to: targetSquare, promotion: isPromotion ? 'q' : undefined };
+
+    const { game, playerColor, playingAI } = useChessStore.getState();
+    const isMyTurn = !playingAI || game.turn() === playerColor;
+
+    if (!isMyTurn && premovesEnabled) {
+      setPremove(move);
+      return true;
+    }
+
+    const success = makeMove(move);
+    if (success) {
+      clearAnnotations();
+      clearPremove();
+    }
     return success;
   };
 
@@ -75,7 +89,11 @@ export default function Board() {
 
   // v5.10 API: onSquareRightClick receives { piece, square }
   const onSquareRightClick = ({ square }: any) => {
-    toggleUserSquare(square, 'rgba(255, 170, 0, 0.4)');
+    if (premove) {
+      clearPremove();
+    } else {
+      toggleUserSquare(square, 'rgba(255, 170, 0, 0.4)');
+    }
   };
 
   // v5.10 API: onArrowsChange receives { arrows }
@@ -148,6 +166,12 @@ export default function Board() {
     const base = customSquareStyles[selectedSquare] || {};
     customSquareStyles[selectedSquare] = Object.assign({}, base, { backgroundColor: 'rgba(255, 255, 0, 0.4)' });
   }
+  
+  if (premove) {
+    customSquareStyles[premove.from] = { backgroundColor: 'rgba(239, 68, 68, 0.4)' };
+    customSquareStyles[premove.to] = { backgroundColor: 'rgba(239, 68, 68, 0.6)' };
+  }
+
   for (let i = 0; i < legalMovesForSelected.length; i++) {
     const sq = legalMovesForSelected[i];
     const base = customSquareStyles[sq] || {};

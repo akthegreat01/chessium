@@ -77,9 +77,10 @@ interface ChessState {
   boardTheme: BoardTheme;
   boardFlipped: boolean;
   soundEnabled: boolean;
-  showHint: boolean;
-  hintMove: string | null;
   zenMode: boolean;
+  premovesEnabled: boolean;
+  premove: { from: string; to: string; promotion?: string } | null;
+  hintMove: string | null;
 
   // AI Play
   playingAI: boolean;
@@ -111,6 +112,9 @@ interface ChessState {
   loadFen: (fen: string) => void;
   resetGame: () => void;
   toggleZenMode: () => void;
+  togglePremoves: () => void;
+  setPremove: (move: { from: string; to: string; promotion?: string } | null) => void;
+  clearPremove: () => void;
   setBotMessage: (msg: { text: string; type: 'trash' | 'coach' } | null) => void;
   setExplainWhyLine: (line: string[] | null) => void;
   saveGame: (data: GameData) => void;
@@ -173,6 +177,8 @@ export const useChessStore = create<ChessState>((set, get) => ({
   showHint: false,
   hintMove: null,
   zenMode: false,
+  premovesEnabled: true,
+  premove: null,
   playingAI: false,
   aiLevel: BOT_PERSONALITIES[3],
   playerColor: 'w',
@@ -202,6 +208,15 @@ export const useChessStore = create<ChessState>((set, get) => ({
     set({ userSquares: newSquares });
   },
   clearAnnotations: () => set({ userArrows: [], userSquares: {} }),
+  togglePremoves: () => {
+    const newVal = !get().premovesEnabled;
+    set({ premovesEnabled: newVal });
+    if (typeof window !== "undefined") {
+      localStorage.setItem('chess_premoves_enabled', String(newVal));
+    }
+  },
+  setPremove: (move) => set({ premove: move }),
+  clearPremove: () => set({ premove: null }),
 
   makeMove: (move) => {
     const { game, currentMoveIndex, history, soundEnabled, playingAI, playerColor, aiLevel, analysisResult } = get();
@@ -335,8 +350,22 @@ export const useChessStore = create<ChessState>((set, get) => ({
         }, 300);
       }
 
-      if (result && playingAI) {
-        get().runGameReview();
+      // Handle premove execution after a short delay
+      const nextState = get();
+      if (nextState.premove && nextState.game.turn() === nextState.playerColor && !result) {
+        const pm = nextState.premove;
+        // Check if the premove is legal in the NEW position
+        const legalMoves = newGame.moves({ verbose: true });
+        const isLegal = legalMoves.some(m => m.from === pm.from && m.to === pm.to);
+        
+        if (isLegal) {
+          setTimeout(() => {
+            set({ premove: null });
+            get().makeMove(pm);
+          }, 100);
+        } else {
+          set({ premove: null });
+        }
       }
 
       return true;
@@ -518,6 +547,11 @@ export const useChessStore = create<ChessState>((set, get) => ({
       const savedDepth = localStorage.getItem('chess_analysis_depth');
       if (savedDepth) {
         set({ analysisDepth: parseInt(savedDepth, 10) });
+      }
+
+      const savedPremoves = localStorage.getItem('chess_premoves_enabled');
+      if (savedPremoves !== null) {
+        set({ premovesEnabled: savedPremoves === 'true' });
       }
     }
   },

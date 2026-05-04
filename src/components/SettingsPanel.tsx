@@ -10,6 +10,7 @@ export default function SettingsPanel() {
     soundEnabled, toggleSound,
     flipBoard, boardFlipped,
     analysisDepth, setAnalysisDepth,
+    premovesEnabled, togglePremoves,
   } = useChessStore();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -81,6 +82,26 @@ export default function SettingsPanel() {
                   >
                     <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${
                       boardFlipped ? 'left-6' : 'left-0.5'
+                    }`} />
+                  </button>
+                </div>
+
+                {/* Premoves */}
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 flex items-center justify-center">
+                      <div className={`w-3 h-3 rounded-full ${premovesEnabled ? 'bg-green-500' : 'bg-gray-500'}`} />
+                    </div>
+                    <span className="text-sm text-gray-200">Premoves</span>
+                  </div>
+                  <button
+                    onClick={togglePremoves}
+                    className={`w-12 h-6 rounded-full transition-colors relative ${
+                      premovesEnabled ? 'bg-green-600' : 'bg-gray-600'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${
+                      premovesEnabled ? 'left-6' : 'left-0.5'
                     }`} />
                   </button>
                 </div>
