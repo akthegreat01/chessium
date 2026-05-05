@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import Script from "next/script";
 
@@ -98,8 +99,9 @@ export default function RootLayout({
         </div>
 
         <Header />
-        <main className="flex-1 z-10 relative">
+        <main className="flex-1 relative z-0">
           {children}
+          <Footer />
         </main>
         <Analytics />
       </body>

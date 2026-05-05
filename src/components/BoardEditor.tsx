@@ -156,21 +156,18 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
               <div className="absolute -inset-16 bg-blue-600/10 blur-[140px] rounded-full opacity-30 group-hover:opacity-50 transition-opacity pointer-events-none" />
               <div className="relative z-10">
                 <Chessboard 
-                  /* @ts-ignore */
-                  options={{
-                    position: fen,
-                    onPieceDrop: ({ sourceSquare, targetSquare, piece }) => {
-                      if (!targetSquare) return false;
-                      return handlePieceDrop(sourceSquare, targetSquare, piece.pieceType);
-                    },
-                    onSquareClick: (args: any) => handleSquareClick(args.square),
-                    boardOrientation: orientation,
-                    id: "board-editor",
-                    boardStyle: {
-                      borderRadius: '16px',
-                      boxShadow: '0 50px 140px rgba(0,0,0,0.9)',
-                      border: '10px solid rgba(255,255,255,0.02)'
-                    }
+                  position={fen}
+                  onPieceDrop={({ sourceSquare, targetSquare, piece }) => {
+                    if (!targetSquare) return false;
+                    return handlePieceDrop(sourceSquare, targetSquare, piece);
+                  }}
+                  onSquareClick={(square) => handleSquareClick(square)}
+                  boardOrientation={orientation}
+                  id="board-editor"
+                  boardStyle={{
+                    borderRadius: '16px',
+                    boxShadow: '0 50px 140px rgba(0,0,0,0.9)',
+                    border: '10px solid rgba(255,255,255,0.02)'
                   }}
                 />
               </div>

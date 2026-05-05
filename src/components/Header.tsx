@@ -182,6 +182,9 @@ export default function Header() {
             <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
               Support
             </Link>
+            <Link href="/privacy" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
+              Privacy Policy
+            </Link>
             <div className="border-t border-white/5 mt-2 pt-2">
               <div className="flex items-center gap-2 px-4 py-2 text-xs text-gray-500">
                 <Keyboard className="w-3.5 h-3.5" />

@@ -244,8 +244,22 @@ export default function Board() {
           </motion.div>
         </div>
       )}
-      {/* @ts-ignore - react-chessboard v5.10 uses options prop */}
-      <ReactChessboard options={boardOptions} />
+      <ReactChessboard 
+        position={boardOptions.position}
+        onPieceDrop={boardOptions.onPieceDrop}
+        onSquareClick={boardOptions.onSquareClick}
+        onSquareRightClick={boardOptions.onSquareRightClick}
+        onArrowsChange={boardOptions.onArrowsChange}
+        boardOrientation={boardOptions.boardOrientation}
+        customDarkSquareStyle={boardOptions.darkSquareStyle}
+        customLightSquareStyle={boardOptions.lightSquareStyle}
+        customSquareStyles={boardOptions.squareStyles}
+        customArrows={boardOptions.arrows}
+        animationDuration={boardOptions.animationDurationInMs}
+        boardStyle={boardOptions.boardStyle}
+        customDropSquareStyle={boardOptions.dropSquareStyle}
+        isDraggablePiece={boardOptions.isDraggablePiece}
+      />
       {iconPos && classInfo && (
         <div className="absolute pointer-events-none z-[100]" style={{ left: iconPos.left + iconPos.squareSize - iconSize / 2, top: iconPos.top - iconSize / 2, width: iconSize, height: iconSize }}>
           <div className="w-full h-full rounded-full flex items-center justify-center shadow-lg border-2 border-white/80" style={{ backgroundColor: classInfo.color }}>
