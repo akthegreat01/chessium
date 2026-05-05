@@ -40,7 +40,8 @@ export default function Board() {
     explainWhyLine, setExplainWhyLine,
     openingName,
     userArrows, userSquares, setUserArrows, toggleUserSquare, clearAnnotations,
-    premove, setPremove, clearPremove, premovesEnabled
+    premove, setPremove, clearPremove, premovesEnabled,
+    playingAI, playerColor
   } = useChessStore();
   
   const [showThemes, setShowThemes] = useState(false);
