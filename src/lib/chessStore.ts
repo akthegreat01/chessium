@@ -81,6 +81,7 @@ interface ChessState {
   premovesEnabled: boolean;
   premove: { from: string; to: string; promotion?: string } | null;
   hintMove: string | null;
+  showHint: boolean;
 
   // AI Play
   playingAI: boolean;
