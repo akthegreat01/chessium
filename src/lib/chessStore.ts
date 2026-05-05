@@ -2,7 +2,11 @@ import { create } from 'zustand';
 import { Chess, Move } from 'chess.js';
 import { Engine, EngineLine, EngineConfig } from './engine';
 import { AnalysisResult, MoveAnalysis, analyzeGameFull, analyzeInstantMove } from './analyzer';
-import { playMoveSound, playCaptureSound, playCheckSound, playCastleSound, playGameEndSound } from './sounds';
+import { 
+  playMoveSound, playCaptureSound, playCheckSound, playCastleSound, 
+  playGameEndSound, playBrilliantSound, playGreatSound,
+  playBlunderSound, playMistakeSound 
+} from './sounds';
 import { saveGameToHistory, generateGameId } from './gameHistory';
 import { getBotResponse } from './botMessages';
 
@@ -22,14 +26,13 @@ export type BoardTheme = {
 };
 
 export const BOARD_THEMES: BoardTheme[] = [
+  { id: 'gold', name: 'Royal Gold', light: '#d4af37', dark: '#1a1b21' },
   { id: 'aura', name: 'Aura Dark', light: '#e2e8f0', dark: '#2a2d35' },
   { id: 'green', name: 'Classic Green', light: '#ebecd0', dark: '#739552' },
   { id: 'blue', name: 'Ocean Blue', light: '#dee3e6', dark: '#6992c2' },
   { id: 'wood', name: 'Natural Wood', light: '#f0d9b5', dark: '#b58863' },
-  { id: 'cyber', name: 'Cyberpunk', light: '#323232', dark: '#00ff41' },
-  { id: 'glass', name: 'Glassmorphism', light: 'rgba(255,255,255,0.2)', dark: 'rgba(0,0,0,0.3)' },
+  { id: 'midnight', name: 'Midnight', light: '#c8c8d0', dark: '#1e2126' },
   { id: 'emerald', name: 'Emerald', light: '#d2f4d3', dark: '#2d5a27' },
-  { id: 'midnight', name: 'Midnight', light: '#c8c8d0', dark: '#3a3a52' },
   { id: 'crimson', name: 'Crimson', light: '#f8d7da', dark: '#721c24' },
 ];
 
@@ -154,6 +157,20 @@ function playMoveAudio(move: Move, game: Chess) {
     playCaptureSound();
   } else {
     playMoveSound();
+  }
+}
+
+function playReviewedMoveAudio(index: number, history: Move[], analysisResult: AnalysisResult | null, soundEnabled: boolean) {
+  if (!soundEnabled || index < 0) return;
+  const classification = analysisResult?.classifications[index];
+  if (classification === 'brilliant') playBrilliantSound();
+  else if (classification === 'great') playGreatSound();
+  else if (classification === 'blunder') playBlunderSound();
+  else if (classification === 'mistake') playMistakeSound();
+  else {
+    const move = history[index];
+    if (move.captured) playCaptureSound();
+    else playMoveSound();
   }
 }
 
@@ -408,7 +425,9 @@ export const useChessStore = create<ChessState>((set, get) => ({
       userSquares: {},
     });
 
-    const { analysisResult } = get();
+    const { analysisResult, soundEnabled } = get();
+    playReviewedMoveAudio(index, history, analysisResult, soundEnabled);
+
     if (index >= 0 && (!analysisResult || index >= analysisResult.evals.length)) {
       analyzeInstantMove(newFen, newFen, history[index], index, 0)
         .then(result => {
@@ -421,12 +440,18 @@ export const useChessStore = create<ChessState>((set, get) => ({
 
   goBack: () => {
     const { currentMoveIndex } = get();
-    get().goToMove(currentMoveIndex - 1);
+    const newIndex = currentMoveIndex - 1;
+    if (newIndex >= -1) {
+      get().goToMove(newIndex);
+    }
   },
 
   goForward: () => {
-    const { currentMoveIndex } = get();
-    get().goToMove(currentMoveIndex + 1);
+    const { currentMoveIndex, history } = get();
+    const newIndex = currentMoveIndex + 1;
+    if (newIndex < history.length) {
+      get().goToMove(newIndex);
+    }
   },
 
   restoreMainLine: () => {

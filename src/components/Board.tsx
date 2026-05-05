@@ -199,9 +199,16 @@ export default function Board() {
     lightSquareStyle: { backgroundColor: boardTheme.light },
     squareStyles: customSquareStyles,
     arrows: customArrows,
-    animationDurationInMs: 150,
-    boardStyle: { borderRadius: '4px' },
-    dropSquareStyle: { boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.4)' },
+    animationDurationInMs: 180, // Snappier but smooth
+    boardStyle: { 
+      borderRadius: '8px',
+      boxShadow: '0 20px 80px rgba(0,0,0,0.6)',
+    },
+    dropSquareStyle: { 
+      boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.5)',
+      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+      borderRadius: '4px'
+    },
     allowDragging: true,
     isDraggablePiece: ({ piece }: any) => {
       if (!playingAI) return true;

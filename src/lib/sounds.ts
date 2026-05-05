@@ -95,3 +95,23 @@ export function playIllegalSound() {
   playTone(200, 0.15, 'sawtooth', 0.05);
   setTimeout(() => playTone(180, 0.15, 'sawtooth', 0.05), 100);
 }
+
+export function playBrilliantSound() {
+  playTone(880, 0.1, 'sine', 0.1);
+  setTimeout(() => playTone(1320, 0.15, 'sine', 0.08), 80);
+  setTimeout(() => playTone(1760, 0.2, 'sine', 0.06), 160);
+}
+
+export function playGreatSound() {
+  playTone(660, 0.1, 'sine', 0.08);
+  setTimeout(() => playTone(990, 0.15, 'sine', 0.06), 80);
+}
+
+export function playBlunderSound() {
+  playTone(150, 0.2, 'sawtooth', 0.08);
+  setTimeout(() => playTone(120, 0.3, 'sawtooth', 0.1), 150);
+}
+
+export function playMistakeSound() {
+  playTone(200, 0.2, 'sawtooth', 0.06);
+}
