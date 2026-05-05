@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { Analytics } from "@vercel/analytics/react";
+import Script from "next/script";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -75,6 +76,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9046932302377091"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body suppressHydrationWarning className={`${inter.className} bg-background text-gray-200 min-h-screen flex flex-col relative overflow-x-hidden`}>
         {/* Professional Background Layer */}
         <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
