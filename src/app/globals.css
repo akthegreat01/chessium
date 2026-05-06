@@ -92,8 +92,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 /* ───── REFINED SURFACES ───── */
 .glass-panel {
   background: rgba(18, 19, 23, 0.7);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: 
     0 4px 32px 0 rgba(0, 0, 0, 0.4),
@@ -123,8 +123,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 /* Gold accent panel variant */
 .glass-panel-gold {
   background: rgba(14, 15, 20, 0.75);
-  backdrop-filter: blur(28px) saturate(1.3);
-  -webkit-backdrop-filter: blur(28px) saturate(1.3);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
   border: 1px solid rgba(212, 175, 55, 0.15);
   box-shadow: 
     0 8px 40px 0 rgba(0, 0, 0, 0.35),
@@ -446,10 +446,10 @@ select option {
 
 /* ───── BLOB ANIMATIONS ───── */
 @keyframes blob {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0px, 0px) scale(1); }
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  33% { transform: translate3d(30px, -50px, 0) scale(1.05); }
+  66% { transform: translate3d(-20px, 20px, 0) scale(0.95); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
 }
 
 .animate-blob {

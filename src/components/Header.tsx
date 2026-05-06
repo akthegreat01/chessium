@@ -42,7 +42,7 @@ export default function Header() {
 
   return (
     <header 
-      className={`w-full border-b bg-[#0a0a0a]/60 backdrop-blur-md sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'border-white/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.4)]' : 'border-white/[0.03]'}`} 
+      className={`w-full border-b bg-[#0a0a0a]/60 backdrop-blur-lg sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'border-white/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.4)]' : 'border-white/[0.03]'}`} 
       style={{ height: 'var(--header-h, 64px)' }}
     >
       {/* Subtle gold accent line at very top */}

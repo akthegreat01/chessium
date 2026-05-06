@@ -114,7 +114,7 @@ void main() {
   vec3 timeAnim = timeSpeed * 0.1 * vec3(7.0, 8.0, 5.0);
 
   float t = 0.0;
-  for (int i = 0; i < 128; i++) {
+  for (int i = 0; i < 48; i++) { // Optimized from 128
     if (t >= uFarPlane) break;
     
     vec3 fpos = floor(pos);
@@ -177,7 +177,7 @@ export default function PixelSnow({
   color = '#ffffff',
   flakeSize = 0.01,
   minFlakeSize = 1.25,
-  pixelResolution = 200,
+  pixelResolution = 150, // Reduced from 200 for performance
   speed = 1.25,
   depthFade = 8,
   farPlane = 20,
