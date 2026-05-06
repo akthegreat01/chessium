@@ -7,9 +7,10 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 
 const PUZZLES = [
-  { id: 1, title: "Find the Brilliant Move", difficulty: "Hard", fen: "4rr1k/1pp3pp/p1pb4/5p2/3P4/2P1BP1q/PP1N1Q2/R3R1K1 w - - 0 24", solution: "Rxg7+!", hint: "A devastating rook sacrifice opens lines", rating: 2200 },
-  { id: 2, title: "Underpromotion Tactic", difficulty: "Expert", fen: "8/P5pk/7p/8/8/8/6PK/1q6 w - - 0 1", solution: "a8=N+!", hint: "A queen isn't always the answer", rating: 2400 },
-  { id: 3, title: "Deflection Sacrifice", difficulty: "Medium", fen: "r1b1k2r/ppq2ppp/2n1p3/3pP3/3P4/5N2/PP1QBPPP/R4RK1 w kq - 3 13", solution: "h4!", hint: "AlphaZero style pawn push to disrupt coordination", rating: 1800 },
+  { id: 1, title: "Kasparov's Immortal Move", difficulty: "Expert", fen: "b2r3r/k4p1p/p2q1np1/NppP4/3p1Q2/P4PPB/1PP4P/1K1RR3 w - - 1 24", solution: "Rxd4!", hint: "A rook sacrifice that ignores the queen and starts an immortal king hunt", rating: 2800, orientation: "white" },
+  { id: 2, title: "The Gold Coins Game", difficulty: "Expert", fen: "5rk1/pp4pp/4p3/2R5/3n2Q1/2q4r/P1P2PPP/5RK1 b - - 1 23", solution: "Qg3!!", hint: "The move that caused the audience to shower the board with gold coins", rating: 2600, orientation: "black" },
+  { id: 3, title: "Game of the Century", difficulty: "Hard", fen: "r3r1k1/pp3pbp/1qp3p1/2B5/2BP2b1/Q1n2N2/P4PPP/3R1K1R b - - 3 17", solution: "Be6!!", hint: "A 13-year-old Fischer gives up his queen for a decisive windmill attack", rating: 2400, orientation: "black" },
+  { id: 4, title: "The Magician's Sacrifice", difficulty: "Hard", fen: "rqb2rk1/3nbppp/p2pp3/6P1/1p1BPP2/2NB1Q2/PPP4P/2KR3R w - - 0 16", solution: "Nd5!!", hint: "Mikhail Tal sacrifices a knight for long-term initiative and attacking geometry", rating: 2300, orientation: "white" },
 ];
 
 export default function PuzzleSection() {
@@ -133,7 +134,7 @@ export default function PuzzleSection() {
                   options={{
                     id: "puzzle-board",
                     position: game.fen(),
-                    boardOrientation: 'white',
+                    boardOrientation: (puzzle.orientation || 'white') as 'white' | 'black',
                     allowDragging: !solved,
                     onPieceDrop: ({ sourceSquare, targetSquare }) => {
                       if (!targetSquare) return false;
