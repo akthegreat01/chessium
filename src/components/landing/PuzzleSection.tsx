@@ -12,7 +12,7 @@ const PUZZLES = [
     title: "Kasparov's Immortal Move", 
     difficulty: "Expert", 
     fen: "b2r3r/k4p1p/p2q1np1/NppP4/3p1Q2/P4PPB/1PP4P/1K1RR3 w - - 1 24", 
-    sequence: ["Rxd4", "cxd4", "Re7+"], 
+    sequence: ["Rxd4", "cxd4", "Re7+", "Kb6", "Qxd4+", "Kxa5", "b4+", "Ka4", "Qc3"], 
     hint: "A rook sacrifice that ignores the queen and starts an immortal king hunt", 
     rating: 2800, 
     orientation: "white" 
@@ -22,7 +22,7 @@ const PUZZLES = [
     title: "The Gold Coins Game", 
     difficulty: "Expert", 
     fen: "5rk1/pp4pp/4p3/2R3Q1/3n4/2q4r/P1P2PPP/5RK1 b - - 1 23", 
-    sequence: ["Qg3", "hxg3", "Ne2#"], 
+    sequence: ["Qg3", "Qxg3", "Ne2+", "Kh1", "Nxg3#"], 
     hint: "The move that caused the audience to shower the board with gold coins", 
     rating: 2600, 
     orientation: "black" 
@@ -32,7 +32,7 @@ const PUZZLES = [
     title: "Game of the Century", 
     difficulty: "Hard", 
     fen: "r3r1k1/pp3pbp/1qp3p1/2B5/2BP2b1/Q1n2N2/P4PPP/3R1K1R b - - 3 17", 
-    sequence: ["Be6", "Bxb6", "Bxc4+"], 
+    sequence: ["Be6", "Bxb6", "Bxc4+", "Kg1", "Ne2+", "Kf1", "Nxd4+", "Kg1", "Ne2+", "Kf1", "Nc3+", "Kg1", "axb6"], 
     hint: "A 13-year-old Fischer gives up his queen for a decisive windmill attack", 
     rating: 2400, 
     orientation: "black" 
@@ -42,7 +42,7 @@ const PUZZLES = [
     title: "The Magician's Sacrifice", 
     difficulty: "Hard", 
     fen: "rqb2rk1/3nbppp/p2pp3/6P1/1p1BPP2/2NB1Q2/PPP4P/2KR3R w - - 0 16", 
-    sequence: ["Nd5", "exd5", "exd5+"], 
+    sequence: ["Nd5", "exd5", "exd5+", "Kd8", "Bb6+"], 
     hint: "Mikhail Tal sacrifices a knight for long-term initiative and attacking geometry", 
     rating: 2300, 
     orientation: "white" 
