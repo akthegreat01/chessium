@@ -21,7 +21,7 @@ const PUZZLES = [
     id: 2, 
     title: "The Gold Coins Game", 
     difficulty: "Expert", 
-    fen: "5rk1/pp4pp/4p3/2R5/3n2Q1/2q4r/P1P2PPP/5RK1 b - - 1 23", 
+    fen: "5rk1/pp4pp/4p3/2R3Q1/3n4/2q4r/P1P2PPP/5RK1 b - - 1 23", 
     sequence: ["Qg3", "hxg3", "Ne2#"], 
     hint: "The move that caused the audience to shower the board with gold coins", 
     rating: 2600, 
