@@ -4,8 +4,9 @@ import { notFound } from 'next/navigation';
 import { Clock, ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
-export async function generateMetadata({ params }: { params: { articleId: string } }): Promise<Metadata> {
-  const article = ARTICLES.find(a => a.id === params.articleId);
+export async function generateMetadata({ params }: { params: Promise<{ articleId: string }> }): Promise<Metadata> {
+  const { articleId } = await params;
+  const article = ARTICLES.find(a => a.id === articleId);
   if (!article) return { title: 'Article Not Found' };
   
   return {
@@ -20,8 +21,9 @@ export function generateStaticParams() {
   }));
 }
 
-export default function ArticlePage({ params }: { params: { articleId: string } }) {
-  const article = ARTICLES.find(a => a.id === params.articleId);
+export default async function ArticlePage({ params }: { params: Promise<{ articleId: string }> }) {
+  const { articleId } = await params;
+  const article = ARTICLES.find(a => a.id === articleId);
   
   if (!article) {
     notFound();
