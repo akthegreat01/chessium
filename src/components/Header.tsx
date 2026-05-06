@@ -76,6 +76,14 @@ export default function Header() {
             <BookOpen className="w-3.5 h-3.5" />
             Learn
           </Link>
+          <Link href="/openings" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium flex items-center gap-1.5">
+            <BookOpen className="w-3.5 h-3.5" />
+            Openings
+          </Link>
+          <Link href="/puzzles" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium flex items-center gap-1.5">
+            <Puzzle className="w-3.5 h-3.5" />
+            Puzzles
+          </Link>
           <Link href="/about" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">
             About
           </Link>
@@ -192,6 +200,12 @@ export default function Header() {
             </Link>
             <Link href="/learn" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
               Learn Chess
+            </Link>
+            <Link href="/openings" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
+              Openings
+            </Link>
+            <Link href="/puzzles" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
+              Puzzles
             </Link>
             <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
               About

@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Clock, ArrowLeft, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import ArticleBoard from '@/components/ArticleBoard';
 
 export async function generateMetadata({ params }: { params: Promise<{ articleId: string }> }): Promise<Metadata> {
   const { articleId } = await params;
@@ -62,6 +63,20 @@ export default async function ArticlePage({ params }: { params: Promise<{ articl
           <div className="prose prose-invert prose-lg max-w-none prose-headings:font-black prose-headings:tracking-tight prose-a:text-[#d4af37] prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-p:text-gray-300 prose-p:leading-relaxed prose-li:text-gray-300">
             {/* Split content by lines to render markdown-like structures manually for now */}
             {article.content.split('\n\n').map((paragraph, index) => {
+              if (paragraph.startsWith('[BOARD|')) {
+                // Format: [BOARD|fen|orientation|caption|solution]
+                const parts = paragraph.replace('[BOARD|', '').replace(']', '').split('|');
+                const [fen, orientation, caption, solution] = parts;
+                return (
+                  <ArticleBoard 
+                    key={index} 
+                    fen={fen} 
+                    orientation={orientation as 'white' | 'black'} 
+                    caption={caption || undefined}
+                    solution={solution || undefined}
+                  />
+                );
+              }
               if (paragraph.startsWith('### ')) {
                 return <h3 key={index} className="text-2xl mt-8 mb-4">{paragraph.replace('### ', '')}</h3>;
               }

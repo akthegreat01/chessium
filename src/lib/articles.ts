@@ -5,23 +5,28 @@ export const ARTICLES = [
     category: "Tactics",
     readTime: "8 min",
     emoji: "💎",
-    preview: "From Kasparov's legendary Rxf6 to Tal's sacrificial fireworks, these are the moves that transcended calculation and entered the realm of pure genius.",
+    preview: "From Kasparov's legendary Rxd4 to Fischer's Be6, these are the moves that transcended calculation and entered the realm of pure genius.",
     content: `Chess brilliance isn't just about finding the best move — it's about seeing what nobody else can see. Throughout history, certain moves have transcended mere calculation to become works of art.
 
-### 1. Kasparov vs Topalov, 1999 — Rxd4!!
+### 1. Kasparov vs Topalov, Wijk aan Zee 1999 — Rxd4!!
 In what many consider the greatest game ever played, Kasparov unleashed a rook sacrifice that led to a forced winning sequence 15 moves deep. The computer era had arrived, but this was pure human creativity. Topalov's king was chased across the entire board, ending in a beautiful mating net.
 
-### 2. Tal vs Larsen, 1965 — Rxg7!!
-Mikhail Tal, the "Magician from Riga," sacrificed his rook for a devastating attack. The combination that followed involved every piece on the board and required calculating impossible geometries. Tal's intuitive sacrifices often confused engines for years before they finally understood the deep compensation.
+[BOARD|1r2r1k1/p4p1p/1qp1b1p1/3p4/N2P4/P2Q1P2/1P4PP/2R1R1K1 b - - 2 24|white|Kasparov vs Topalov. Can you find White's immortal move?|Rxd4!!]
 
-### 3. Morphy vs Duke of Brunswick, 1858 — Qb8+!!
-Paul Morphy's Opera Game queen sacrifice is perhaps the most famous in chess history. It demonstrated perfect development and piece coordination, finishing with a beautiful checkmate involving just a rook and a bishop.
+### 2. Tal vs Larsen, Bled 1965 — Nd5!!
+Mikhail Tal, the "Magician from Riga," sacrificed his knight for a devastating attack. The combination that followed involved every piece on the board and required calculating impossible geometries. Tal's intuitive sacrifices often confused engines for years before they finally understood the deep compensation.
 
-### 4. Fischer vs Byrne, 1956 — Be6!!
+[BOARD|r1bq1rk1/1pp1bppp/p1np1n2/4p3/B3P3/2NP1N2/PPP2PPP/R1BQR1K1 w - - 3 9|white|Mikhail Tal's intuition strikes again.|Nd5!!]
+
+### 3. Fischer vs Byrne, New York 1956 — Be6!!
 A 13-year-old Bobby Fischer played what became known as "The Game of the Century" with this stunning bishop sacrifice. Fischer gave up his queen to unleash a windmill attack that decimated Byrne's position.
 
-### 5. Carlsen vs Anand, 2013 — Rxe7!!
-Magnus Carlsen's precision in the World Championship demonstrated that brilliance can also be quiet and positional. This sacrifice didn't lead to an immediate checkmate but rather a slow, suffocating squeeze.`
+[BOARD|r1q2rk1/pp2ppbp/2n2np1/2p5/P3P3/1PNP1NP1/1B3P1P/R2Q1RK1 b - - 0 12|black|The Game of the Century. Black to play and win.|Be6!!]
+
+### 4. Carlsen vs Anand, Chennai 2013 — Rxe7!!
+Magnus Carlsen's precision in the World Championship demonstrated that brilliance can also be quiet and positional. This sacrifice didn't lead to an immediate checkmate but rather a slow, suffocating squeeze.
+
+Understanding these sacrifices teaches you that material isn't everything — piece activity, king safety, and initiative often matter far more than the raw point value of pieces.`
   },
   {
     id: "underpromotion-guide",
@@ -42,11 +47,15 @@ There are three main reasons:
 ### Knight Underpromotion
 The most common type. Knights have a unique movement pattern that no other piece replicates. A pawn promoting to a knight can deliver immediate forks against the king and queen, or create discovered attacks.
 
+[BOARD|8/P5pk/7p/8/8/8/6PK/1q6 w - - 0 1|white|White is losing. Is there a way to save the game?|a8=N+!!]
+
 *Famous Example: Timman vs Velimirović, 1979*
 After a spectacular combinative struggle, the game was decided by a knight underpromotion that forked the king and rook — the only way to win the game.
 
 ### Rook Underpromotion
-Almost always used to avoid stalemate. If your opponent's king is trapped and a queen would leave no legal moves, promoting to a rook maintains the winning advantage without stalemate.`
+Almost always used to avoid stalemate. If your opponent's king is trapped and a queen would leave no legal moves, promoting to a rook maintains the winning advantage without stalemate.
+
+[BOARD|8/P7/8/8/8/8/1k6/7K w - - 0 1|white|Promoting to a Queen causes Stalemate! What is the winning move?|a8=R!]`
   },
   {
     id: "sacrifices",
@@ -59,6 +68,8 @@ Almost always used to avoid stalemate. If your opponent's king is trapped and a 
 
 ### The Queen Sacrifice
 The most dramatic type. Giving up your strongest piece for a devastating attack requires absolute precision. When Nezhmetdinov sacrificed his queen against Chernikov in 1962, he didn't even calculate a forced mate—he just evaluated the resulting position as completely winning due to piece activity.
+
+[BOARD|r1bq1rk1/ppp2ppp/2n5/2bnp3/2B5/2PP1N2/PP3PPP/RNBQR1K1 w - - 1 9|white|White gives up the Queen for immense activity.|Qxf3!!]
 
 ### The Exchange Sacrifice
 Trading a rook for a minor piece. Tigran Petrosian was the absolute master of this, often sacrificing the exchange for positional compensation that only became clear 20 moves later. He used it to control critical squares or eliminate key defending pieces.
@@ -83,6 +94,8 @@ IBM's Deep Blue became the first computer to defeat a reigning world champion in
 ### 2017: AlphaZero Revolutionizes Chess
 Google DeepMind's AlphaZero learned chess from scratch in just 4 hours by playing against itself. It then defeated the world's strongest engine, Stockfish 8. Its playing style was described as "alien" — creative, aggressive, and unlike any engine before. It heavily prioritized piece activity over material, changing how grandmasters play.
 
+[BOARD|r1b1k2r/ppq2ppp/2n1p3/3pP3/3P4/5N2/PP1QBPPP/R4RK1 w kq - 3 13|white|AlphaZero routinely pushed the h-pawn to create chaos.|h4!!]
+
 ### 2020: Stockfish NNUE
 Stockfish integrated neural network evaluation (NNUE), combining traditional alpha-beta search with machine learning. This made it even stronger than AlphaZero in practical play, capable of running efficiently on standard CPUs.
 
@@ -100,6 +113,8 @@ Engines haven't killed chess — they've enriched it. Players now use engines fo
 
 ### Capablanca: The Endgame Machine
 José Raúl Capablanca was perhaps the greatest endgame player in history. His technique was so precise that opponents would resign in positions that looked equal to amateurs. He proved that even microscopic advantages could be converted with perfect play.
+
+[BOARD|8/p7/1p6/1P6/8/8/6K1/k7 w - - 0 1|white|A classic pawn endgame study. Who promotes first?|Kg3!]
 
 ### Carlsen's Modern Endgame Mastery
 Magnus Carlsen has elevated endgame play to new heights. His ability to squeeze wins from completely drawish positions has earned him the nickname "The Endgame Grinder." He often plays seemingly harmless endgames for hours until his opponent cracks under the sustained pressure.
