@@ -92,8 +92,8 @@ export default function PuzzleSection() {
             <div className="flex flex-col md:flex-row gap-6">
               <div className="w-full md:w-[280px] aspect-square rounded-lg overflow-hidden flex-shrink-0 border border-white/10 relative" style={{ boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}>
                 <Chessboard 
-                  id="puzzle-board"
                   options={{
+                    id: "puzzle-board",
                     position: puzzle.fen,
                     boardOrientation: 'white',
                     allowDragging: false,
