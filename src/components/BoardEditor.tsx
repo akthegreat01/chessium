@@ -64,6 +64,10 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
     try {
       const game = new Chess(fen);
       
+      if (sourceSquare !== 'spare') {
+        game.remove(sourceSquare as any);
+      }
+      
       if (targetSquare !== 'off-board') {
         const type = piece[1].toLowerCase();
         const color = piece[0].toLowerCase() as 'w' | 'b';
@@ -94,6 +98,14 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
   const copyFen = () => {
     navigator.clipboard.writeText(fen);
     setShowCopied(true);
+    setTimeout(() => setShowCopied(false), 2000);
+  };
+
+  const sharePosition = () => {
+    const baseUrl = window.location.origin + '/editor';
+    const shareUrl = `${baseUrl}?fen=${encodeURIComponent(fen)}`;
+    navigator.clipboard.writeText(shareUrl);
+    setShowCopied(true); // Reuse the same toast
     setTimeout(() => setShowCopied(false), 2000);
   };
 
@@ -235,7 +247,6 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
             ))}
           </div>
         </div>
-        </div>
 
         {/* Info & Analysis Area */}
         <div className="lg:col-span-4 flex flex-col gap-8 w-full">
@@ -331,10 +342,11 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
                 <span className="text-[9px] font-black uppercase text-gray-600 group-hover:text-white tracking-widest">Copy FEN</span>
               </button>
               <button 
+                onClick={sharePosition}
                 className="flex-1 flex items-center justify-center gap-3 bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 p-4 rounded-2xl transition-all group"
               >
                 <Share2 className="w-4 h-4 text-gray-700 group-hover:text-white" />
-                <span className="text-[9px] font-black uppercase text-gray-600 group-hover:text-white tracking-widest">Share</span>
+                <span className="text-[9px] font-black uppercase text-gray-600 group-hover:text-white tracking-widest">Share Link</span>
               </button>
             </div>
           </div>
