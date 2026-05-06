@@ -25,7 +25,7 @@ const playSound = (url: string) => {
   } catch (e) {}
 };
 
-export const playMoveSound = () => playSound(SOUND_URLS.move);
+export const playMoveSound = (type: keyof typeof SOUND_URLS = 'move') => playSound(SOUND_URLS[type]);
 export const playCaptureSound = () => playSound(SOUND_URLS.capture);
 export const playCheckSound = () => playSound(SOUND_URLS.check);
 export const playCastleSound = () => playSound(SOUND_URLS.castle);
