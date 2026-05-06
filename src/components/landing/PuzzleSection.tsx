@@ -140,7 +140,19 @@ export default function PuzzleSection() {
                     },
                     boardStyle: {
                       borderRadius: '4px',
-                    }
+                    },
+                    squareStyles: showHint && !solved ? (() => {
+                      try {
+                        const gameCopy = new Chess(game.fen());
+                        const moves = gameCopy.moves({ verbose: true });
+                        const cleanSolution = puzzle.solution.replace(/[!+#]/g, '').toLowerCase();
+                        const correctMove = moves.find(m => m.san.replace(/[!+#]/g, '').toLowerCase() === cleanSolution);
+                        if (correctMove) {
+                          return { [correctMove.from]: { backgroundColor: 'rgba(212, 175, 55, 0.4)', borderRadius: '4px' } };
+                        }
+                      } catch (e) {}
+                      return {};
+                    })() : {}
                   }}
                 />
               </div>
