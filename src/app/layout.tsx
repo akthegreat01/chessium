@@ -16,28 +16,28 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL('https://underpromotion.vercel.app'),
   title: {
-    default: "Chessium | Premium Chess Analysis",
-    template: "%s | Chessium"
+    default: "Underpromotion — The Dark Art of Chess Calculation",
+    template: "%s | Underpromotion"
   },
-  description: "High-performance, beautifully crafted browser-based chess analysis engine powered by Stockfish WASM. Analyze games, train mistakes, and explore openings — all for free.",
-  keywords: ["chess", "analysis", "stockfish", "engine", "chess.com", "lichess", "game review", "opening explorer", "grandmaster", "tactics"],
+  description: "Premium chess analysis platform powered by Stockfish NNUE. Explore underpromotion tactics, analyze games, solve puzzles, and master the most brilliant moves in chess history. Free, browser-based, and beautifully crafted.",
+  keywords: ["underpromotion", "chess", "chess analysis", "stockfish", "chess engine", "chess tactics", "chess puzzles", "brilliant moves", "chess strategy", "grandmaster", "opening explorer", "endgame", "chess sacrifice", "chess education"],
   authors: [{ name: "Akshath Kataria" }],
   creator: "Akshath Kataria",
-  publisher: "Chessium",
+  publisher: "Underpromotion",
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "Chessium | Premium Chess Analysis",
-    description: "Analyze your chess games with grandmaster-level Stockfish NNUE. Import from Chess.com and Lichess instantly.",
+    title: "Underpromotion — Where Brilliant Moves Become Immortal",
+    description: "A next-generation chess experience. Analyze games with Stockfish NNUE, solve tactical puzzles, explore famous underpromotions, and master the dark art of chess calculation.",
     url: 'https://underpromotion.vercel.app',
-    siteName: 'Chessium',
+    siteName: 'Underpromotion',
     images: [
       {
-        url: '/og-image.png', // Assume we might add this later or it uses default
+        url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Chessium - Professional Chess Analysis',
+        alt: 'Underpromotion - Premium Chess Analysis Platform',
       },
     ],
     locale: 'en_US',
@@ -45,8 +45,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Chessium | Premium Chess Analysis',
-    description: 'Free, browser-based chess analysis powered by Stockfish NNUE.',
+    title: 'Underpromotion — The Dark Art of Chess Calculation',
+    description: 'Premium chess analysis, tactical puzzles, and deep chess content. Powered by Stockfish NNUE.',
     creator: '@akshath_kataria',
     images: ['/og-image.png'],
   },
@@ -83,6 +83,28 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9046932302377091"
           crossOrigin="anonymous"
           strategy="afterInteractive"
+        />
+        {/* JSON-LD Schema for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Underpromotion",
+              "url": "https://underpromotion.vercel.app",
+              "description": "Premium chess analysis platform with Stockfish NNUE engine, tactical puzzles, and deep chess content.",
+              "publisher": {
+                "@type": "Organization",
+                "name": "Underpromotion",
+              },
+              "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://underpromotion.vercel.app/analysis?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+              }
+            })
+          }}
         />
       </head>
       <body suppressHydrationWarning className={`${inter.className} bg-background text-gray-200 min-h-screen flex flex-col relative overflow-x-hidden`}>

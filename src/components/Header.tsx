@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { Keyboard, Trophy, Flame, Menu, X, Star, Zap } from 'lucide-react';
+import { Keyboard, Trophy, Flame, Menu, X, Star, Zap, BookOpen, Puzzle, BarChart3 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useUserStore, getRankFromLevel } from '@/lib/userStore';
 import dynamic from 'next/dynamic';
@@ -13,9 +13,16 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { level, xp, streak, dailyStreak } = useUserStore();
   const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Close mobile menu on route change / resize
@@ -28,14 +35,16 @@ export default function Header() {
   }, []);
 
   // Calculate XP progress percentage
-  const calculateLevel = (xp: number) => Math.floor(Math.pow(xp / 100, 0.7)) + 1;
   const nextLevelXp = Math.round(Math.pow(level / 1, 1 / 0.7) * 100);
   const currentLevelXp = Math.round(Math.pow((level - 1) / 1, 1 / 0.7) * 100);
   const levelProgress = Math.max(0, Math.min(100, ((xp - currentLevelXp) / Math.max(1, nextLevelXp - currentLevelXp)) * 100));
   const rank = getRankFromLevel(level);
 
   return (
-    <header className="w-full border-b border-white/[0.04] bg-[#0a0a0a]/92 backdrop-blur-2xl sticky top-0 z-50" style={{ height: 'var(--header-h, 56px)' }}>
+    <header 
+      className={`w-full border-b bg-[#0a0a0a]/92 backdrop-blur-2xl sticky top-0 z-50 transition-all duration-500 ${scrolled ? 'border-white/[0.06] shadow-lg shadow-black/20' : 'border-white/[0.04]'}`} 
+      style={{ height: 'var(--header-h, 56px)' }}
+    >
       {/* Subtle gold accent line at very top */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[rgba(212,175,55,0.3)] to-transparent" />
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-full flex items-center justify-between">
@@ -49,18 +58,23 @@ export default function Header() {
           </div>
           <div className="flex flex-col">
             <span className="font-black text-base md:text-lg tracking-tight text-white leading-none" style={{ letterSpacing: '-0.01em' }}>
-              Chessium
+              Underpromotion
             </span>
             <span className="hidden md:block text-[9px] font-medium tracking-tight mt-0.5 uppercase" style={{ color: 'rgba(212,175,55,0.5)', letterSpacing: '0.05em' }}>
-              Not always the obvious move is the best
+              Beyond Evaluation
             </span>
           </div>
         </Link>
         
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-0.5">
-          <Link href="/analysis" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">
+          <Link href="/analysis" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium flex items-center gap-1.5">
+            <BarChart3 className="w-3.5 h-3.5" />
             Analysis
+          </Link>
+          <Link href="/learn" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium flex items-center gap-1.5">
+            <BookOpen className="w-3.5 h-3.5" />
+            Learn
           </Link>
           <Link href="/about" className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 font-medium">
             About
@@ -176,20 +190,25 @@ export default function Header() {
             <Link href="/analysis" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
               Analysis
             </Link>
+            <Link href="/learn" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
+              Learn Chess
+            </Link>
             <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
               About
             </Link>
             <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
               Support
             </Link>
-            <Link href="/privacy" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
-              Privacy Policy
+            <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="text-sm text-gray-300 hover:text-white py-3 px-4 rounded-lg hover:bg-white/5 transition-colors font-medium">
+              Contact
             </Link>
-            <div className="border-t border-white/5 mt-2 pt-2">
-              <div className="flex items-center gap-2 px-4 py-2 text-xs text-gray-500">
-                <Keyboard className="w-3.5 h-3.5" />
-                <span>Use keyboard shortcuts on desktop for faster navigation</span>
-              </div>
+            <div className="border-t border-white/5 mt-2 pt-2 flex flex-col gap-1">
+              <Link href="/privacy" onClick={() => setMobileMenuOpen(false)} className="text-xs text-gray-500 hover:text-white py-2 px-4 rounded-lg hover:bg-white/5 transition-colors">
+                Privacy Policy
+              </Link>
+              <Link href="/terms" onClick={() => setMobileMenuOpen(false)} className="text-xs text-gray-500 hover:text-white py-2 px-4 rounded-lg hover:bg-white/5 transition-colors">
+                Terms of Service
+              </Link>
             </div>
           </div>
         </div>

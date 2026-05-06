@@ -252,20 +252,22 @@ export default function Board() {
         </div>
       )}
       <ReactChessboard 
-        position={boardOptions.position}
-        onPieceDrop={boardOptions.onPieceDrop}
-        onSquareClick={boardOptions.onSquareClick}
-        onSquareRightClick={boardOptions.onSquareRightClick}
-        onArrowsChange={boardOptions.onArrowsChange}
-        boardOrientation={boardOptions.boardOrientation}
-        customDarkSquareStyle={boardOptions.darkSquareStyle}
-        customLightSquareStyle={boardOptions.lightSquareStyle}
-        customSquareStyles={boardOptions.squareStyles}
-        customArrows={boardOptions.arrows}
-        animationDuration={boardOptions.animationDurationInMs}
-        boardStyle={boardOptions.boardStyle}
-        customDropSquareStyle={boardOptions.dropSquareStyle}
-        isDraggablePiece={boardOptions.isDraggablePiece}
+        options={{
+          position: boardOptions.position,
+          onPieceDrop: boardOptions.onPieceDrop,
+          onSquareClick: boardOptions.onSquareClick,
+          onSquareRightClick: boardOptions.onSquareRightClick,
+          onArrowsChange: boardOptions.onArrowsChange,
+          boardOrientation: boardOptions.boardOrientation,
+          darkSquareStyle: boardOptions.darkSquareStyle,
+          lightSquareStyle: boardOptions.lightSquareStyle,
+          squareStyles: boardOptions.squareStyles,
+          arrows: boardOptions.arrows,
+          animationDurationInMs: boardOptions.animationDurationInMs,
+          boardStyle: boardOptions.boardStyle,
+          dropSquareStyle: boardOptions.dropSquareStyle,
+          canDragPiece: boardOptions.isDraggablePiece
+        }}
       />
       {iconPos && classInfo && (
         <div className="absolute pointer-events-none z-[100]" style={{ left: iconPos.left + iconPos.squareSize - iconSize / 2, top: iconPos.top - iconSize / 2, width: iconSize, height: iconSize }}>

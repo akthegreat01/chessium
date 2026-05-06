@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 import { Sparkles, Cpu, Zap, Shield, Globe, BarChart3, Target, Heart, ChevronRight, Crown } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: "About Chessium",
-  description: "Learn about the technology behind Chessium - the professional chess analysis engine powered by Stockfish 16.1 WebAssembly.",
+  title: "About Underpromotion",
+  description: "Learn about the technology behind Underpromotion - the premium chess analysis platform powered by Stockfish 16.1 WebAssembly.",
 };
 
 export default function AboutPage() {
@@ -36,20 +36,20 @@ export default function AboutPage() {
 
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-8 tracking-widest uppercase text-xs font-black" style={{ background: 'rgba(212,175,55,0.08)', border: '1px solid rgba(212,175,55,0.2)', color: '#d4af37', boxShadow: '0 0 20px rgba(212,175,55,0.1)' }}>
             <Crown className="w-3.5 h-3.5" />
-            Chessium
+            Underpromotion
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black mb-6 text-white tracking-tight leading-tight drop-shadow-2xl" style={{ letterSpacing: '-0.02em' }}>
-            Not always the{' '}
+            Where{' '}
             <span style={{ background: 'linear-gradient(135deg, #e8c84a 0%, #d4af37 40%, #b8962e 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
-              obvious move
+              brilliant moves
             </span>
             <br className="hidden md:block" />
-            is the best.
+            become immortal.
           </h1>
 
           <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed mb-12 font-medium">
-            Chessium is a professional-grade, locally-computed analysis platform. By combining the raw power of Stockfish 16.1 WebAssembly with an uncompromising, distraction-free aesthetic, it brings absolute clarity to the beautiful game.
+            Underpromotion is a premium chess analysis platform and educational resource. By combining the raw power of Stockfish 16.1 WebAssembly with deep chess content and an uncompromising aesthetic, it brings absolute clarity to the beautiful game.
           </p>
 
           {/* Stats */}
@@ -70,7 +70,7 @@ export default function AboutPage() {
 
       {/* Features Grid */}
       <div className="max-w-5xl mx-auto px-4 pb-20 w-full relative z-10">
-        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-center mb-8" style={{ color: 'rgba(212,175,55,0.4)' }}>What Makes Chessium Different</h2>
+        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-center mb-8" style={{ color: 'rgba(212,175,55,0.4)' }}>What Makes Underpromotion Different</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {features.map((f) => (
             <div key={f.title} className="glass-panel p-6 rounded-2xl group transition-all duration-300" style={{ cursor: 'default' }}>
@@ -97,7 +97,7 @@ export default function AboutPage() {
               <div className="text-xs font-black uppercase tracking-widest mb-1" style={{ color: 'rgba(212,175,55,0.5)' }}>Created by</div>
               <h3 className="text-2xl font-black text-white mb-2" style={{ letterSpacing: '-0.01em' }}>Akshath Kataria</h3>
               <p className="text-sm text-gray-400 leading-relaxed max-w-lg">
-                Passionate chess player and developer dedicated to making grandmaster-level analysis accessible to everyone. Built Chessium to bridge the gap between raw engine power and beautiful, intuitive design.
+                Passionate chess player and developer dedicated to making grandmaster-level analysis accessible to everyone. Built Underpromotion to bridge the gap between raw engine power and beautiful, intuitive design.
               </p>
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function AboutPage() {
       <div className="max-w-4xl mx-auto px-4 pb-32 w-full relative z-10 text-center">
         <div className="glass-panel p-10 rounded-3xl relative overflow-hidden group">
           <div className="absolute inset-0 transition-opacity" style={{ background: 'linear-gradient(135deg, rgba(212,175,55,0.04) 0%, transparent 60%)', opacity: 0 }} />
-          <h2 className="text-2xl md:text-3xl font-black text-white mb-4 relative z-10" style={{ letterSpacing: '-0.01em' }}>Help Keep Chessium Free</h2>
+          <h2 className="text-2xl md:text-3xl font-black text-white mb-4 relative z-10" style={{ letterSpacing: '-0.01em' }}>Help Keep Underpromotion Free</h2>
           <p className="text-gray-400 mb-8 max-w-xl mx-auto relative z-10 font-medium leading-relaxed">
             Developing and maintaining a high-performance chess engine is a labor of love. 
             If you find value in Chessium, consider supporting its continued growth.
