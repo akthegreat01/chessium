@@ -39,12 +39,15 @@ export default function HeroSection() {
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-8">
             <div className="flex flex-col items-center md:items-end text-center md:text-right">
               <h1 
-                className="text-6xl md:text-[10rem] font-medium tracking-tight italic select-none"
+                className="text-6xl md:text-[10rem] font-medium tracking-tight italic select-none relative"
                 style={{ fontFamily: "'Cormorant Garamond', serif", filter: 'drop-shadow(0 0 50px rgba(255,255,255,0.15))', lineHeight: 0.85 }}
               >
                 <ShinyText text="Under" speed={3} color="#b5b5b5" shineColor="#ffffff" spread={150} />
                 <br />
                 <ShinyText text="promotion" speed={3} color="#b5b5b5" shineColor="#ffffff" spread={150} />
+                <span className="absolute -bottom-6 right-2 text-sm md:text-xl text-gray-500 font-sans not-italic font-medium tracking-widest uppercase opacity-70">
+                  - Akshath Kataria
+                </span>
               </h1>
             </div>
             <motion.div
