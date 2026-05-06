@@ -4,9 +4,10 @@ import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react'
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 import { motion } from 'framer-motion';
-import { Trash2, RotateCcw, Play, Check, X, ArrowRight, Brain, Sparkles, Power, FlipHorizontal } from 'lucide-react';
+import { Trash2, RotateCcw, Play, Check, X, ArrowRight, Brain, Sparkles, Power, FlipHorizontal, Copy, Share2 } from 'lucide-react';
 import { useChessStore } from '@/lib/chessStore';
 import { Engine, EngineLine } from '@/lib/engine';
+import { playMoveSound, playCaptureSound, playWrongSound } from '@/lib/sounds';
 
 interface BoardEditorProps {
   onClose: () => void;
@@ -18,6 +19,7 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
   const [orientation, setOrientation] = useState<'white' | 'black'>('white');
   const [isActive, setIsActive] = useState(false);
   const [lines, setLines] = useState<EngineLine[]>([]);
+  const [showCopied, setShowCopied] = useState(false);
   const engineRef = useRef<Engine | null>(null);
 
   // Engine logic integrated
@@ -62,14 +64,13 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
     try {
       const game = new Chess(fen);
       
-      if (sourceSquare !== 'spare') {
-        game.remove(sourceSquare as any);
-      }
-      
       if (targetSquare !== 'off-board') {
         const type = piece[1].toLowerCase();
         const color = piece[0].toLowerCase() as 'w' | 'b';
         game.put({ type: type as any, color }, targetSquare as any);
+        playMoveSound();
+      } else {
+        playWrongSound();
       }
       
       setFen(game.fen());
@@ -85,8 +86,15 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
       const color = selectedSparePiece[0].toLowerCase() as 'w' | 'b';
       const type = selectedSparePiece[1].toLowerCase() as any;
       game.put({ type, color }, square as any);
+      playMoveSound();
       setFen(game.fen());
     }
+  };
+
+  const copyFen = () => {
+    navigator.clipboard.writeText(fen);
+    setShowCopied(true);
+    setTimeout(() => setShowCopied(false), 2000);
   };
 
   useEffect(() => {
@@ -132,28 +140,29 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
         <div className="lg:col-span-8 flex items-center justify-center gap-4 md:gap-10">
           
           {/* Black Pieces Tray */}
-          <div className="hidden md:flex flex-col gap-4 p-4 bg-white/[0.03] border border-white/10 rounded-[2rem] backdrop-blur-xl shadow-2xl">
-            <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest text-center mb-1">Black</div>
+          <div className="hidden md:flex flex-col gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-[2.5rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="text-[9px] font-black uppercase text-gray-600 tracking-[0.2em] text-center mb-1 relative z-10">Black</div>
             {pieces.b.map((p) => (
               <button 
                 key={p} 
                 onClick={() => setSelectedSparePiece(selectedSparePiece === p ? null : p)}
-                className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all hover:scale-110 group relative ${
-                  selectedSparePiece === p ? 'bg-blue-500/20 border border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.3)]' : 'hover:bg-white/5 border border-transparent'
+                className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all hover:scale-110 group/btn relative z-10 ${
+                  selectedSparePiece === p ? 'bg-blue-500/20 border border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.3)]' : 'hover:bg-white/5 border border-transparent'
                 }`}
               >
                 {selectedSparePiece === p && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-[#050505] animate-pulse" />
+                  <motion.div layoutId="spare-glow-b" className="absolute inset-0 bg-blue-500/10 blur-xl rounded-full" />
                 )}
-                <img src={`https://lichess1.org/assets/piece/cburnett/${p}.svg`} alt={p} className="w-12 h-12 drop-shadow-2xl" />
+                <img src={`https://lichess1.org/assets/piece/cburnett/${p}.svg`} alt={p} className="w-12 h-12 drop-shadow-2xl group-hover/btn:-translate-y-1 transition-transform" />
               </button>
             ))}
           </div>
 
           {/* Main Board Area */}
-          <div className="flex flex-col gap-8 items-center flex-1 max-w-[650px]">
+          <div className="flex flex-col gap-6 items-center flex-1 max-w-[650px]">
             <div className="w-full aspect-square relative group">
-              <div className="absolute -inset-16 bg-blue-600/10 blur-[140px] rounded-full opacity-30 group-hover:opacity-50 transition-opacity pointer-events-none" />
+              <div className="absolute -inset-20 bg-blue-600/5 blur-[160px] rounded-full opacity-30 group-hover:opacity-60 transition-opacity pointer-events-none" />
               <div className="relative z-10">
                 <Chessboard 
                   options={{
@@ -166,58 +175,66 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
                     boardOrientation: orientation,
                     id: "board-editor",
                     boardStyle: {
-                      borderRadius: '16px',
-                      boxShadow: '0 50px 140px rgba(0,0,0,0.9)',
-                      border: '10px solid rgba(255,255,255,0.02)'
+                      borderRadius: '12px',
+                      boxShadow: '0 40px 120px rgba(0,0,0,0.85)',
+                      border: '8px solid rgba(255,255,255,0.015)'
                     }
                   }}
                 />
               </div>
               {selectedSparePiece && (
-                <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-2xl z-20 animate-bounce">
-                  Select square to place {selectedSparePiece[1] === 'K' ? 'King' : selectedSparePiece[1] === 'Q' ? 'Queen' : selectedSparePiece[1] === 'R' ? 'Rook' : selectedSparePiece[1] === 'B' ? 'Bishop' : selectedSparePiece[1] === 'N' ? 'Knight' : 'Pawn'}
-                </div>
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute top-4 left-1/2 -translate-x-1/2 bg-[#0a0a0a] border border-blue-500/30 text-white text-[10px] font-black uppercase tracking-[0.2em] px-6 py-2.5 rounded-full shadow-2xl z-20 flex items-center gap-3 backdrop-blur-xl"
+                >
+                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                  Placing {selectedSparePiece[1] === 'K' ? 'King' : selectedSparePiece[1] === 'Q' ? 'Queen' : 'Piece'}
+                </motion.div>
               )}
             </div>
             
             <div className="flex gap-4 w-full">
               <button 
                 onClick={() => setOrientation(prev => prev === 'white' ? 'black' : 'white')}
-                className="flex-1 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center justify-center gap-3 active:scale-95"
+                className="flex-1 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all flex items-center justify-center gap-2.5"
               >
-                <FlipHorizontal className="w-5 h-5" /> Flip Board
+                <FlipHorizontal className="w-4 h-4" /> Flip Board
               </button>
               <button 
                 onClick={() => {
                   const parts = fen.split(' ');
                   parts[1] = parts[1] === 'w' ? 'b' : 'w';
                   setFen(parts.join(' '));
+                  playMoveSound();
                 }}
-                className="flex-1 bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 py-5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-gray-400 hover:text-white transition-all flex items-center justify-center gap-3 active:scale-95"
+                className="flex-1 bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-white transition-all flex items-center justify-center gap-2.5"
               >
-                Turn: <span className="text-white ml-1 font-black">{fen.split(' ')[1] === 'w' ? 'WHITE' : 'BLACK'}</span>
+                Turn: <span className="text-blue-400 font-black">{fen.split(' ')[1] === 'w' ? 'WHITE' : 'BLACK'}</span>
               </button>
             </div>
           </div>
 
           {/* White Pieces Tray */}
-          <div className="hidden md:flex flex-col gap-4 p-4 bg-white/[0.03] border border-white/10 rounded-[2rem] backdrop-blur-xl shadow-2xl">
-            <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest text-center mb-1">White</div>
+          <div className="hidden md:flex flex-col gap-3 p-4 bg-white/[0.02] border border-white/5 rounded-[2.5rem] backdrop-blur-3xl shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="text-[9px] font-black uppercase text-gray-600 tracking-[0.2em] text-center mb-1 relative z-10">White</div>
             {pieces.w.map((p) => (
               <button 
                 key={p} 
                 onClick={() => setSelectedSparePiece(selectedSparePiece === p ? null : p)}
-                className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all hover:scale-110 group relative ${
-                  selectedSparePiece === p ? 'bg-blue-500/20 border border-blue-500/40 shadow-[0_0_20px_rgba(59,130,246,0.3)]' : 'hover:bg-white/5 border border-transparent'
+                className={`w-14 h-14 flex items-center justify-center rounded-2xl transition-all hover:scale-110 group/btn relative z-10 ${
+                  selectedSparePiece === p ? 'bg-blue-500/20 border border-blue-500/30 shadow-[0_0_30px_rgba(59,130,246,0.3)]' : 'hover:bg-white/5 border border-transparent'
                 }`}
               >
                 {selectedSparePiece === p && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-[#050505] animate-pulse" />
+                  <motion.div layoutId="spare-glow-w" className="absolute inset-0 bg-blue-500/10 blur-xl rounded-full" />
                 )}
-                <img src={`https://lichess1.org/assets/piece/cburnett/${p}.svg`} alt={p} className="w-12 h-12 drop-shadow-2xl" />
+                <img src={`https://lichess1.org/assets/piece/cburnett/${p}.svg`} alt={p} className="w-12 h-12 drop-shadow-2xl group-hover/btn:-translate-y-1 transition-transform" />
               </button>
             ))}
           </div>
+        </div>
         </div>
 
         {/* Info & Analysis Area */}
@@ -235,43 +252,46 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
           </div>
 
           {/* Engine Dashboard */}
-          <div className="bg-gradient-to-br from-white/[0.06] to-transparent border border-white/10 rounded-[2.5rem] p-8 relative overflow-hidden group shadow-2xl">
-            <div className="absolute -top-10 -right-10 opacity-[0.03] group-hover:opacity-[0.07] transition-opacity">
-              <Brain className="w-48 h-48 text-blue-400" />
+          <div className="bg-gradient-to-br from-white/[0.04] to-transparent border border-white/5 rounded-[2rem] p-8 relative overflow-hidden group shadow-2xl">
+            <div className="absolute -top-10 -right-10 opacity-[0.02] group-hover:opacity-[0.05] transition-opacity">
+              <Brain className="w-40 h-40 text-blue-400" />
             </div>
             
             <div className="relative z-10 flex flex-col gap-6">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className={`w-3 h-3 rounded-full ${isActive ? 'bg-green-500 animate-pulse' : 'bg-gray-700'}`} />
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${isActive ? 'text-green-400' : 'text-gray-500'}`}>
-                    Stockfish 16 {isActive ? 'Running' : 'Standby'}
-                  </span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-500 animate-pulse' : 'bg-gray-700'}`} />
+                    <span className={`text-[9px] font-black uppercase tracking-widest ${isActive ? 'text-green-400' : 'text-gray-600'}`}>
+                      Stockfish 16 {isActive ? 'Live' : 'Ready'}
+                    </span>
+                  </div>
+                  <span className="text-[8px] font-bold text-gray-700 uppercase tracking-widest ml-4">NNUE Engine Build</span>
                 </div>
                 <button 
                   onClick={() => setIsActive(!isActive)}
-                  className={`p-3 rounded-xl transition-all flex items-center gap-2 ${
-                    isActive ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
+                  className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 group/power ${
+                    isActive ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-blue-600 text-white shadow-[0_4px_20px_rgba(59,130,246,0.3)]'
                   }`}
                 >
-                  <Power className="w-4 h-4" />
-                  <span className="text-[10px] font-black uppercase">{isActive ? 'Stop' : 'Start Engine'}</span>
+                  <Power className={`w-3.5 h-3.5 ${isActive ? '' : 'group-hover/power:rotate-12 transition-transform'}`} />
+                  <span className="text-[9px] font-black uppercase tracking-widest">{isActive ? 'Stop' : 'Analyze'}</span>
                 </button>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-black/40 rounded-3xl p-5 border border-white/5">
-                  <div className="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Evaluation</div>
-                  <div className="text-3xl font-mono font-bold text-white">
+                <div className="bg-white/[0.02] rounded-2xl p-4 border border-white/5">
+                  <div className="text-[8px] text-gray-600 font-black uppercase tracking-widest mb-1">Eval</div>
+                  <div className={`text-2xl font-black tabular-nums ${evalValue > 0 ? 'text-white' : evalValue < 0 ? 'text-gray-300' : 'text-gray-500'}`}>
                     {isActive ? (evalValue > 0 ? `+${evalValue.toFixed(1)}` : evalValue.toFixed(1)) : '0.0'}
                   </div>
                 </div>
-                <div className="bg-black/40 rounded-3xl p-5 border border-white/5">
-                  <div className="text-[9px] text-gray-500 font-black uppercase tracking-widest mb-1">Top Choice</div>
-                  <div className="text-3xl font-bold text-white flex items-center gap-2">
+                <div className="bg-white/[0.02] rounded-2xl p-4 border border-white/5">
+                  <div className="text-[8px] text-gray-600 font-black uppercase tracking-widest mb-1">Stockfish Pick</div>
+                  <div className="text-2xl font-black text-white flex items-center gap-2 uppercase italic tracking-tighter">
                     {isActive && bestMove ? (
                       <>
-                        <Sparkles className="w-5 h-5 text-yellow-400" />
+                        <Sparkles className="w-4 h-4 text-yellow-400" />
                         {bestMove}
                       </>
                     ) : '—'}
@@ -281,21 +301,42 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <button 
-              onClick={clearBoard}
-              className="flex items-center justify-center gap-3 bg-white/[0.03] hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 p-6 rounded-3xl transition-all group"
-            >
-              <Trash2 className="w-5 h-5 text-gray-600 group-hover:text-red-400" />
-              <span className="text-xs font-black uppercase text-gray-500 group-hover:text-white">Clear All</span>
-            </button>
-            <button 
-              onClick={resetBoard}
-              className="flex items-center justify-center gap-3 bg-white/[0.03] hover:bg-blue-500/10 border border-white/10 hover:border-blue-500/20 p-6 rounded-3xl transition-all group"
-            >
-              <RotateCcw className="w-5 h-5 text-gray-600 group-hover:text-blue-400" />
-              <span className="text-xs font-black uppercase text-gray-500 group-hover:text-white">Start Pos</span>
-            </button>
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-3">
+              <button 
+                onClick={clearBoard}
+                className="flex-1 flex items-center justify-center gap-3 bg-white/[0.02] hover:bg-red-500/10 border border-white/5 hover:border-red-500/20 p-4 rounded-2xl transition-all group"
+              >
+                <Trash2 className="w-4 h-4 text-gray-700 group-hover:text-red-400" />
+                <span className="text-[9px] font-black uppercase text-gray-600 group-hover:text-white tracking-widest">Clear</span>
+              </button>
+              <button 
+                onClick={resetBoard}
+                className="flex-1 flex items-center justify-center gap-3 bg-white/[0.02] hover:bg-blue-500/10 border border-white/5 hover:border-blue-500/20 p-4 rounded-2xl transition-all group"
+              >
+                <RotateCcw className="w-4 h-4 text-gray-700 group-hover:text-blue-400" />
+                <span className="text-[9px] font-black uppercase text-gray-600 group-hover:text-white tracking-widest">Reset</span>
+              </button>
+            </div>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={copyFen}
+                className="flex-1 flex items-center justify-center gap-3 bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 p-4 rounded-2xl transition-all group relative overflow-hidden"
+              >
+                <motion.div animate={{ opacity: showCopied ? 1 : 0 }} className="absolute inset-0 bg-emerald-500/10 flex items-center justify-center">
+                  <span className="text-[9px] font-black text-emerald-400 uppercase tracking-[0.2em]">Copied!</span>
+                </motion.div>
+                <Copy className="w-4 h-4 text-gray-700 group-hover:text-white" />
+                <span className="text-[9px] font-black uppercase text-gray-600 group-hover:text-white tracking-widest">Copy FEN</span>
+              </button>
+              <button 
+                className="flex-1 flex items-center justify-center gap-3 bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 p-4 rounded-2xl transition-all group"
+              >
+                <Share2 className="w-4 h-4 text-gray-700 group-hover:text-white" />
+                <span className="text-[9px] font-black uppercase text-gray-600 group-hover:text-white tracking-widest">Share</span>
+              </button>
+            </div>
           </div>
 
           <div className="pt-4 flex gap-4">
