@@ -46,6 +46,10 @@
   scrollbar-color: rgba(255,255,255,0.06) transparent;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: #050505;
   background-image: 
@@ -79,7 +83,7 @@ body::after {
 }
 
 main {
-  animation: pageReveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: pageReveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ───── SMOOTH FOCUS RINGS ───── */
@@ -200,20 +204,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .btn-primary {
   background: linear-gradient(135deg, #d4af37 0%, #b8962e 50%, #a8882a 100%);
   color: #0a0a0a;
-  font-weight: 800;
-  letter-spacing: 0.03em;
+  font-weight: 900;
+  letter-spacing: 0.15em;
   border: 1px solid rgba(212, 175, 55, 0.5);
-  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.3), inset 0 1px 0 rgba(255,255,255,0.35);
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 4px 24px rgba(212, 175, 55, 0.25), inset 0 1px 0 rgba(255,255,255,0.3);
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .btn-primary:hover {
-  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.45), 0 0 0 1px rgba(212,175,55,0.3), inset 0 1px 0 rgba(255,255,255,0.4);
-  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(212, 175, 55, 0.4), 0 0 0 1px rgba(212,175,55,0.2), inset 0 1px 0 rgba(255,255,255,0.4);
+  transform: translateY(-3px) scale(1.02);
   background: linear-gradient(135deg, #e8c84a 0%, #d4af37 50%, #b8962e 100%);
 }
 .btn-primary:active {
-  transform: translateY(1px);
-  box-shadow: 0 2px 12px rgba(212, 175, 55, 0.3);
+  transform: translateY(1px) scale(0.98);
 }
 
 .btn-gold-outline {

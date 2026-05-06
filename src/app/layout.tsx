@@ -70,6 +70,8 @@ export const viewport: Viewport = {
   themeColor: '#0a0a0a',
 };
 
+import CustomCursor from "@/components/CustomCursor";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -108,6 +110,7 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning className={`${inter.className} bg-background text-gray-200 min-h-screen flex flex-col relative overflow-x-hidden`}>
+        <CustomCursor />
         {/* Professional Background Layer */}
         <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
           {/* Deep dark base */}
