@@ -5,13 +5,16 @@ import { motion } from 'framer-motion';
 import { ArrowRight, Clock, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
-const ARTICLES = [
-  { title: "The 10 Most Brilliant Moves in Chess History", tag: "Tactics", time: "8 min read", emoji: "💎", gradient: "from-blue-500/10 to-cyan-500/5" },
-  { title: "Most Insane Sacrifices That Changed the Game", tag: "Strategy", time: "6 min read", emoji: "🔥", gradient: "from-orange-500/10 to-red-500/5" },
-  { title: "Famous Underpromotions: When Less is More", tag: "Endgame", time: "7 min read", emoji: "♞", gradient: "from-[#d4af37]/10 to-amber-500/5" },
-  { title: "AI vs Human: The New Era of Chess", tag: "Technology", time: "10 min read", emoji: "🤖", gradient: "from-purple-500/10 to-violet-500/5" },
-  { title: "Greatest Endgames Ever Played", tag: "Endgame", time: "9 min read", emoji: "👑", gradient: "from-emerald-500/10 to-green-500/5" },
-  { title: "Psychological Warfare on the Chessboard", tag: "Psychology", time: "5 min read", emoji: "🧠", gradient: "from-pink-500/10 to-rose-500/5" },
+import { ARTICLES } from '@/lib/articles';
+
+// Keep the gradient mapping
+const GRADIENTS = [
+  "from-blue-500/10 to-cyan-500/5",
+  "from-orange-500/10 to-red-500/5",
+  "from-[#d4af37]/10 to-amber-500/5",
+  "from-purple-500/10 to-violet-500/5",
+  "from-emerald-500/10 to-green-500/5",
+  "from-pink-500/10 to-rose-500/5"
 ];
 
 export default function ArticlesSection() {
@@ -41,14 +44,14 @@ export default function ArticlesSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08 }}
             >
-              <Link href="/learn" className="block glass-panel p-6 rounded-xl group cursor-pointer h-full">
-                <div className={`w-full h-32 rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br ${article.gradient} border border-white/[0.04]`}>
+              <Link href={`/learn/${article.id}`} className="block glass-panel p-6 rounded-xl group cursor-pointer h-full">
+                <div className={`w-full h-32 rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]} border border-white/[0.04]`}>
                   <span className="text-5xl group-hover:scale-110 transition-transform duration-500">{article.emoji}</span>
                 </div>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full" style={{ background: 'rgba(212,175,55,0.08)', color: '#d4af37' }}>{article.tag}</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full" style={{ background: 'rgba(212,175,55,0.08)', color: '#d4af37' }}>{article.category}</span>
                   <span className="flex items-center gap-1 text-[10px] text-gray-500">
-                    <Clock className="w-3 h-3" />{article.time}
+                    <Clock className="w-3 h-3" />{article.readTime}
                   </span>
                 </div>
                 <h3 className="text-white font-bold text-base mb-3 group-hover:text-[#d4af37] transition-colors leading-snug">{article.title}</h3>

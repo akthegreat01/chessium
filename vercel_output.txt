@@ -1,0 +1,41 @@
+Retrieving project…
+Deploying katariaakshath-5211s-projects/chessium
+Uploading [--------------------] (0.0B/71B)
+Uploading [====================] (71.0B/71B)
+Inspect: https://vercel.com/katariaakshath-5211s-projects/chessium/GHrAkP1CYFeZJLLBgPG4ueRY7FaV [4s]
+Production: https://chessium-fzys985o5-katariaakshath-5211s-projects.vercel.app [4s]
+https://chessium-fzys985o5-katariaakshath-5211s-projects.vercel.appBuilding...
+Building...
+Building: Running build in Washington, D.C., USA (East) – iad1
+Building: Build machine configuration: 2 cores, 8 GB
+Building: Retrieving list of deployment files...
+Building: Downloading 73 deployment files...
+Building: Restored build cache from previous deployment (EDgNeyJWsZFnqEzcgFCfdysRuxYG)
+Building: Running "vercel build"
+Building: Vercel CLI 51.6.1
+Building: Installing dependencies...
+Building: up to date in 847ms
+Building: 148 packages are looking for funding
+Building: run `npm fund` for details
+Building: Detected Next.js version: 16.2.4
+Building: Running "npm run build"
+Building: > chessium@0.1.0 build
+Building: > next build
+Building: Applying modifyConfig from Vercel
+Building: ▲ Next.js 16.2.4 (Turbopack)
+Building: Creating an optimized production build ...
+Building: ✓ Compiled successfully in 8.9s
+Building: Running TypeScript ...
+Building: Failed to type check.
+Building: ./src/app/analysis/page.tsx:35:53
+Building: Type error: Property 'showHint' does not exist on type 'ChessState'.
+Building: 33 | ...Game, flipBoard, toggleSound,
+Building: 34 | ...Flipped, analysisResult, mainLineHistory, restoreMainLine,
+Building: > 35 | ...de, toggleZenMode, showHintMove, hideHint, showHint, goToMove, goBack, goForward, loadS...
+Building: |                                               ^
+Building: 36 | ...ssage, playingAI, loadFen
+Building: 37 | ...ChessStore();
+Building: 38 | ...
+Building: Next.js build worker exited with code: 1 and signal: null
+Building: Error: Command "npm run build" exited with 1
+Error: Command "npm run build" exited with 1
