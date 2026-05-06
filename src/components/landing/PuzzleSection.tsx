@@ -134,7 +134,10 @@ export default function PuzzleSection() {
                     position: game.fen(),
                     boardOrientation: 'white',
                     allowDragging: !solved,
-                    onPieceDrop: ({ sourceSquare, targetSquare }) => onDrop(sourceSquare, targetSquare),
+                    onPieceDrop: ({ sourceSquare, targetSquare }) => {
+                      if (!targetSquare) return false;
+                      return onDrop(sourceSquare, targetSquare);
+                    },
                     boardStyle: {
                       borderRadius: '4px',
                     }
