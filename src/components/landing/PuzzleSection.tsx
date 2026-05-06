@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Flame, Timer, Trophy, CheckCircle, XCircle, ChevronRight } from 'lucide-react';
+import { Flame, Timer, Trophy, CheckCircle, XCircle, ChevronRight, RotateCcw } from 'lucide-react';
 import { Chessboard } from 'react-chessboard';
+import { Chess } from 'chess.js';
 
 const PUZZLES = [
   { id: 1, title: "Find the Brilliant Move", difficulty: "Hard", fen: "4rr1k/1pp3pp/p1pb4/5p2/3P4/2P1BP1q/PP1N1Q2/R3R1K1 w - - 0 24", solution: "Rxg7+!", hint: "A devastating rook sacrifice opens lines", rating: 2200 },
@@ -12,13 +13,14 @@ const PUZZLES = [
 ];
 
 export default function PuzzleSection() {
+  const [game, setGame] = useState(new Chess(PUZZLES[0].fen));
   const [currentPuzzle, setCurrentPuzzle] = useState(0);
   const [showHint, setShowHint] = useState(false);
   const [solved, setSolved] = useState(false);
+  const [error, setError] = useState(false);
   const [timer, setTimer] = useState(0);
   const [running, setRunning] = useState(true);
   const [streak, setStreak] = useState(0);
-  const [userAnswer, setUserAnswer] = useState('');
 
   useEffect(() => {
     if (!running || solved) return;
@@ -28,21 +30,55 @@ export default function PuzzleSection() {
 
   const puzzle = PUZZLES[currentPuzzle];
 
-  const checkAnswer = useCallback(() => {
-    if (userAnswer.trim().toLowerCase() === puzzle.solution.toLowerCase().replace('!', '').replace('+', '')) {
-      setSolved(true);
-      setStreak(s => s + 1);
-      setRunning(false);
+  const onDrop = (sourceSquare: string, targetSquare: string) => {
+    if (solved) return false;
+    
+    try {
+      const gameCopy = new Chess(game.fen());
+      const move = gameCopy.move({
+        from: sourceSquare,
+        to: targetSquare,
+        promotion: 'q' // always promote to queen for simplicity in puzzles
+      });
+
+      if (!move) return false;
+
+      // Clean the solution string for comparison (remove !, +, #)
+      const cleanSolution = puzzle.solution.replace(/[!+#]/g, '').toLowerCase();
+      const cleanMoveSan = move.san.replace(/[!+#]/g, '').toLowerCase();
+
+      if (cleanMoveSan === cleanSolution) {
+        setGame(gameCopy);
+        setSolved(true);
+        setError(false);
+        setStreak(s => s + 1);
+        setRunning(false);
+        return true;
+      } else {
+        setError(true);
+        setTimeout(() => setError(false), 1000);
+        return false;
+      }
+    } catch (e) {
+      return false;
     }
-  }, [userAnswer, puzzle.solution]);
+  };
 
   const nextPuzzle = () => {
-    setCurrentPuzzle((currentPuzzle + 1) % PUZZLES.length);
+    const nextIdx = (currentPuzzle + 1) % PUZZLES.length;
+    setCurrentPuzzle(nextIdx);
+    setGame(new Chess(PUZZLES[nextIdx].fen));
     setSolved(false);
+    setError(false);
     setShowHint(false);
     setTimer(0);
     setRunning(true);
-    setUserAnswer('');
+  };
+
+  const resetPuzzle = () => {
+    setGame(new Chess(puzzle.fen));
+    setSolved(false);
+    setError(false);
   };
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
@@ -89,51 +125,55 @@ export default function PuzzleSection() {
             </div>
 
             {/* Puzzle board area */}
-            <div className="flex flex-col md:flex-row gap-6">
-              <div className="w-full md:w-[280px] aspect-square rounded-lg overflow-hidden flex-shrink-0 border border-white/10 relative" style={{ boxShadow: '0 8px 48px rgba(0,0,0,0.5)' }}>
+            <div className="flex flex-col lg:flex-row gap-10">
+              <div className="w-full lg:w-[400px] aspect-square rounded-2xl overflow-hidden flex-shrink-0 border-4 border-white/5 relative group shadow-[0_0_60px_rgba(0,0,0,0.6)]">
+                <div className={`absolute inset-0 z-20 pointer-events-none transition-colors duration-300 ${error ? 'bg-red-500/20' : solved ? 'bg-green-500/10' : ''}`} />
                 <Chessboard 
                   options={{
                     id: "puzzle-board",
-                    position: puzzle.fen,
+                    position: game.fen(),
                     boardOrientation: 'white',
-                    allowDragging: false,
+                    allowDragging: !solved,
+                    onPieceDrop: ({ sourceSquare, targetSquare }) => onDrop(sourceSquare, targetSquare),
+                    boardStyle: {
+                      borderRadius: '4px',
+                    }
                   }}
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-3 py-2 text-center pointer-events-none">
-                  <span className="text-[11px] font-bold text-gray-300">{puzzle.fen}</span>
-                </div>
               </div>
 
               <div className="flex-1 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center gap-2 mb-2 text-xs text-gray-500">
+                  <div className="flex items-center gap-2 mb-4 text-xs text-gray-500">
                     <span className="font-bold">Rating: {puzzle.rating}</span>
                     <span>•</span>
                     <span>Puzzle #{puzzle.id}</span>
                   </div>
-                  <p className="text-gray-400 text-sm mb-6">Find the strongest continuation. Enter your answer in algebraic notation.</p>
-
-                  {/* Answer input */}
-                  <div className="flex gap-3 mb-4">
-                    <input
-                      type="text"
-                      value={userAnswer}
-                      onChange={(e) => setUserAnswer(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && checkAnswer()}
-                      placeholder="e.g. Rxg7+"
-                      className="flex-1 px-4 py-2.5 rounded-lg bg-white/[0.05] border border-white/10 text-white text-sm font-mono focus:border-[#d4af37]/40 focus:outline-none transition-colors"
-                      disabled={solved}
-                    />
-                    <button onClick={checkAnswer} disabled={solved || !userAnswer} className="btn-primary px-5 py-2.5 rounded-lg text-sm font-bold disabled:opacity-40">
-                      Submit
-                    </button>
+                  
+                  <div className="mb-8">
+                    <p className="text-white text-lg font-medium mb-2">Your turn to move</p>
+                    <p className="text-gray-400 text-sm leading-relaxed">Find the winning continuation by dragging pieces on the board.</p>
                   </div>
 
                   {/* Result feedback */}
                   {solved && (
-                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-2 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-4">
-                      <CheckCircle className="w-5 h-5 text-emerald-400" />
-                      <span className="text-emerald-300 font-bold text-sm">Correct! The answer is {puzzle.solution}</span>
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col gap-4 p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                          <CheckCircle className="w-5 h-5 text-emerald-400" />
+                        </div>
+                        <div>
+                          <p className="text-emerald-400 font-black uppercase tracking-widest text-xs">Puzzle Solved</p>
+                          <p className="text-white font-bold">Excellent vision! {puzzle.solution}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {error && (
+                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 mb-6">
+                      <XCircle className="w-5 h-5 text-red-400" />
+                      <span className="text-red-300 font-bold text-sm">That's not the right move. Try again!</span>
                     </motion.div>
                   )}
 
@@ -145,13 +185,16 @@ export default function PuzzleSection() {
                   )}
                 </div>
 
-                <div className="flex items-center gap-3 mt-4">
-                  <button onClick={() => setShowHint(true)} disabled={showHint || solved} className="text-xs font-bold text-gray-500 hover:text-gray-300 transition-colors disabled:opacity-30">
-                    Show Hint
+                <div className="flex items-center gap-4 mt-auto">
+                  <button onClick={resetPuzzle} disabled={solved} className="text-xs font-bold text-gray-500 hover:text-white transition-colors flex items-center gap-1.5 disabled:opacity-0">
+                    <RotateCcw className="w-3.5 h-3.5" /> Reset
+                  </button>
+                  <button onClick={() => setShowHint(true)} disabled={showHint || solved} className="text-xs font-bold text-gray-500 hover:text-white transition-colors disabled:opacity-30">
+                    Need a hint?
                   </button>
                   {solved && (
-                    <button onClick={nextPuzzle} className="ml-auto btn-gold-outline px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5">
-                      Next Puzzle <ChevronRight className="w-3 h-3" />
+                    <button onClick={nextPuzzle} className="ml-auto bg-[#d4af37] hover:bg-[#b8962d] text-black px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)]">
+                      Next Challenge <ChevronRight className="w-4 h-4" />
                     </button>
                   )}
                 </div>
