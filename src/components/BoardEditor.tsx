@@ -121,10 +121,10 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 z-[100] bg-[#050505]/98 backdrop-blur-3xl flex flex-col items-center justify-center p-4 md:p-8"
+      className="min-h-screen bg-[#050505] flex flex-col items-center pt-24 pb-12 px-4 md:px-8 overflow-y-auto"
     >
       <div 
-        className="max-w-[1600px] w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center"
+        className="max-w-[1400px] w-full grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start"
         style={{ cursor: selectedSparePiece ? 'crosshair' : 'default' }}
       >
         
@@ -145,7 +145,7 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
                 {selectedSparePiece === p && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-[#050505] animate-pulse" />
                 )}
-                <img src={`https://react-chessboard.com/static/media/${p}.png`} alt={p} className="w-12 h-12 drop-shadow-2xl" />
+                <img src={`https://lichess1.org/assets/piece/cburnett/${p}.svg`} alt={p} className="w-12 h-12 drop-shadow-2xl" />
               </button>
             ))}
           </div>
@@ -214,7 +214,7 @@ export default function BoardEditor({ onClose, onAnalyze }: BoardEditorProps) {
                 {selectedSparePiece === p && (
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-[#050505] animate-pulse" />
                 )}
-                <img src={`https://react-chessboard.com/static/media/${p}.png`} alt={p} className="w-12 h-12 drop-shadow-2xl" />
+                <img src={`https://lichess1.org/assets/piece/cburnett/${p}.svg`} alt={p} className="w-12 h-12 drop-shadow-2xl" />
               </button>
             ))}
           </div>
