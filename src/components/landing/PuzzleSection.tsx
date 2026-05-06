@@ -7,15 +7,52 @@ import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
 
 const PUZZLES = [
-  { id: 1, title: "Kasparov's Immortal Move", difficulty: "Expert", fen: "b2r3r/k4p1p/p2q1np1/NppP4/3p1Q2/P4PPB/1PP4P/1K1RR3 w - - 1 24", solution: "Rxd4!", hint: "A rook sacrifice that ignores the queen and starts an immortal king hunt", rating: 2800, orientation: "white" },
-  { id: 2, title: "The Gold Coins Game", difficulty: "Expert", fen: "5rk1/pp4pp/4p3/2R5/3n2Q1/2q4r/P1P2PPP/5RK1 b - - 1 23", solution: "Qg3!!", hint: "The move that caused the audience to shower the board with gold coins", rating: 2600, orientation: "black" },
-  { id: 3, title: "Game of the Century", difficulty: "Hard", fen: "r3r1k1/pp3pbp/1qp3p1/2B5/2BP2b1/Q1n2N2/P4PPP/3R1K1R b - - 3 17", solution: "Be6!!", hint: "A 13-year-old Fischer gives up his queen for a decisive windmill attack", rating: 2400, orientation: "black" },
-  { id: 4, title: "The Magician's Sacrifice", difficulty: "Hard", fen: "rqb2rk1/3nbppp/p2pp3/6P1/1p1BPP2/2NB1Q2/PPP4P/2KR3R w - - 0 16", solution: "Nd5!!", hint: "Mikhail Tal sacrifices a knight for long-term initiative and attacking geometry", rating: 2300, orientation: "white" },
+  { 
+    id: 1, 
+    title: "Kasparov's Immortal Move", 
+    difficulty: "Expert", 
+    fen: "b2r3r/k4p1p/p2q1np1/NppP4/3p1Q2/P4PPB/1PP4P/1K1RR3 w - - 1 24", 
+    sequence: ["Rxd4", "cxd4", "Re7+"], 
+    hint: "A rook sacrifice that ignores the queen and starts an immortal king hunt", 
+    rating: 2800, 
+    orientation: "white" 
+  },
+  { 
+    id: 2, 
+    title: "The Gold Coins Game", 
+    difficulty: "Expert", 
+    fen: "5rk1/pp4pp/4p3/2R5/3n2Q1/2q4r/P1P2PPP/5RK1 b - - 1 23", 
+    sequence: ["Qg3", "hxg3", "Ne2#"], 
+    hint: "The move that caused the audience to shower the board with gold coins", 
+    rating: 2600, 
+    orientation: "black" 
+  },
+  { 
+    id: 3, 
+    title: "Game of the Century", 
+    difficulty: "Hard", 
+    fen: "r3r1k1/pp3pbp/1qp3p1/2B5/2BP2b1/Q1n2N2/P4PPP/3R1K1R b - - 3 17", 
+    sequence: ["Be6", "Bxb6", "Bxc4+"], 
+    hint: "A 13-year-old Fischer gives up his queen for a decisive windmill attack", 
+    rating: 2400, 
+    orientation: "black" 
+  },
+  { 
+    id: 4, 
+    title: "The Magician's Sacrifice", 
+    difficulty: "Hard", 
+    fen: "rqb2rk1/3nbppp/p2pp3/6P1/1p1BPP2/2NB1Q2/PPP4P/2KR3R w - - 0 16", 
+    sequence: ["Nd5", "exd5", "exd5+"], 
+    hint: "Mikhail Tal sacrifices a knight for long-term initiative and attacking geometry", 
+    rating: 2300, 
+    orientation: "white" 
+  },
 ];
 
 export default function PuzzleSection() {
   const [game, setGame] = useState(new Chess(PUZZLES[0].fen));
   const [currentPuzzle, setCurrentPuzzle] = useState(0);
+  const [moveIndex, setMoveIndex] = useState(0);
   const [hintStage, setHintStage] = useState(0); // 0: none, 1: square, 2: move
   const [solved, setSolved] = useState(false);
   const [error, setError] = useState(false);
@@ -31,29 +68,58 @@ export default function PuzzleSection() {
 
   const puzzle = PUZZLES[currentPuzzle];
 
+  const playOpponentMove = useCallback((currentGame: Chess, nextIdx: number) => {
+    if (nextIdx >= puzzle.sequence.length) {
+      setSolved(true);
+      setStreak(s => s + 1);
+      setRunning(false);
+      return;
+    }
+
+    setTimeout(() => {
+      const gameCopy = new Chess(currentGame.fen());
+      const move = gameCopy.move(puzzle.sequence[nextIdx]);
+      if (move) {
+        setGame(gameCopy);
+        setMoveIndex(nextIdx + 1);
+        if (nextIdx + 1 >= puzzle.sequence.length) {
+          setSolved(true);
+          setStreak(s => s + 1);
+          setRunning(false);
+        }
+      }
+    }, 600);
+  }, [puzzle.sequence]);
+
   const onDrop = (sourceSquare: string, targetSquare: string) => {
-    if (solved) return false;
+    if (solved || moveIndex % 2 !== 0) return false;
     
     try {
       const gameCopy = new Chess(game.fen());
       const move = gameCopy.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: 'q' // always promote to queen for simplicity in puzzles
+        promotion: 'q'
       });
 
       if (!move) return false;
 
-      // Clean the solution string for comparison (remove !, +, #)
-      const cleanSolution = puzzle.solution.replace(/[!+#]/g, '').toLowerCase();
+      const cleanSolution = puzzle.sequence[moveIndex].replace(/[!+#]/g, '').toLowerCase();
       const cleanMoveSan = move.san.replace(/[!+#]/g, '').toLowerCase();
 
       if (cleanMoveSan === cleanSolution) {
         setGame(gameCopy);
-        setSolved(true);
         setError(false);
-        setStreak(s => s + 1);
-        setRunning(false);
+        const nextIdx = moveIndex + 1;
+        setMoveIndex(nextIdx);
+        
+        if (nextIdx >= puzzle.sequence.length) {
+          setSolved(true);
+          setStreak(s => s + 1);
+          setRunning(false);
+        } else {
+          playOpponentMove(gameCopy, nextIdx);
+        }
         return true;
       } else {
         setError(true);
@@ -69,6 +135,7 @@ export default function PuzzleSection() {
     const nextIdx = (currentPuzzle + 1) % PUZZLES.length;
     setCurrentPuzzle(nextIdx);
     setGame(new Chess(PUZZLES[nextIdx].fen));
+    setMoveIndex(0);
     setSolved(false);
     setError(false);
     setHintStage(0);
@@ -78,6 +145,7 @@ export default function PuzzleSection() {
 
   const resetPuzzle = () => {
     setGame(new Chess(puzzle.fen));
+    setMoveIndex(0);
     setSolved(false);
     setError(false);
     setHintStage(0);
@@ -143,11 +211,11 @@ export default function PuzzleSection() {
                     boardStyle: {
                       borderRadius: '4px',
                     },
-                    squareStyles: hintStage >= 1 && !solved ? (() => {
+                    squareStyles: hintStage >= 1 && !solved && moveIndex % 2 === 0 ? (() => {
                       try {
                         const gameCopy = new Chess(game.fen());
                         const moves = gameCopy.moves({ verbose: true });
-                        const cleanSolution = puzzle.solution.replace(/[!+#]/g, '').toLowerCase();
+                        const cleanSolution = puzzle.sequence[moveIndex].replace(/[!+#]/g, '').toLowerCase();
                         const correctMove = moves.find(m => m.san.replace(/[!+#]/g, '').toLowerCase() === cleanSolution);
                         if (correctMove) {
                           return { [correctMove.from]: { backgroundColor: 'rgba(212, 175, 55, 0.4)', borderRadius: '4px' } };
@@ -181,7 +249,7 @@ export default function PuzzleSection() {
                         </div>
                         <div>
                           <p className="text-emerald-400 font-black uppercase tracking-widest text-xs">Puzzle Solved</p>
-                          <p className="text-white font-bold">Excellent vision! {puzzle.solution}</p>
+                          <p className="text-white font-bold">Excellent vision! You've successfully played through the key moves.</p>
                         </div>
                       </div>
                     </motion.div>
@@ -202,9 +270,9 @@ export default function PuzzleSection() {
                   )}
 
                   {/* Hint Stage 2: Move Reveal */}
-                  {hintStage >= 2 && !solved && (
+                  {hintStage >= 2 && !solved && moveIndex % 2 === 0 && (
                     <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="px-4 py-2.5 rounded-lg bg-blue-500/10 border border-blue-500/15 mb-4">
-                      <span className="text-blue-300 text-sm font-bold uppercase tracking-widest">The move is: {puzzle.solution}</span>
+                      <span className="text-blue-300 text-sm font-bold uppercase tracking-widest">The move is: {puzzle.sequence[moveIndex]}</span>
                     </motion.div>
                   )}
                 </div>
