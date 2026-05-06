@@ -52,11 +52,21 @@ export default function HeroSection() {
             </div>
             <motion.div
               initial={{ opacity: 0, scale: 0.8, rotate: 10 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
+              animate={{ 
+                opacity: 1, 
+                scale: 1, 
+                rotate: 0,
+                y: [0, -15, 0] 
+              }}
+              transition={{ 
+                opacity: { duration: 1.5 },
+                scale: { duration: 1.5 },
+                rotate: { duration: 1.5 },
+                y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+              }}
               className="relative w-36 h-36 md:w-[20rem] md:h-[20rem]"
             >
-              <img src="/horse.png" alt="Chess Knight" className="w-full h-full object-contain filter drop-shadow-[0_0_50px_rgba(255,255,255,0.4)]" />
+              <img src="/horse.png" alt="Chess Knight" className="w-full h-full object-contain filter drop-shadow-[0_0_50px_rgba(255,255,255,0.3)] select-none pointer-events-none" />
             </motion.div>
           </div>
 
@@ -65,8 +75,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 1 }}
-            className="text-lg md:text-2xl text-gray-400 font-medium tracking-wide mb-12 text-center max-w-xl"
-            style={{ fontFamily: "'Cormorant Garamond', serif", fontStyle: 'italic' }}
+            className="text-lg md:text-2xl text-gray-400 font-light tracking-[0.05em] mb-12 text-center max-w-xl"
           >
             Where Brilliant Moves Become Immortal.
           </motion.p>
@@ -98,11 +107,11 @@ export default function HeroSection() {
             {[
               { value: "3600+", label: "ELO Strength" },
               { value: "100%", label: "Free Forever" },
-              { value: "0ms", label: "Server Latency" },
+              { value: "0ms", label: "Latency" },
             ].map((stat) => (
               <div key={stat.label} className="flex flex-col items-center gap-1">
-                <span className="text-2xl md:text-3xl font-black text-white" style={{ letterSpacing: '-0.02em' }}>{stat.value}</span>
-                <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: 'rgba(212,175,55,0.4)' }}>{stat.label}</span>
+                <span className="text-2xl md:text-3xl font-black text-white tabular-nums tracking-tighter">{stat.value}</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] font-black" style={{ color: 'rgba(212,175,55,0.5)' }}>{stat.label}</span>
               </div>
             ))}
           </motion.div>

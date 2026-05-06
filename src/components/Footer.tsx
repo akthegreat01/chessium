@@ -7,8 +7,11 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full border-t border-white/[0.04] bg-[#070707]/90 backdrop-blur-md mt-auto">
-      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-16">
+    <footer className="w-full border-t border-white/[0.04] bg-black/40 backdrop-blur-xl mt-auto relative overflow-hidden">
+      {/* Footer background glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#d4af37]/5 blur-[120px] rounded-full pointer-events-none" />
+      
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-20 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
           <div className="col-span-1 md:col-span-2">

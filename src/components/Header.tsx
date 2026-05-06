@@ -42,22 +42,22 @@ export default function Header() {
 
   return (
     <header 
-      className={`w-full border-b bg-[#0a0a0a]/92 backdrop-blur-2xl sticky top-0 z-50 transition-all duration-500 ${scrolled ? 'border-white/[0.06] shadow-lg shadow-black/20' : 'border-white/[0.04]'}`} 
-      style={{ height: 'var(--header-h, 56px)' }}
+      className={`w-full border-b bg-[#0a0a0a]/60 backdrop-blur-md sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'border-white/[0.06] shadow-[0_4px_20px_rgba(0,0,0,0.4)]' : 'border-white/[0.03]'}`} 
+      style={{ height: 'var(--header-h, 64px)' }}
     >
       {/* Subtle gold accent line at very top */}
-      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[rgba(212,175,55,0.3)] to-transparent" />
+      <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[rgba(212,175,55,0.2)] to-transparent" />
       <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-full flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="transition-transform group-hover:scale-105 flex items-center justify-center drop-shadow-[0_0_8px_rgba(212,175,55,0.3)]">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" className="w-7 h-7 md:w-8 md:h-8 fill-[#d4af37] drop-shadow-md">
+          <div className="transition-transform group-hover:scale-105 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 45 45" className="w-7 h-7 md:w-8 md:h-8 fill-[#d4af37]">
               <path d="M 22,10 C 32.5,11 38.5,18 38,39 L 15,39 C 15,30 25,32.5 23,18" />
               <path d="M 24,18 C 24.38,20.91 18.45,25.37 16,27 C 13,29 13.18,31.34 11,31 C 9.958,30.06 12.41,27.96 11,28 C 10,28 11.19,29.23 10,30 C 9,30 5.997,31 6,26 C 6,24 12,14 12,14 C 12,14 13.89,12.1 14,10.5 C 13.27,9.506 13.5,8.5 13.5,7.5 C 14.5,6.5 16.5,10 16.5,10 L 18.5,10 C 18.5,10 19.28,8.008 21,7 C 22,7 22,10 22,10" />
             </svg>
           </div>
           <div className="flex flex-col">
-            <span className="font-black text-base md:text-lg tracking-tight text-white leading-none" style={{ letterSpacing: '-0.01em' }}>
+            <span className="font-black text-lg md:text-xl tracking-tighter text-white leading-none uppercase italic" style={{ letterSpacing: '-0.02em' }}>
               Underpromotion
             </span>
             <span className="hidden md:block text-[9px] font-medium tracking-tight mt-0.5 uppercase" style={{ color: 'rgba(212,175,55,0.5)', letterSpacing: '0.05em' }}>

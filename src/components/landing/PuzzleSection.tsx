@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { Flame, Timer, Trophy, CheckCircle, XCircle, ChevronRight, RotateCcw } from 'lucide-react';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
+import confetti from 'canvas-confetti';
+import { playMoveSound } from '@/lib/sounds';
 
 const PUZZLES = [
   { 
@@ -59,6 +61,12 @@ export default function PuzzleSection() {
   const [timer, setTimer] = useState(0);
   const [running, setRunning] = useState(true);
   const [streak, setStreak] = useState(0);
+  const [xp, setXp] = useState(0);
+
+  const XP_PER_PUZZLE = 100;
+  const XP_FOR_NEXT_LEVEL = 500;
+  const currentLevel = Math.floor(xp / XP_FOR_NEXT_LEVEL) + 1;
+  const levelProgress = (xp % XP_FOR_NEXT_LEVEL) / XP_FOR_NEXT_LEVEL * 100;
 
   useEffect(() => {
     if (!running || solved) return;
@@ -82,14 +90,32 @@ export default function PuzzleSection() {
       if (move) {
         setGame(gameCopy);
         setMoveIndex(nextIdx + 1);
+        
+        // Play appropriate sound
+        if (move.captured) playMoveSound('capture');
+        else if (move.san.includes('+')) playMoveSound('check');
+        else playMoveSound('move');
+
         if (nextIdx + 1 >= puzzle.sequence.length) {
-          setSolved(true);
-          setStreak(s => s + 1);
-          setRunning(false);
+          handleSuccess();
         }
       }
     }, 600);
   }, [puzzle.sequence]);
+
+  const handleSuccess = () => {
+    setSolved(true);
+    setStreak(s => s + 1);
+    setXp(prev => prev + XP_PER_PUZZLE);
+    setRunning(false);
+    playMoveSound('correct');
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#d4af37', '#ffffff', '#a8882a']
+    });
+  };
 
   const onDrop = (sourceSquare: string, targetSquare: string) => {
     if (solved || moveIndex % 2 !== 0) return false;
@@ -113,16 +139,20 @@ export default function PuzzleSection() {
         const nextIdx = moveIndex + 1;
         setMoveIndex(nextIdx);
         
+        // Play appropriate sound
+        if (move.captured) playMoveSound('capture');
+        else if (move.san.includes('+')) playMoveSound('check');
+        else playMoveSound('move');
+
         if (nextIdx >= puzzle.sequence.length) {
-          setSolved(true);
-          setStreak(s => s + 1);
-          setRunning(false);
+          handleSuccess();
         } else {
           playOpponentMove(gameCopy, nextIdx);
         }
         return true;
       } else {
         setError(true);
+        playMoveSound('wrong');
         setTimeout(() => setError(false), 1000);
         return false;
       }
@@ -229,6 +259,21 @@ export default function PuzzleSection() {
 
               <div className="flex-1 flex flex-col justify-between">
                 <div>
+                  {/* XP Bar */}
+                  <div className="mb-8">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#d4af37]">Tactical Rank: Bronze II</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">Level {currentLevel} • {xp % XP_FOR_NEXT_LEVEL}/{XP_FOR_NEXT_LEVEL} XP</span>
+                    </div>
+                    <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden border border-white/5">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${levelProgress}%` }}
+                        className="h-full bg-gradient-to-r from-[#d4af37] to-[#e8c84a] shadow-[0_0_10px_rgba(212,175,55,0.4)]"
+                      />
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-2 mb-4 text-xs text-gray-500">
                     <span className="font-bold">Rating: {puzzle.rating}</span>
                     <span>•</span>
