@@ -31,18 +31,38 @@ function squareToPosition(square: string, boardWidth: number, flipped: boolean) 
 }
 
 export default function Board() {
-  const {
-    fen, makeMove, history, currentMoveIndex,
-    analysisResult, boardTheme, setBoardTheme, boardFlipped,
-    showHint, hintMove, showHintMove, hideHint,
-    selectedSquare, legalMovesForSelected, selectSquare,
-    variationAnalysis, mainLineHistory,
-    explainWhyLine, setExplainWhyLine,
-    openingName,
-    userArrows, userSquares, setUserArrows, toggleUserSquare, clearAnnotations,
-    premove, setPremove, clearPremove, premovesEnabled,
-    playingAI, playerColor
-  } = useChessStore();
+  const fen = useChessStore(state => state.fen);
+  const makeMove = useChessStore(state => state.makeMove);
+  const history = useChessStore(state => state.history);
+  const currentMoveIndex = useChessStore(state => state.currentMoveIndex);
+  const analysisResult = useChessStore(state => state.analysisResult);
+  const boardTheme = useChessStore(state => state.boardTheme);
+  const setBoardTheme = useChessStore(state => state.setBoardTheme);
+  const boardFlipped = useChessStore(state => state.boardFlipped);
+  const showHint = useChessStore(state => state.showHint);
+  const hintMove = useChessStore(state => state.hintMove);
+  const showHintMove = useChessStore(state => state.showHintMove);
+  const hideHint = useChessStore(state => state.hideHint);
+  const selectedSquare = useChessStore(state => state.selectedSquare);
+  const legalMovesForSelected = useChessStore(state => state.legalMovesForSelected);
+  const selectSquare = useChessStore(state => state.selectSquare);
+  const variationAnalysis = useChessStore(state => state.variationAnalysis);
+  const mainLineHistory = useChessStore(state => state.mainLineHistory);
+  const explainWhyLine = useChessStore(state => state.explainWhyLine);
+  const setExplainWhyLine = useChessStore(state => state.setExplainWhyLine);
+  const openingName = useChessStore(state => state.openingName);
+  const userArrows = useChessStore(state => state.userArrows);
+  const userSquares = useChessStore(state => state.userSquares);
+  const setUserArrows = useChessStore(state => state.setUserArrows);
+  const toggleUserSquare = useChessStore(state => state.toggleUserSquare);
+  const clearAnnotations = useChessStore(state => state.clearAnnotations);
+  const premove = useChessStore(state => state.premove);
+  const setPremove = useChessStore(state => state.setPremove);
+  const clearPremove = useChessStore(state => state.clearPremove);
+  const premovesEnabled = useChessStore(state => state.premovesEnabled);
+  const playingAI = useChessStore(state => state.playingAI);
+  const playerColor = useChessStore(state => state.playerColor);
+
   
   const [showThemes, setShowThemes] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
@@ -187,36 +207,6 @@ export default function Board() {
     customSquareStyles[sq] = Object.assign({}, base, { background: 'radial-gradient(circle, rgba(0,0,0,0.25) 25%, transparent 25%)', borderRadius: '50%' });
   }
 
-  // Build options object for react-chessboard v5.10
-  const boardOptions = useMemo(() => ({
-    position: fen,
-    onPieceDrop: onDrop,
-    onSquareClick: onSquareClick,
-    onSquareRightClick: onSquareRightClick,
-    onArrowsChange: onArrowsChange,
-    boardOrientation: boardFlipped ? 'black' as const : 'white' as const,
-    darkSquareStyle: { backgroundColor: boardTheme.dark },
-    lightSquareStyle: { backgroundColor: boardTheme.light },
-    squareStyles: customSquareStyles,
-    arrows: customArrows,
-    animationDurationInMs: 180, // Snappier but smooth
-    boardStyle: { 
-      borderRadius: '8px',
-      boxShadow: '0 20px 80px rgba(0,0,0,0.6)',
-    },
-    dropSquareStyle: { 
-      boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.5)',
-      backgroundColor: 'rgba(16, 185, 129, 0.1)',
-      borderRadius: '4px'
-    },
-    allowDragging: true,
-    isDraggablePiece: ({ piece }: any) => {
-      if (!playingAI) return true;
-      return piece[0] === playerColor;
-    },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }), [fen, boardFlipped, boardTheme, customSquareStyles, customArrows, playingAI, playerColor]);
-
   const iconPos = lastMoveSquare && classInfo && boardWidth > 0 ? squareToPosition(lastMoveSquare, boardWidth, boardFlipped) : null;
   const iconSize = boardWidth > 0 ? Math.max(16, boardWidth / 8 * 0.38) : 20;
 
@@ -253,20 +243,31 @@ export default function Board() {
       )}
       <ReactChessboard 
         options={{
-          position: boardOptions.position,
-          onPieceDrop: boardOptions.onPieceDrop,
-          onSquareClick: boardOptions.onSquareClick,
-          onSquareRightClick: boardOptions.onSquareRightClick,
-          onArrowsChange: boardOptions.onArrowsChange,
-          boardOrientation: boardOptions.boardOrientation,
-          darkSquareStyle: boardOptions.darkSquareStyle,
-          lightSquareStyle: boardOptions.lightSquareStyle,
-          squareStyles: boardOptions.squareStyles,
-          arrows: boardOptions.arrows,
-          animationDurationInMs: boardOptions.animationDurationInMs,
-          boardStyle: boardOptions.boardStyle,
-          dropSquareStyle: boardOptions.dropSquareStyle,
-          canDragPiece: boardOptions.isDraggablePiece
+          position: fen,
+          onPieceDrop: onDrop,
+          onSquareClick: onSquareClick,
+          onSquareRightClick: onSquareRightClick,
+          onArrowsChange: onArrowsChange,
+          boardOrientation: boardFlipped ? 'black' : 'white',
+          darkSquareStyle: { backgroundColor: boardTheme.dark },
+          lightSquareStyle: { backgroundColor: boardTheme.light },
+          squareStyles: customSquareStyles,
+          arrows: customArrows,
+          animationDurationInMs: 180,
+          boardStyle: { 
+            borderRadius: '8px',
+            boxShadow: '0 20px 80px rgba(0,0,0,0.6)',
+          },
+          dropSquareStyle: { 
+            boxShadow: 'inset 0 0 1px 6px rgba(16, 185, 129, 0.5)',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderRadius: '4px'
+          },
+          allowDragging: true,
+          canDragPiece: ({ piece }) => {
+            if (!playingAI) return true;
+            return piece.pieceType[0] === playerColor;
+          }
         }}
       />
       {iconPos && classInfo && (

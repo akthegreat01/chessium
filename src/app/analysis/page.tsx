@@ -28,13 +28,30 @@ import { Suspense } from "react";
 
 function AnalysisContent() {
   const searchParams = useSearchParams();
-  const { 
-    fen, game, history, currentMoveIndex,
-    resetGame, flipBoard, toggleSound,
-    boardFlipped, analysisResult, mainLineHistory, restoreMainLine,
-    zenMode, toggleZenMode, showHintMove, hideHint, showHint, goToMove, goBack, goForward, loadSavedGames,
-    botMessage, playingAI, loadFen
-  } = useChessStore();
+  const fen = useChessStore(state => state.fen);
+  const game = useChessStore(state => state.game);
+  const history = useChessStore(state => state.history);
+  const currentMoveIndex = useChessStore(state => state.currentMoveIndex);
+  const resetGame = useChessStore(state => state.resetGame);
+  const flipBoard = useChessStore(state => state.flipBoard);
+  const toggleSound = useChessStore(state => state.toggleSound);
+  const boardFlipped = useChessStore(state => state.boardFlipped);
+  const analysisResult = useChessStore(state => state.analysisResult);
+  const mainLineHistory = useChessStore(state => state.mainLineHistory);
+  const restoreMainLine = useChessStore(state => state.restoreMainLine);
+  const zenMode = useChessStore(state => state.zenMode);
+  const toggleZenMode = useChessStore(state => state.toggleZenMode);
+  const showHintMove = useChessStore(state => state.showHintMove);
+  const hideHint = useChessStore(state => state.hideHint);
+  const showHint = useChessStore(state => state.showHint);
+  const goToMove = useChessStore(state => state.goToMove);
+  const goBack = useChessStore(state => state.goBack);
+  const goForward = useChessStore(state => state.goForward);
+  const loadSavedGames = useChessStore(state => state.loadSavedGames);
+  const botMessage = useChessStore(state => state.botMessage);
+  const playingAI = useChessStore(state => state.playingAI);
+  const loadFen = useChessStore(state => state.loadFen);
+
 
   const { checkDailyStreak } = useUserStore();
 
