@@ -15,7 +15,7 @@ const PUZZLES = [
 export default function PuzzleSection() {
   const [game, setGame] = useState(new Chess(PUZZLES[0].fen));
   const [currentPuzzle, setCurrentPuzzle] = useState(0);
-  const [showHint, setShowHint] = useState(false);
+  const [hintStage, setHintStage] = useState(0); // 0: none, 1: square, 2: move
   const [solved, setSolved] = useState(false);
   const [error, setError] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -70,7 +70,7 @@ export default function PuzzleSection() {
     setGame(new Chess(PUZZLES[nextIdx].fen));
     setSolved(false);
     setError(false);
-    setShowHint(false);
+    setHintStage(0);
     setTimer(0);
     setRunning(true);
   };
@@ -79,6 +79,7 @@ export default function PuzzleSection() {
     setGame(new Chess(puzzle.fen));
     setSolved(false);
     setError(false);
+    setHintStage(0);
   };
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
@@ -141,7 +142,7 @@ export default function PuzzleSection() {
                     boardStyle: {
                       borderRadius: '4px',
                     },
-                    squareStyles: showHint && !solved ? (() => {
+                    squareStyles: hintStage >= 1 && !solved ? (() => {
                       try {
                         const gameCopy = new Chess(game.fen());
                         const moves = gameCopy.moves({ verbose: true });
@@ -192,11 +193,18 @@ export default function PuzzleSection() {
                     </motion.div>
                   )}
 
-                  {/* Hint */}
-                  {showHint && !solved && (
+                  {/* Hint Stage 1: Text Hint */}
+                  {hintStage >= 1 && !solved && (
                     <div className="px-4 py-2.5 rounded-lg bg-amber-500/10 border border-amber-500/15 mb-4">
                       <span className="text-amber-300 text-sm">💡 {puzzle.hint}</span>
                     </div>
+                  )}
+
+                  {/* Hint Stage 2: Move Reveal */}
+                  {hintStage >= 2 && !solved && (
+                    <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="px-4 py-2.5 rounded-lg bg-blue-500/10 border border-blue-500/15 mb-4">
+                      <span className="text-blue-300 text-sm font-bold uppercase tracking-widest">The move is: {puzzle.solution}</span>
+                    </motion.div>
                   )}
                 </div>
 
@@ -204,8 +212,12 @@ export default function PuzzleSection() {
                   <button onClick={resetPuzzle} disabled={solved} className="text-xs font-bold text-gray-500 hover:text-white transition-colors flex items-center gap-1.5 disabled:opacity-0">
                     <RotateCcw className="w-3.5 h-3.5" /> Reset
                   </button>
-                  <button onClick={() => setShowHint(true)} disabled={showHint || solved} className="text-xs font-bold text-gray-500 hover:text-white transition-colors disabled:opacity-30">
-                    Need a hint?
+                  <button 
+                    onClick={() => setHintStage(prev => Math.min(prev + 1, 2))} 
+                    disabled={hintStage >= 2 || solved} 
+                    className="text-xs font-bold text-gray-500 hover:text-white transition-colors disabled:opacity-30"
+                  >
+                    {hintStage === 0 ? 'Need a hint?' : hintStage === 1 ? 'Show me the move' : 'Move revealed'}
                   </button>
                   {solved && (
                     <button onClick={nextPuzzle} className="ml-auto bg-[#d4af37] hover:bg-[#b8962d] text-black px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)]">
