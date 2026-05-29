@@ -249,17 +249,17 @@ export default function Analyzer() {
           </div>
         </div>
 
-        {/* Board & Eval Wrapper (Zero Gap) */}
-        <div className="flex w-full max-w-[80vh] aspect-[1.05/1] bg-background rounded-[16px] overflow-hidden shadow-2xl shadow-black/20 border border-white/10 relative">
+        {/* Board & Eval Wrapper */}
+        <div className="flex w-full max-w-[70vh] bg-background rounded-[16px] overflow-hidden shadow-2xl shadow-black/20 border border-white/10 relative shrink-0">
           
           {/* Eval Bar */}
-          <div className="w-8 h-full bg-[#1e293b] flex flex-col relative shrink-0 overflow-hidden">
+          <div className="w-6 md:w-8 bg-[#1e293b] flex flex-col relative shrink-0 overflow-hidden">
             <div 
               className="absolute bottom-0 left-0 right-0 bg-[#e2e8f0] transition-all duration-700 ease-out flex items-start justify-center pt-2"
               style={{ height: `${clampPercent}%` }}
             >
               {displayScore >= 0 && (
-                <span className="text-[11px] font-bold text-[#1e293b] select-none tracking-tighter">
+                <span className="text-[9px] md:text-[11px] font-bold text-[#1e293b] select-none tracking-tighter">
                   {currentEvalData.mate ? `M${Math.abs(currentEvalData.mate)}` : `+${displayScore.toFixed(1)}`}
                 </span>
               )}
@@ -274,14 +274,16 @@ export default function Analyzer() {
           </div>
 
           {/* Board */}
-          <div className="flex-1 h-full">
+          <div className="flex-1 aspect-square relative">
             {/* @ts-ignore */}
-        <Chessboard 
-              position={currentFen} 
-              onPieceDrop={onDrop}
-              customDarkSquareStyle={{ backgroundColor: '#2d3748' }}
-              customLightSquareStyle={{ backgroundColor: '#e2e8f0' }}
-              animationDuration={250}
+            <Chessboard 
+              options={{
+                position: currentFen,
+                onPieceDrop: onDrop,
+                darkSquareStyle: { backgroundColor: '#2d3748' },
+                lightSquareStyle: { backgroundColor: '#e2e8f0' },
+                animationDurationInMs: 250
+              }}
             />
           </div>
         </div>

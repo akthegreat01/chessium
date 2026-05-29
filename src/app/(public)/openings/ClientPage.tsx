@@ -49,14 +49,18 @@ export default function OpeningsClient() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-            <div className="w-full max-w-[400px] bg-background rounded-xl overflow-hidden shadow-2xl border border-white/10 pointer-events-none">
-              {/* @ts-ignore */}
-              <Chessboard 
-                position={openings[selectedIndex].fen} 
-                customDarkSquareStyle={{ backgroundColor: '#2d3748' }}
-                customLightSquareStyle={{ backgroundColor: '#e2e8f0' }}
-                arePiecesDraggable={false}
-              />
+            <div className="w-full max-w-[400px] aspect-square bg-background rounded-xl overflow-hidden shadow-2xl border border-white/10 pointer-events-none shrink-0">
+              <div className="flex-1 aspect-square relative">
+                {/* @ts-ignore */}
+                <Chessboard 
+                  options={{
+                    position: openings[selectedIndex].fen,
+                    darkSquareStyle: { backgroundColor: '#2d3748' },
+                    lightSquareStyle: { backgroundColor: '#e2e8f0' },
+                    allowDragging: false
+                  }}
+                />
+              </div>
             </div>
             <div className="space-y-8">
               <div>

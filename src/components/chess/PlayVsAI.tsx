@@ -243,16 +243,20 @@ export default function PlayVsAI() {
         </div>
 
         {/* The Board */}
-        <div className="w-full max-w-[650px] bg-background rounded-[16px] overflow-hidden shadow-2xl shadow-black/20 border border-white/10 relative z-0">
-          {/* @ts-ignore */}
-        <Chessboard 
-            position={game.fen()} 
-            onPieceDrop={onDrop}
-            boardOrientation={playerColor === "w" ? "white" : "black"}
-            customDarkSquareStyle={{ backgroundColor: '#2d3748' }}
-            customLightSquareStyle={{ backgroundColor: '#e2e8f0' }}
-            animationDuration={250}
-          />
+        <div className="w-full max-w-[70vh] bg-background rounded-[16px] overflow-hidden shadow-2xl shadow-black/20 border border-white/10 relative shrink-0">
+          <div className="flex-1 aspect-square relative">
+            {/* @ts-ignore */}
+            <Chessboard 
+              options={{
+                position: game.fen(),
+                onPieceDrop: onDrop,
+                boardOrientation: playerColor === "w" ? "white" : "black",
+                darkSquareStyle: { backgroundColor: '#2d3748' },
+                lightSquareStyle: { backgroundColor: '#e2e8f0' },
+                animationDurationInMs: 250
+              }}
+            />
+          </div>
         </div>
 
         {/* Player Info Footer */}
