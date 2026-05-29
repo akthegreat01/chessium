@@ -124,7 +124,7 @@ export default function Analyzer() {
     }
   }, [currentIndex]);
 
-  const onDrop = (sourceSquare: string, targetSquare: string) => {
+  const onDrop = ({ sourceSquare, targetSquare }: { sourceSquare: string, targetSquare: string }) => {
     // If not at the end of history, truncate history
     const tempGame = new Chess(currentFen);
     try {

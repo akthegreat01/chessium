@@ -31,7 +31,7 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
     }
   }, [moveIndex, status, game, puzzle.moves]);
 
-  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
+  const onDrop = ({ sourceSquare, targetSquare }: { sourceSquare: string, targetSquare: string }) => {
     if (status !== "playing") return false;
     if (moveIndex % 2 !== 0) return false; // Opponent's turn
 

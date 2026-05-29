@@ -110,7 +110,7 @@ export default function PlayVsAI() {
     }
   }, [game, playerColor, engineReady, isThinking, personality, requestEngineMove]);
 
-  function onDrop(sourceSquare: string, targetSquare: string) {
+  const onDrop = ({ sourceSquare, targetSquare }: { sourceSquare: string, targetSquare: string }) => {
     if (game.turn() !== playerColor || game.isGameOver()) return false;
 
     const gameCopy = new Chess(game.fen());
