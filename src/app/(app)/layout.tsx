@@ -23,8 +23,8 @@ export default async function AppLayout({
       <aside className="w-20 md:w-64 border-r border-[#1e2433] flex flex-col justify-between py-6 bg-[#121620] transition-all z-20 shadow-2xl shadow-black/50">
         <div>
           <div className="px-6 mb-10 flex items-center justify-center md:justify-start gap-3">
-            <div className="bg-gradient-to-br from-primary to-amber-600 w-8 h-8 rounded flex items-center justify-center shadow-[0_0_15px_rgba(245,185,20,0.4)]">
-              <Crown className="w-5 h-5 text-[#0a0d14]" fill="currentColor" />
+            <div className="w-10 h-10 flex items-center justify-center shrink-0">
+              <img src="/logo.png" alt="Chessium Logo" className="w-full h-full object-contain" />
             </div>
             <Link href="/home" className="font-bold text-xl tracking-[0.2em] uppercase hidden md:block text-foreground">Chessium</Link>
           </div>

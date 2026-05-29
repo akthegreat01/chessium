@@ -16,8 +16,11 @@ export default async function LandingPage() {
   return (
     <main className="flex-1 flex flex-col min-h-screen selection:bg-primary/20 bg-background font-sans">
       <header className="w-full flex items-center justify-between px-6 py-5 sticky top-0 bg-background/95 backdrop-blur-3xl z-50 border-b border-white/5">
-        <div className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-          <span>Chessium</span>
+        <div className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-3">
+          <div className="w-8 h-8 flex items-center justify-center shrink-0">
+            <img src="/logo.png" alt="Chessium Logo" className="w-full h-full object-contain" />
+          </div>
+          <span className="tracking-[0.2em] uppercase text-xl">Chessium</span>
         </div>
         <nav className="hidden md:flex gap-8">
           <Link href="/openings" className="text-sm font-bold text-secondary-foreground hover:text-foreground transition-colors">Openings</Link>
