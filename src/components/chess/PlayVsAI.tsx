@@ -244,7 +244,8 @@ export default function PlayVsAI() {
 
         {/* The Board */}
         <div className="w-full max-w-[650px] bg-background rounded-[16px] overflow-hidden shadow-2xl shadow-black/20 border border-white/10 relative z-0">
-          <Chessboard 
+          {/* @ts-ignore */}
+        <Chessboard 
             position={game.fen()} 
             onPieceDrop={onDrop}
             boardOrientation={playerColor === "w" ? "white" : "black"}

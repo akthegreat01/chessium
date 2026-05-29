@@ -44,10 +44,10 @@ export default function LearnPage() {
           From absolute beginner to seasoned master, Chessium provides the tools you need to elevate your game.
         </p>
         <div className="flex justify-center gap-4">
-          <Button asChild size="lg" className="rounded-full px-8 h-14 text-base font-semibold">
+          <Button size="lg" className="rounded-full px-8 h-14 text-base font-semibold">
             <Link href="/puzzles">Solve Daily Puzzles</Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="rounded-full px-8 h-14 text-base font-semibold border-white/10 bg-surface">
+          <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base font-semibold border-white/10 bg-surface">
             <Link href="/openings">Explore Openings</Link>
           </Button>
         </div>

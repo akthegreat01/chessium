@@ -275,7 +275,8 @@ export default function Analyzer() {
 
           {/* Board */}
           <div className="flex-1 h-full">
-            <Chessboard 
+            {/* @ts-ignore */}
+        <Chessboard 
               position={currentFen} 
               onPieceDrop={onDrop}
               customDarkSquareStyle={{ backgroundColor: '#2d3748' }}

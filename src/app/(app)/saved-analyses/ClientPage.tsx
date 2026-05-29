@@ -57,7 +57,7 @@ export default function SavedAnalysesClient({ serverSaves, isLoggedIn }: { serve
           </div>
           <h2 className="text-2xl font-bold mb-2">No saved analyses</h2>
           <p className="text-secondary-foreground mb-8">You haven't saved any games yet. Head over to the Analyzer to import and save a game.</p>
-          <Button asChild className="rounded-full px-8">
+          <Button className="rounded-full px-8">
             <Link href="/analyze">Go to Analyzer</Link>
           </Button>
         </div>
@@ -79,7 +79,7 @@ export default function SavedAnalysesClient({ serverSaves, isLoggedIn }: { serve
               </div>
 
               <div className="flex items-center gap-4">
-                <Button asChild variant="outline" className="rounded-full border-white/10 hover:bg-white/10">
+                <Button variant="outline" className="rounded-full border-white/10 hover:bg-white/10">
                   <Link href={`/analyze?pgn=${encodeURIComponent(save.pgn)}`}>
                     Reopen Analysis
                   </Link>

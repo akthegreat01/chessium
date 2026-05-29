@@ -20,13 +20,13 @@ export default async function LandingPage() {
         </nav>
         <div className="flex gap-4 items-center">
           {user ? (
-            <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-6 font-medium shadow-none h-9">
+            <Button className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-6 font-medium shadow-none h-9">
               <Link href="/home">Go to Dashboard</Link>
             </Button>
           ) : (
             <>
               <Link href="/login" className="text-sm font-medium hover:text-foreground/80 transition-colors">Sign In</Link>
-              <Button asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-6 font-medium shadow-none h-9">
+              <Button className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-6 font-medium shadow-none h-9">
                 <Link href="/signup">Get Started</Link>
               </Button>
             </>
@@ -50,10 +50,10 @@ export default async function LandingPage() {
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <Button size="lg" asChild className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-10 h-14 text-lg font-medium shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-all hover:shadow-[0_0_60px_rgba(212,175,55,0.4)]">
+          <Button size="lg" className="rounded-full bg-primary text-primary-foreground hover:bg-primary/90 px-10 h-14 text-lg font-medium shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-all hover:shadow-[0_0_60px_rgba(212,175,55,0.4)]">
             <Link href={user ? "/home" : "/signup"}>Start Playing</Link>
           </Button>
-          <Button size="lg" variant="outline" asChild className="rounded-full px-10 h-14 text-lg font-medium border-white/10 hover:bg-white/5 bg-transparent shadow-none">
+          <Button size="lg" variant="outline" className="rounded-full px-10 h-14 text-lg font-medium border-white/10 hover:bg-white/5 bg-transparent shadow-none">
             <Link href="/analyze">Analyze Game</Link>
           </Button>
         </div>

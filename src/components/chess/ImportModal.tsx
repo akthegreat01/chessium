@@ -39,7 +39,7 @@ export default function ImportModal({ onImport, children }: ImportModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger>
         {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg bg-surface border border-white/10 rounded-[32px] p-8 shadow-2xl">

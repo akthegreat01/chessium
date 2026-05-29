@@ -5,7 +5,7 @@ export default async function SavedAnalysesPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  let serverSaves = [];
+  let serverSaves: any[] = [];
   
   if (user) {
     const { data } = await supabase
