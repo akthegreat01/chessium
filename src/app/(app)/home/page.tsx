@@ -12,15 +12,51 @@ const genData = (base: number, volatility: number) => {
   }));
 };
 
-const perfData = Array.from({ length: 30 }, (_, i) => ({
-  name: i % 7 === 0 ? `May ${i + 1}` : '',
-  rating: 1800 + i * 5 + Math.random() * 30 - 15
-}));
-
 export default async function HomePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const name = user?.email?.split('@')[0] || "Player";
+
+  let analyses: any[] = [];
+  if (user) {
+    const { data } = await supabase.from("saved_analyses").select("*").order("created_at", { ascending: false });
+    if (data) analyses = data;
+  }
+
+  // Calculate real stats
+  const totalAnalyzed = analyses.length;
+  
+  const accW = totalAnalyzed > 0 ? analyses.reduce((sum, a) => sum + (parseFloat(a.accuracy_w) || 0), 0) / totalAnalyzed : 0;
+  const accB = totalAnalyzed > 0 ? analyses.reduce((sum, a) => sum + (parseFloat(a.accuracy_b) || 0), 0) / totalAnalyzed : 0;
+  const avgAcc = totalAnalyzed > 0 ? (accW + accB) / 2 : 0;
+  
+  const openings = analyses.reduce((acc: any, curr: any) => {
+    if (curr.opening_name) {
+      if (!acc[curr.opening_name]) acc[curr.opening_name] = { count: 0, eco: '???' };
+      acc[curr.opening_name].count += 1;
+      // You could extract ECO if you store it, but for now we'll just show the count or default
+    }
+    return acc;
+  }, {});
+
+  const uniqueOpenings = Object.keys(openings).length;
+
+  const topOpenings = Object.entries(openings)
+    .sort((a: any, b: any) => b[1].count - a[1].count)
+    .slice(0, 5)
+    .map(([name, data]: any) => ({ name, count: data.count }));
+
+  const perfData = [...analyses].reverse().slice(-30).map((a, i) => ({
+    name: new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+    rating: (parseFloat(a.accuracy_w) + parseFloat(a.accuracy_b)) / 2 || 0
+  }));
+
+  if (perfData.length === 0) {
+    // Fallback if no real data
+    perfData.push({ name: 'No Data', rating: 0 });
+  }
+
+  const todayDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date());
 
   return (
     <div className="p-6 md:p-10 max-w-[1600px] mx-auto space-y-8 text-foreground min-h-screen">
@@ -51,12 +87,11 @@ export default async function HomePage() {
       </header>
 
       {/* STAT CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <StatCard title="Rapid Rating" value="1947" sub="+12" subClass="text-success" icon={<Zap className="w-5 h-5 text-primary" />} data={genData(1900, 10)} color="#f5b914" />
-        <StatCard title="Games Played" value="1,248" icon={<Gamepad2 className="w-5 h-5 text-purple-500" />} data={genData(1200, 5)} color="#a855f7" />
-        <StatCard title="Win Rate" value="58.6%" icon={<Trophy className="w-5 h-5 text-cyan-500" />} data={genData(50, 2)} color="#06b6d4" />
-        <StatCard title="Puzzles Rating" value="2103" icon={<Puzzle className="w-5 h-5 text-primary" />} data={genData(2000, 15)} color="#f5b914" />
-        <StatCard title="Best Streak" value="18" sub="Apr 22 - May 10" subClass="text-secondary-foreground text-xs font-normal" icon={<Zap className="w-5 h-5 text-red-500" />} data={genData(10, 8)} color="#ef4444" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard title="Games Analyzed" value={totalAnalyzed.toString()} icon={<Gamepad2 className="w-5 h-5 text-purple-500" />} data={genData(totalAnalyzed, 5)} color="#a855f7" />
+        <StatCard title="Avg Accuracy" value={`${avgAcc.toFixed(1)}%`} icon={<Trophy className="w-5 h-5 text-cyan-500" />} data={genData(avgAcc, 2)} color="#06b6d4" />
+        <StatCard title="White Accuracy" value={`${accW.toFixed(1)}%`} icon={<Zap className="w-5 h-5 text-primary" />} data={genData(accW, 4)} color="#f5b914" />
+        <StatCard title="Openings Explored" value={uniqueOpenings.toString()} icon={<Puzzle className="w-5 h-5 text-green-500" />} data={genData(uniqueOpenings, 2)} color="#22c55e" />
       </div>
 
       {/* MIDDLE SECTION */}
@@ -97,11 +132,20 @@ export default async function HomePage() {
             <Link href="/saved-analyses" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300">View All</Link>
           </div>
           <div className="flex flex-col gap-4">
-            <AnalysisRow opening="Sicilian Defense" eco="B20" accW="96.2%" accB="89.4%" date="May 20, 2024" fen="r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3" />
-            <AnalysisRow opening="Ruy Lopez" eco="C60" accW="91.7%" accB="84.1%" date="May 19, 2024" fen="r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3" />
-            <AnalysisRow opening="Italian Game" eco="C50" accW="93.5%" accB="87.3%" date="May 18, 2024" fen="r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3" />
-            <AnalysisRow opening="French Defense" eco="C11" accW="88.9%" accB="79.2%" date="May 17, 2024" fen="rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3" />
-            <AnalysisRow opening="Queen's Gambit" eco="D06" accW="94.0%" accB="85.6%" date="May 16, 2024" fen="rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2" />
+            {analyses.slice(0, 5).map((a: any) => (
+              <AnalysisRow 
+                key={a.id}
+                opening={a.opening_name || "Unknown Opening"} 
+                eco="N/A" 
+                accW={a.accuracy_w} 
+                accB={a.accuracy_b} 
+                date={new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} 
+                fen="start" 
+              />
+            ))}
+            {analyses.length === 0 && (
+              <div className="text-secondary-foreground text-sm py-4 text-center">No games analyzed yet. Go import some!</div>
+            )}
           </div>
         </div>
 
@@ -109,7 +153,7 @@ export default async function HomePage() {
         <div className="bg-[#121620] border border-[#1e2433] rounded-3xl p-6 flex flex-col">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-lg font-bold">Daily Puzzle</h2>
-            <div className="text-xs text-secondary-foreground font-medium">May 20, 2024</div>
+            <div className="text-xs text-secondary-foreground font-medium">{todayDate}</div>
           </div>
           <div className="w-full aspect-square bg-[#0a0d14] rounded-xl overflow-hidden border border-[#1e2433] mb-4 shrink-0 relative">
             <div className="absolute inset-0 z-10 pointer-events-none border border-black/20 rounded-xl" />
@@ -132,9 +176,9 @@ export default async function HomePage() {
         {/* Performance Chart */}
         <div className="bg-[#121620] border border-[#1e2433] rounded-3xl p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold">Performance Overview</h2>
+            <h2 className="text-lg font-bold">Accuracy Trend</h2>
             <Button variant="outline" size="sm" className="bg-[#0a0d14] border-[#1e2433] rounded-lg text-xs h-8">
-              This Month <ChevronRight className="w-3 h-3 ml-1 rotate-90" />
+              All Time <ChevronRight className="w-3 h-3 ml-1 rotate-90" />
             </Button>
           </div>
           <PerformanceChart data={perfData} />
@@ -143,14 +187,16 @@ export default async function HomePage() {
         {/* Opening Explorer */}
         <div className="bg-[#121620] border border-[#1e2433] rounded-3xl p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-lg font-bold">Opening Explorer</h2>
+            <h2 className="text-lg font-bold">Top Openings Played</h2>
             <Link href="/openings" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300">View All</Link>
           </div>
           <div className="flex flex-col gap-5">
-            <OpeningRow name="Sicilian Defense" eco="B20" winRate="54%" />
-            <OpeningRow name="French Defense" eco="C00" winRate="52%" />
-            <OpeningRow name="Ruy Lopez" eco="C60" winRate="50%" />
-            <OpeningRow name="Caro-Kann" eco="B10" winRate="48%" />
+            {topOpenings.map((op: any, i: number) => (
+              <OpeningRow key={i} name={op.name} winRate={`${op.count} times`} />
+            ))}
+            {topOpenings.length === 0 && (
+              <div className="text-secondary-foreground text-sm py-4 text-center">No openings found.</div>
+            )}
           </div>
         </div>
 
