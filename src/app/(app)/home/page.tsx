@@ -1,97 +1,220 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Bot, LineChart, Puzzle } from "lucide-react";
+import { Bot, Search, Puzzle, Trophy, Zap, Gamepad2, Bell, Book, ChevronRight } from "lucide-react";
+import { createClient } from "@/utils/supabase/server";
+import { StatSparkline, PerformanceChart } from "@/components/home/DashboardCharts";
+import { StaticBoard } from "@/components/chess/StaticBoard";
 
-export default function HomePage() {
+// Helper for generic sparkline data
+const genData = (base: number, volatility: number) => {
+  return Array.from({ length: 20 }, (_, i) => ({
+    value: base + Math.sin(i) * volatility + (i * volatility * 0.1)
+  }));
+};
+
+const perfData = Array.from({ length: 30 }, (_, i) => ({
+  name: i % 7 === 0 ? `May ${i + 1}` : '',
+  rating: 1800 + i * 5 + Math.random() * 30 - 15
+}));
+
+export default async function HomePage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const name = user?.email?.split('@')[0] || "Player";
+
   return (
-    <div className="p-8 md:p-16 max-w-6xl mx-auto space-y-16">
-      <header className="space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Training Overview</h1>
-        <div className="flex gap-8 text-secondary-foreground font-medium text-lg">
-          <div className="flex flex-col">
-            <span className="text-sm uppercase tracking-wider text-secondary-foreground/60 mb-1">AI Rating</span>
-            <span className="text-foreground text-2xl">1400</span>
+    <div className="p-6 md:p-10 max-w-[1600px] mx-auto space-y-8 text-foreground min-h-screen">
+      
+      {/* HEADER */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-2">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight mb-1">Welcome back, {name}! <span className="text-2xl">👋</span></h1>
+          <p className="text-secondary-foreground font-medium">Ready to make your next move?</p>
+        </div>
+        <div className="flex items-center gap-4 w-full md:w-auto">
+          <div className="relative flex-1 md:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary-foreground" />
+            <input 
+              type="text" 
+              placeholder="Search games, players, openings..." 
+              className="w-full bg-[#121620] border border-[#1e2433] rounded-full pl-10 pr-16 py-2.5 text-sm focus:outline-none focus:border-white/20 transition-colors"
+            />
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-[#1e2433] px-2 py-0.5 rounded text-[10px] font-mono text-secondary-foreground">
+              <span>⌘</span><span>K</span>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <span className="text-sm uppercase tracking-wider text-secondary-foreground/60 mb-1">Puzzle Rating</span>
-            <span className="text-foreground text-2xl">1850</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm uppercase tracking-wider text-secondary-foreground/60 mb-1">Accuracy Avg</span>
-            <span className="text-foreground text-2xl">84.2%</span>
-          </div>
+          <Button variant="ghost" size="icon" className="rounded-full bg-[#121620] border border-[#1e2433] hover:bg-[#1e2433]">
+            <Bell className="w-4 h-4" />
+          </Button>
+          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 overflow-hidden border border-[#1e2433]" />
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link href="/play/ai" className="group flex flex-col justify-between h-48 p-6 rounded-[24px] bg-primary text-primary-foreground hover:bg-primary/90 transition-all shadow-[0_8px_30px_rgba(212,175,55,0.15)] hover:shadow-[0_8px_40px_rgba(212,175,55,0.25)] relative overflow-hidden">
-          <Bot className="w-8 h-8 opacity-80" />
-          <div className="text-2xl font-semibold tracking-tight">Play vs AI</div>
-          <div className="absolute right-0 bottom-0 translate-x-1/4 translate-y-1/4 opacity-10">
-            <Bot className="w-48 h-48" />
-          </div>
-        </Link>
-        
-        <Link href="/analyze" className="group flex flex-col justify-between h-48 p-6 rounded-[24px] bg-surface border border-white/5 hover:bg-surface/80 transition-all shadow-sm">
-          <LineChart className="w-8 h-8 text-primary opacity-80" />
-          <div className="text-2xl font-semibold tracking-tight">Analyze Game</div>
-        </Link>
-        
-        <Link href="/puzzles" className="group flex flex-col justify-between h-48 p-6 rounded-[24px] bg-surface border border-white/5 hover:bg-surface/80 transition-all shadow-sm">
-          <Puzzle className="w-8 h-8 text-primary opacity-80" />
-          <div className="text-2xl font-semibold tracking-tight">Puzzles</div>
-        </Link>
+      {/* STAT CARDS */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <StatCard title="Rapid Rating" value="1947" sub="+12" subClass="text-success" icon={<Zap className="w-5 h-5 text-primary" />} data={genData(1900, 10)} color="#f5b914" />
+        <StatCard title="Games Played" value="1,248" icon={<Gamepad2 className="w-5 h-5 text-purple-500" />} data={genData(1200, 5)} color="#a855f7" />
+        <StatCard title="Win Rate" value="58.6%" icon={<Trophy className="w-5 h-5 text-cyan-500" />} data={genData(50, 2)} color="#06b6d4" />
+        <StatCard title="Puzzles Rating" value="2103" icon={<Puzzle className="w-5 h-5 text-primary" />} data={genData(2000, 15)} color="#f5b914" />
+        <StatCard title="Best Streak" value="18" sub="Apr 22 - May 10" subClass="text-secondary-foreground text-xs font-normal" icon={<Zap className="w-5 h-5 text-red-500" />} data={genData(10, 8)} color="#ef4444" />
       </div>
 
-      <section className="space-y-6">
-        <h2 className="text-2xl font-semibold tracking-tight">Daily Challenge</h2>
-        <div className="bg-surface border border-white/5 rounded-[32px] p-8 flex flex-col md:flex-row gap-8 items-center shadow-sm">
-          <div className="w-full md:w-56 aspect-square bg-background/50 rounded-2xl flex items-center justify-center text-secondary-foreground border border-white/5">
-            <span className="font-mono text-sm opacity-50">[Board]</span>
+      {/* MIDDLE SECTION */}
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.5fr_1fr] gap-6">
+        
+        {/* Quick Actions */}
+        <div className="bg-[#121620] border border-[#1e2433] rounded-3xl p-6 flex flex-col">
+          <h2 className="text-lg font-bold mb-6">Quick Actions</h2>
+          <div className="grid grid-cols-2 gap-4 flex-1">
+            <Link href="/analyze" className="bg-[#0a0d14] border border-[#1e2433] rounded-2xl p-4 flex flex-col items-center justify-center gap-3 hover:border-white/10 transition-colors group">
+              <Search className="w-8 h-8 text-secondary-foreground group-hover:text-foreground transition-colors" />
+              <div className="text-center">
+                <div className="font-bold text-sm">Analyze Game</div>
+                <div className="text-[10px] text-secondary-foreground mt-1">Upload or paste a PGN</div>
+              </div>
+            </Link>
+            <Link href="/play/ai" className="bg-[#0a0d14] border border-[#1e2433] rounded-2xl p-4 flex flex-col items-center justify-center gap-3 hover:border-white/10 transition-colors group">
+              <Bot className="w-8 h-8 text-secondary-foreground group-hover:text-foreground transition-colors" />
+              <div className="text-center">
+                <div className="font-bold text-sm">Play vs AI</div>
+                <div className="text-[10px] text-secondary-foreground mt-1">Challenge the engine</div>
+              </div>
+            </Link>
+            <Link href="/puzzles" className="col-span-2 bg-[#0a0d14] border border-[#1e2433] rounded-2xl p-4 flex flex-col items-center justify-center gap-3 hover:border-white/10 transition-colors group">
+              <Puzzle className="w-8 h-8 text-primary" />
+              <div className="text-center">
+                <div className="font-bold text-sm">Daily Puzzle</div>
+                <div className="text-[10px] text-secondary-foreground mt-1">Keep your streak</div>
+              </div>
+            </Link>
           </div>
-          <div className="flex-1 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
-              Daily Puzzle
-            </div>
-            <h3 className="text-3xl font-bold tracking-tight">Tactical Strike</h3>
-            <p className="text-secondary-foreground text-lg max-w-md">
-              White to move and win material. Test your tactical vision.
-            </p>
-            <Button size="lg" className="rounded-full mt-4 bg-foreground text-background hover:bg-foreground/90 font-medium px-8">
-              Solve Now
+        </div>
+
+        {/* Recent Analyses */}
+        <div className="bg-[#121620] border border-[#1e2433] rounded-3xl p-6 flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold">Recent Analyses</h2>
+            <Link href="/saved-analyses" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300">View All</Link>
+          </div>
+          <div className="flex flex-col gap-4">
+            <AnalysisRow opening="Sicilian Defense" eco="B20" accW="96.2%" accB="89.4%" date="May 20, 2024" fen="r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 2 3" />
+            <AnalysisRow opening="Ruy Lopez" eco="C60" accW="91.7%" accB="84.1%" date="May 19, 2024" fen="r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3" />
+            <AnalysisRow opening="Italian Game" eco="C50" accW="93.5%" accB="87.3%" date="May 18, 2024" fen="r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3" />
+            <AnalysisRow opening="French Defense" eco="C11" accW="88.9%" accB="79.2%" date="May 17, 2024" fen="rnbqkbnr/ppp2ppp/4p3/3p4/3PP3/8/PPP2PPP/RNBQKBNR w KQkq - 0 3" />
+            <AnalysisRow opening="Queen's Gambit" eco="D06" accW="94.0%" accB="85.6%" date="May 16, 2024" fen="rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq - 0 2" />
+          </div>
+        </div>
+
+        {/* Daily Puzzle */}
+        <div className="bg-[#121620] border border-[#1e2433] rounded-3xl p-6 flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold">Daily Puzzle</h2>
+            <div className="text-xs text-secondary-foreground font-medium">May 20, 2024</div>
+          </div>
+          <div className="w-full aspect-square bg-[#0a0d14] rounded-xl overflow-hidden border border-[#1e2433] mb-4 shrink-0 relative">
+            <div className="absolute inset-0 z-10 pointer-events-none border border-black/20 rounded-xl" />
+            <StaticBoard position="3r3k/2q3pp/8/8/3Q4/2P5/5PPP/3R2K1 w - - 0 1" />
+          </div>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-3 h-3 bg-white rounded-sm" />
+            <span className="text-sm font-semibold">White to move</span>
+          </div>
+          <div className="text-sm font-bold text-secondary-foreground mb-4">Mate in 2</div>
+          <Button className="w-full rounded-xl bg-primary text-primary-foreground font-bold h-12 shadow-[0_4px_20px_rgba(245,185,20,0.3)] hover:bg-primary/90">
+            Solve Puzzle
+          </Button>
+        </div>
+      </div>
+
+      {/* BOTTOM SECTION */}
+      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 pb-10">
+        
+        {/* Performance Chart */}
+        <div className="bg-[#121620] border border-[#1e2433] rounded-3xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold">Performance Overview</h2>
+            <Button variant="outline" size="sm" className="bg-[#0a0d14] border-[#1e2433] rounded-lg text-xs h-8">
+              This Month <ChevronRight className="w-3 h-3 ml-1 rotate-90" />
             </Button>
           </div>
+          <PerformanceChart data={perfData} />
         </div>
-      </section>
 
-      <section className="space-y-6 pb-20">
-        <h2 className="text-2xl font-semibold tracking-tight">Recent Analyses</h2>
-        <div className="space-y-4">
-          <AnalysisRow opponent="Stockfish Level 4" opening="Ruy Lopez" accuracy="88.2%" time="2h ago" />
-          <AnalysisRow opponent="Stockfish Level 3" opening="Sicilian Defense" accuracy="92.1%" time="1d ago" />
-          <AnalysisRow opponent="Imported PGN" opening="Queen's Gambit" accuracy="76.4%" time="3d ago" />
+        {/* Opening Explorer */}
+        <div className="bg-[#121620] border border-[#1e2433] rounded-3xl p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold">Opening Explorer</h2>
+            <Link href="/openings" className="text-xs font-semibold text-indigo-400 hover:text-indigo-300">View All</Link>
+          </div>
+          <div className="flex flex-col gap-5">
+            <OpeningRow name="Sicilian Defense" eco="B20" winRate="54%" />
+            <OpeningRow name="French Defense" eco="C00" winRate="52%" />
+            <OpeningRow name="Ruy Lopez" eco="C60" winRate="50%" />
+            <OpeningRow name="Caro-Kann" eco="B10" winRate="48%" />
+          </div>
         </div>
-      </section>
+
+      </div>
+
     </div>
   );
 }
 
-function AnalysisRow({ opponent, opening, accuracy, time }: { opponent: string, opening: string, accuracy: string, time: string }) {
-  const accNum = parseFloat(accuracy);
-  const accColor = accNum > 90 ? "text-success" : accNum > 80 ? "text-primary" : "text-warning";
-  
+function StatCard({ title, value, sub, subClass, icon, data, color }: any) {
   return (
-    <div className="flex items-center justify-between p-6 rounded-[24px] bg-surface border border-white/5 hover:bg-surface/80 transition-colors shadow-sm">
-      <div className="flex items-center gap-6">
-        <div className={`font-bold w-16 text-xl tracking-tight ${accColor}`}>{accuracy}</div>
+    <div className="bg-[#121620] border border-[#1e2433] rounded-2xl p-5 overflow-hidden flex flex-col relative group hover:border-white/10 transition-colors">
+      <div className="flex justify-between items-start mb-2">
+        <div className="text-xs font-semibold text-secondary-foreground">{title}</div>
+        {icon}
+      </div>
+      <div className="flex items-baseline gap-2 mt-auto">
+        <div className="text-3xl font-bold tracking-tight">{value}</div>
+        {sub && <div className={`text-sm font-bold ${subClass}`}>{sub}</div>}
+      </div>
+      <StatSparkline data={data} color={color} />
+    </div>
+  );
+}
+
+function AnalysisRow({ opening, eco, accW, accB, date, fen }: any) {
+  return (
+    <div className="flex items-center gap-4 p-2 -mx-2 rounded-xl hover:bg-[#0a0d14] cursor-pointer transition-colors group">
+      <div className="w-12 h-12 bg-[#0a0d14] rounded overflow-hidden shrink-0 pointer-events-none">
+        <StaticBoard position={fen} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-bold truncate text-foreground">{opening}</div>
+        <div className="text-[11px] text-secondary-foreground font-mono mt-0.5">{eco}</div>
+      </div>
+      <div className="hidden sm:flex items-center gap-6">
         <div>
-          <div className="font-semibold text-lg">{opponent}</div>
-          <div className="text-sm text-secondary-foreground font-medium">{opening}</div>
+          <div className="text-sm font-bold text-success">{accW}</div>
+          <div className="text-[10px] text-secondary-foreground">White</div>
+        </div>
+        <div>
+          <div className="text-sm font-bold text-foreground">{accB}</div>
+          <div className="text-[10px] text-secondary-foreground">Black</div>
         </div>
       </div>
-      <div className="text-sm text-secondary-foreground font-medium">
-        {time}
+      <div className="text-xs font-medium text-secondary-foreground hidden md:block w-24 text-right">{date}</div>
+      <ChevronRight className="w-4 h-4 text-secondary-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+    </div>
+  );
+}
+
+function OpeningRow({ name, eco, winRate }: any) {
+  return (
+    <div className="flex items-center justify-between pb-5 border-b border-[#1e2433] last:border-0 last:pb-0">
+      <div className="flex items-center gap-4">
+        <div className="w-10 h-10 rounded-xl bg-[#0a0d14] border border-[#1e2433] flex items-center justify-center shrink-0">
+          <Book className="w-5 h-5 text-secondary-foreground" />
+        </div>
+        <div>
+          <div className="text-sm font-bold">{name}</div>
+          <div className="text-[11px] font-mono text-secondary-foreground mt-0.5">{eco}</div>
+        </div>
       </div>
+      <div className="text-sm font-bold text-secondary-foreground">{winRate}</div>
     </div>
   );
 }
