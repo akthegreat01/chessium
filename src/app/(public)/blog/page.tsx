@@ -23,6 +23,20 @@ const BLOG_POSTS = [
     excerpt: "What does +1.5 actually mean? We break down how Stockfish evaluates positions and how to interpret it.",
     date: "May 15, 2026",
     readTime: "4 min read"
+  },
+  {
+    slug: "carlsen-legacy",
+    title: "Magnus Carlsen: A Legacy of Endgames",
+    excerpt: "Analyzing the World Champion's unparalleled ability to squeeze water from a stone in seemingly drawn endgames.",
+    date: "May 10, 2026",
+    readTime: "6 min read"
+  },
+  {
+    slug: "blitz-chess-strategies",
+    title: "Speed and Precision: Blitz Chess Strategies",
+    excerpt: "How to manage your time, avoid flags, and play practical chess when the clock is ticking down.",
+    date: "May 3, 2026",
+    readTime: "4 min read"
   }
 ];
 

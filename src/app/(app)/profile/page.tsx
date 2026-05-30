@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 export default async function ProfilePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const name = user?.email?.split('@')[0] || "Player";
+  const name = user?.user_metadata?.display_name || user?.email?.split('@')[0] || "Player";
+  const chesscomUsername = user?.user_metadata?.chesscom_username;
 
   let analyses: any[] = [];
   if (user) {
@@ -14,6 +15,22 @@ export default async function ProfilePage() {
     if (data) analyses = data;
   }
   const totalAnalyzed = analyses.length;
+
+  let rapidRating = 1200;
+  let puzzleRating = 1200;
+
+  if (chesscomUsername) {
+    try {
+      const res = await fetch(`https://api.chess.com/pub/player/${chesscomUsername}/stats`, { next: { revalidate: 3600 } });
+      if (res.ok) {
+        const stats = await res.json();
+        if (stats.chess_rapid?.last?.rating) rapidRating = stats.chess_rapid.last.rating;
+        if (stats.tactics?.highest?.rating) puzzleRating = stats.tactics.highest.rating;
+      }
+    } catch (err) {
+      console.error("Failed to fetch chess.com stats", err);
+    }
+  }
 
   return (
     <div className="p-6 md:p-8 max-w-[1000px] mx-auto min-h-screen flex flex-col md:flex-row gap-8">
@@ -39,19 +56,15 @@ export default async function ProfilePage() {
               <span className="text-secondary-foreground">Member Since</span>
               <span className="font-mono">May 2025</span>
             </div>
-            <div className="flex justify-between items-center pb-4 border-b border-border">
+            <div className="flex justify-between items-center">
               <span className="text-secondary-foreground">Games Analyzed</span>
               <span className="font-mono">{totalAnalyzed}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-secondary-foreground">Time Played</span>
-              <span className="font-mono">42h 15m</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Right Column - Stats & Achievements */}
+      {/* Right Column - Stats */}
       <div className="flex-1 flex flex-col gap-6">
         {user ? (
           <div className="grid grid-cols-2 gap-4">
@@ -59,13 +72,13 @@ export default async function ProfilePage() {
               <div className="flex items-center gap-2 text-[12px] text-secondary-foreground font-medium mb-3">
                 <Activity className="w-4 h-4 text-emerald-400" /> Rapid Rating
               </div>
-              <div className="text-4xl font-bold tracking-tight">2113</div>
+              <div className="text-4xl font-bold tracking-tight">{rapidRating}</div>
             </div>
             <div className="bg-surface border border-border rounded-xl p-6">
               <div className="flex items-center gap-2 text-[12px] text-secondary-foreground font-medium mb-3">
                 <Star className="w-4 h-4 text-primary" /> Puzzle Rating
               </div>
-              <div className="text-4xl font-bold tracking-tight">2530</div>
+              <div className="text-4xl font-bold tracking-tight">{puzzleRating}</div>
             </div>
           </div>
         ) : (
@@ -75,32 +88,6 @@ export default async function ProfilePage() {
             <a href="/signup" className="text-[13px] font-medium text-primary hover:underline">Sign up now →</a>
           </div>
         )}
-
-        <div className="bg-surface border border-border rounded-xl p-6 flex-1">
-          <h2 className="text-[14px] font-semibold mb-6 flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-primary" /> Recent Achievements
-          </h2>
-          <div className="flex flex-col gap-4">
-            {[
-              { title: "Tactician", desc: "Solve 50 puzzles in a row.", date: "2 days ago" },
-              { title: "Flawless Victory", desc: "Win a game with 99%+ accuracy.", date: "1 week ago" },
-              { title: "Marathon", desc: "Analyze 100 games.", date: "1 month ago" }
-            ].map((ach, i) => (
-              <div key={i} className="flex gap-4 p-4 rounded-lg bg-background border border-border">
-                <div className="w-10 h-10 rounded bg-surface border border-border flex items-center justify-center shrink-0">
-                  <Trophy className="w-5 h-5 text-primary opacity-80" />
-                </div>
-                <div>
-                  <div className="flex items-baseline justify-between mb-1">
-                    <h3 className="font-semibold text-[14px]">{ach.title}</h3>
-                    <span className="text-[11px] text-secondary-foreground">{ach.date}</span>
-                  </div>
-                  <p className="text-[13px] text-secondary-foreground">{ach.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
     </div>

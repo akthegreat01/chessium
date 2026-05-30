@@ -133,7 +133,7 @@ export default function PlayVsAI() {
       const move = g.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: piece[1].toLowerCase() ?? "q"
+        promotion: "q"
       });
 
       if (move) {

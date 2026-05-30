@@ -204,7 +204,13 @@ export default function Analyzer() {
     const newGame = new Chess();
     try {
       if (type === 'pgn') {
-        newGame.loadPgn(data);
+        try {
+          newGame.loadPgn(data);
+        } catch (e) {
+          // If strict parsing fails, strip headers and try again
+          const rawMoves = data.replace(/\[.*?\]\s*/g, '').trim();
+          newGame.loadPgn(rawMoves);
+        }
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
         setCurrentIndex(moves.length - 1);
@@ -218,7 +224,8 @@ export default function Analyzer() {
       setEvaluations({});
       setClassifications({});
     } catch (e) {
-      console.error("Invalid Import");
+      console.error("Invalid Import", e);
+      alert("Failed to parse the imported game. Please ensure the PGN or FEN is valid.");
     }
   };
 

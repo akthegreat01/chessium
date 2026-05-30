@@ -3,6 +3,7 @@ import { Settings, Bell, Shield, Key, Monitor, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/server";
 import ChangeNickname from "@/components/settings/ChangeNickname";
+import BoardThemeSelector from "@/components/settings/BoardThemeSelector";
 
 export default async function SettingsPage() {
   const supabase = await createClient();
@@ -61,13 +62,7 @@ export default async function SettingsPage() {
             <Monitor className="w-4 h-4 text-primary" /> Preferences
           </h2>
           <div className="flex flex-col gap-6">
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="text-[14px] font-medium mb-1">Board Theme</div>
-                <div className="text-[12px] text-secondary-foreground">Change the visual appearance of the chessboard.</div>
-              </div>
-              <Button variant="outline" className="h-8 rounded text-[12px] border-border hover:bg-white/5">Customize</Button>
-            </div>
+            <BoardThemeSelector />
             <div className="h-px w-full bg-border" />
             <div className="flex justify-between items-center">
               <div>
