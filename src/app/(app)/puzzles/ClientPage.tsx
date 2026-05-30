@@ -7,8 +7,10 @@ import { Puzzle } from "@/lib/puzzles/data";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";
 import confetti from "canvas-confetti";
+import { useBoardTheme } from "@/components/chess/ThemeContext";
 
 export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
+  const { boardTheme } = useBoardTheme();
   const [game, setGame] = useState(new Chess(puzzle.fen));
   const [moveIndex, setMoveIndex] = useState(0);
   const [status, setStatus] = useState<"playing" | "incorrect" | "solved">("playing");
@@ -31,7 +33,7 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
     }
   }, [moveIndex, status, game, puzzle.moves]);
 
-  const onDrop = ({ sourceSquare, targetSquare }: { sourceSquare: string, targetSquare: string }) => {
+  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
     if (status !== "playing") return false;
     if (moveIndex % 2 !== 0) return false; // Opponent's turn
 
@@ -40,7 +42,7 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
       const move = gameCopy.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: piece[1].toLowerCase() ?? "q",
+        promotion: piece[1] ? piece[1].toLowerCase() : "q"
       });
 
       if (move) {
@@ -90,14 +92,12 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
       <div className="w-full max-w-[600px] aspect-square bg-background rounded-2xl overflow-hidden shadow-2xl border border-white/10 shrink-0">
         {/* @ts-ignore */}
         <Chessboard 
-          options={{
-            position: game.fen(),
-            onPieceDrop: onDrop,
-            boardOrientation: playerColor === "White" ? "white" : "black",
-            darkSquareStyle: { backgroundColor: '#2d3748' },
-            lightSquareStyle: { backgroundColor: '#e2e8f0' },
-            animationDurationInMs: 300
-          }}
+          position={game.fen()}
+          onPieceDrop={onDrop}
+          boardOrientation={playerColor === "White" ? "white" : "black"}
+          customDarkSquareStyle={boardTheme.darkSquareStyle}
+          customLightSquareStyle={boardTheme.lightSquareStyle}
+          animationDuration={300}
         />
       </div>
 

@@ -6,8 +6,10 @@ import { Chessboard } from "react-chessboard";
 import { Button } from "@/components/ui/button";
 import { Undo2, Flag, RefreshCw, RefreshCcw, CheckCircle2 } from "lucide-react";
 import { AIPersonality, aiPersonalities } from "@/lib/ai/personalities";
+import { useBoardTheme } from "./ThemeContext";
 
 export default function PlayVsAI() {
+  const { boardTheme } = useBoardTheme();
   const [game, setGame] = useState(new Chess());
   const [personality, setPersonality] = useState<AIPersonality>(aiPersonalities[1]); // Default Aggressor
   const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
@@ -79,7 +81,12 @@ export default function PlayVsAI() {
   const makeEngineMove = (moveString: string) => {
     const gameCopy = new Chess(game.fen());
     try {
-      const result = gameCopy.move(moveString, { sloppy: true } as any);
+      // Stockfish UCI moves are like "e2e4" or "e7e8q"
+      const from = moveString.substring(0, 2);
+      const to = moveString.substring(2, 4);
+      const promotion = moveString.length > 4 ? moveString.substring(4, 5) : undefined;
+      
+      const result = gameCopy.move({ from, to, promotion });
       if (result) {
         setGame(gameCopy);
         
@@ -110,7 +117,7 @@ export default function PlayVsAI() {
     }
   }, [game, playerColor, engineReady, isThinking, personality, requestEngineMove]);
 
-  const onDrop = ({ sourceSquare, targetSquare }: { sourceSquare: string, targetSquare: string }) => {
+  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
     if (game.turn() !== playerColor || game.isGameOver()) return false;
 
     const gameCopy = new Chess(game.fen());
@@ -118,7 +125,7 @@ export default function PlayVsAI() {
       const result = gameCopy.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: "q",
+        promotion: piece[1] ? piece[1].toLowerCase() : "q",
       });
       if (result) {
         setGame(gameCopy);
@@ -247,14 +254,12 @@ export default function PlayVsAI() {
           <div className="flex-1 aspect-square relative">
             {/* @ts-ignore */}
             <Chessboard 
-              options={{
-                position: game.fen(),
-                onPieceDrop: onDrop,
-                boardOrientation: playerColor === "w" ? "white" : "black",
-                darkSquareStyle: { backgroundColor: '#2d3748' },
-                lightSquareStyle: { backgroundColor: '#e2e8f0' },
-                animationDurationInMs: 250
-              }}
+              position={game.fen()}
+              onPieceDrop={onDrop}
+              boardOrientation={playerColor === "w" ? "white" : "black"}
+              customDarkSquareStyle={boardTheme.darkSquareStyle}
+              customLightSquareStyle={boardTheme.lightSquareStyle}
+              animationDuration={250}
             />
           </div>
         </div>

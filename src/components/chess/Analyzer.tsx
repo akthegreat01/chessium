@@ -15,6 +15,7 @@ import { saveAnalysis } from "@/app/actions/analysis";
 import { Loader2, Save } from "lucide-react";
 
 import { useSearchParams } from "next/navigation";
+import { useBoardTheme } from "./ThemeContext";
 
 // Helper to chunk move history into pairs
 const chunkMoves = (moves: Move[]) => {
@@ -26,6 +27,7 @@ const chunkMoves = (moves: Move[]) => {
 };
 
 export default function Analyzer() {
+  const { boardTheme } = useBoardTheme();
   const searchParams = useSearchParams();
   const [game, setGame] = useState(new Chess());
   const [history, setHistory] = useState<Move[]>([]);
@@ -124,14 +126,14 @@ export default function Analyzer() {
     }
   }, [currentIndex]);
 
-  const onDrop = ({ sourceSquare, targetSquare }: { sourceSquare: string, targetSquare: string }) => {
+  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
     // If not at the end of history, truncate history
     const tempGame = new Chess(currentFen);
     try {
       const move = tempGame.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: "q",
+        promotion: piece[1] ? piece[1].toLowerCase() : "q",
       });
       if (move) {
         const newHistory = [...history.slice(0, currentIndex + 1), move];
@@ -277,13 +279,11 @@ export default function Analyzer() {
           <div className="flex-1 aspect-square relative">
             {/* @ts-ignore */}
             <Chessboard 
-              options={{
-                position: currentFen,
-                onPieceDrop: onDrop,
-                darkSquareStyle: { backgroundColor: '#2d3748' },
-                lightSquareStyle: { backgroundColor: '#e2e8f0' },
-                animationDurationInMs: 250
-              }}
+              position={currentFen}
+              onPieceDrop={onDrop}
+              customDarkSquareStyle={boardTheme.darkSquareStyle}
+              customLightSquareStyle={boardTheme.lightSquareStyle}
+              animationDuration={250}
             />
           </div>
         </div>
