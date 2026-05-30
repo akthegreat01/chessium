@@ -32,3 +32,5 @@
 React does not recognize the `asChild` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `aschild` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
  GET /analyze 200 in 317ms (next.js: 54ms, proxy.ts: 28ms, application-code: 235ms)
 ✓ Compiled in 160ms
+ GET / 200 in 547ms (next.js: 186ms, proxy.ts: 136ms, application-code: 225ms)
+ GET /play/ai 200 in 244ms (next.js: 60ms, proxy.ts: 2ms, application-code: 181ms)

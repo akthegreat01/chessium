@@ -90,16 +90,18 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
     <div className="w-full max-w-[1200px] mx-auto p-6 md:p-10 flex flex-col md:flex-row gap-12 lg:gap-16 items-center lg:items-start justify-center min-h-[calc(100vh-100px)] pt-12 lg:pt-16">
       
       <div className="w-full max-w-[650px] bg-surface/40 backdrop-blur-xl rounded-[32px] p-4 sm:p-6 shadow-[0_0_60px_rgba(0,0,0,0.5)] border border-white/10 shrink-0">
-        <div className="flex-1 aspect-square relative rounded-[16px] overflow-hidden border border-white/5 shadow-inner">
-        {/* @ts-ignore */}
-        <Chessboard 
-          position={game.fen()}
-          onPieceDrop={onDrop}
-          boardOrientation={playerColor === "White" ? "white" : "black"}
-          customDarkSquareStyle={boardTheme.darkSquareStyle}
-          customLightSquareStyle={boardTheme.lightSquareStyle}
-          animationDuration={300}
-        />
+        <div className="w-full aspect-square relative rounded-[16px] overflow-hidden border border-white/5 shadow-inner bg-background/50">
+          <div className="w-full h-full absolute inset-0">
+            {/* @ts-ignore */}
+            <Chessboard 
+              position={game.fen()}
+              onPieceDrop={onDrop}
+              boardOrientation={playerColor === "White" ? "white" : "black"}
+              customDarkSquareStyle={boardTheme.darkSquareStyle}
+              customLightSquareStyle={boardTheme.lightSquareStyle}
+              animationDuration={300}
+            />
+          </div>
         </div>
       </div>
 

@@ -186,10 +186,10 @@ export default function PlayVsAI() {
               <button 
                 key={p.id}
                 onClick={() => setPersonality(p)}
-                className={`w-full text-left p-5 rounded-md bg-[#262421] transition-all flex gap-4 ${
+                className={`w-full text-left p-5 rounded-[16px] bg-surface transition-all flex gap-4 ${
                   isSelected 
-                    ? "border-2 border-primary bg-[#312e2b] shadow-lg shadow-primary/10" 
-                    : "border-2 border-transparent hover:bg-[#312e2b]"
+                    ? "border-2 border-primary shadow-lg shadow-primary/10" 
+                    : "border-2 border-transparent hover:border-border"
                 }`}
               >
                 <div className={`w-14 h-14 rounded shrink-0 flex items-center justify-center ${p.colorClass} text-white`}>
@@ -197,31 +197,31 @@ export default function PlayVsAI() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <div className="font-bold text-[#fff] text-base">{p.name}</div>
+                    <div className="font-bold text-foreground text-base">{p.name}</div>
                     {isSelected && <CheckCircle2 className="w-5 h-5 text-primary" />}
                   </div>
-                  <div className="text-xs font-bold text-[#8b8987] uppercase tracking-wider mb-2">{p.title} • Lvl {p.engine.skillLevel}</div>
-                  <div className="text-xs text-[#8b8987] leading-relaxed line-clamp-2">{p.description}</div>
+                  <div className="text-xs font-bold text-secondary-foreground uppercase tracking-wider mb-2">{p.title} • Lvl {p.engine.skillLevel}</div>
+                  <div className="text-xs text-secondary-foreground leading-relaxed line-clamp-2">{p.description}</div>
                 </div>
               </button>
             )
           })}
         </div>
 
-        <div className="bg-[#262421] border border-[#312e2b] p-8 rounded-xl w-full max-w-[500px] flex flex-col items-center gap-6 mt-4">
+        <div className="bg-surface border border-border rounded-[24px] p-8 w-full max-w-[500px] flex flex-col items-center gap-6 mt-4">
           <div className="w-full">
-            <h3 className="text-xs font-bold tracking-wider text-[#8b8987] uppercase mb-3 text-center">Play As</h3>
+            <h3 className="text-xs font-bold tracking-wider text-secondary-foreground uppercase mb-3 text-center">Play As</h3>
             <div className="flex gap-2 w-full">
               <Button 
                 variant="secondary"
-                className={`flex-1 rounded-lg h-12 text-[15px] font-bold ${playerColor === "w" ? "bg-[#fff] text-[#262421] hover:bg-[#fff]" : "bg-[#312e2b] text-[#8b8987] hover:bg-[#3d3935]"}`}
+                className={`flex-1 rounded-xl h-12 text-[15px] font-bold border-2 transition-all ${playerColor === "w" ? "border-primary bg-primary/10 text-primary" : "border-transparent bg-background text-secondary-foreground hover:bg-white/5"}`}
                 onClick={() => { setPlayerColor("w"); setIsFlipped(false); }}
               >
                 White
               </Button>
               <Button 
                 variant="secondary"
-                className={`flex-1 rounded-lg h-12 text-[15px] font-bold ${playerColor === "b" ? "bg-[#fff] text-[#262421] hover:bg-[#fff]" : "bg-[#312e2b] text-[#8b8987] hover:bg-[#3d3935]"}`}
+                className={`flex-1 rounded-xl h-12 text-[15px] font-bold border-2 transition-all ${playerColor === "b" ? "border-primary bg-primary/10 text-primary" : "border-transparent bg-background text-secondary-foreground hover:bg-white/5"}`}
                 onClick={() => { setPlayerColor("b"); setIsFlipped(true); }}
               >
                 Black
@@ -244,21 +244,21 @@ export default function PlayVsAI() {
     <div className="flex flex-col lg:flex-row h-full w-full max-w-[1200px] mx-auto gap-8 px-4 py-6 pb-24 lg:pb-6 bg-background items-center lg:items-start justify-center min-h-[calc(100vh-80px)]">
       
       {/* Board Column (Center) */}
-      <div className="flex flex-col w-full max-w-[calc(100vh-180px)] min-w-[300px] flex-1 bg-[#312e2b] rounded-md overflow-hidden relative shrink-0 shadow-2xl">
+      <div className="flex flex-col w-full max-w-[75vh] flex-1 bg-surface border border-border rounded-[24px] overflow-hidden relative shrink-0 shadow-2xl">
         
         {/* Opponent Info Header */}
-        <div className="w-full bg-[#312e2b] px-5 py-4 flex items-center justify-between border-b border-[#262421]">
+        <div className="w-full bg-surface px-5 py-4 flex items-center justify-between border-b border-border">
           <div className="flex items-center gap-4 relative">
             <div className={`w-10 h-10 rounded flex items-center justify-center text-white shadow-md ${personality.colorClass}`}>
               {React.createElement(personality.avatarIcon, { className: "w-5 h-5" })}
             </div>
-            <h2 className="text-base font-bold text-[#fff]">{personality.name} <span className="text-[#8b8987] font-normal text-sm ml-1">(Lvl {personality.engine.skillLevel})</span></h2>
+            <h2 className="text-base font-bold text-foreground">{personality.name} <span className="text-secondary-foreground font-normal text-sm ml-1">(Lvl {personality.engine.skillLevel})</span></h2>
 
             {/* Dialogue Bubble */}
-            <div className={`absolute top-[50px] left-0 w-[250px] bg-[#fff] text-[#262421] p-3 rounded shadow-xl transition-all duration-300 z-10 ${
+            <div className={`absolute top-[50px] left-0 w-[250px] bg-foreground text-background p-3 rounded-xl shadow-xl transition-all duration-300 z-10 ${
               showDialogue ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
             }`}>
-              <div className="absolute -top-2 left-4 w-4 h-4 bg-[#fff] rotate-45"></div>
+              <div className="absolute -top-2 left-4 w-4 h-4 bg-foreground rotate-45"></div>
               <p className="text-[13px] font-bold relative z-10 leading-snug">{dialogue}</p>
             </div>
           </div>
@@ -272,9 +272,8 @@ export default function PlayVsAI() {
           </div>
         </div>
 
-        <div className="flex w-full flex-1 overflow-hidden">
-          {/* The Board */}
-          <div className="flex-1 aspect-square relative bg-[#262421]">
+        <div className="w-full aspect-square relative bg-background/50">
+          <div className="w-full h-full absolute inset-0">
             {/* @ts-ignore */}
             <Chessboard 
               position={game.fen()}
@@ -285,28 +284,15 @@ export default function PlayVsAI() {
               animationDuration={250}
             />
           </div>
-
-          {/* Board Controls Bar */}
-          <div className="w-14 bg-[#262421] flex flex-col items-center py-4 shrink-0 gap-3 border-l border-[#312e2b]">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={flipBoard}
-              className="w-10 h-10 rounded text-[#8b8987] hover:bg-[#312e2b] hover:text-[#fff]"
-              title="Flip Board"
-            >
-              <ArrowUpDown className="w-5 h-5" />
-            </Button>
-          </div>
         </div>
 
         {/* Player Info Footer */}
-        <div className="w-full bg-[#312e2b] px-5 py-4 flex items-center justify-between border-t border-[#262421]">
+        <div className="w-full bg-surface px-5 py-4 flex items-center justify-between border-t border-border">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded bg-[#262421] flex items-center justify-center overflow-hidden shadow-inner">
+            <div className="w-10 h-10 rounded bg-background flex items-center justify-center overflow-hidden shadow-inner">
               <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover p-1 opacity-80" />
             </div>
-            <h2 className="text-base font-bold text-[#fff]">{playerName}</h2>
+            <h2 className="text-base font-bold text-foreground">{playerName}</h2>
           </div>
         </div>
       </div>
@@ -315,17 +301,17 @@ export default function PlayVsAI() {
       <div className="w-full lg:w-[300px] flex flex-col gap-4">
         
         {/* Actions */}
-        <div className="bg-[#262421] rounded-md p-3 flex flex-col gap-2 shadow-lg">
-          <Button onClick={undoMove} disabled={game.history().length === 0 || game.isGameOver()} variant="ghost" className="w-full justify-start gap-4 h-14 rounded bg-[#312e2b]/50 hover:bg-[#312e2b] text-[#c3c3c2] font-semibold text-[15px]">
-            <Undo2 className="w-5 h-5 text-[#8b8987]" /> Undo Move
+        <div className="bg-surface rounded-2xl p-3 flex flex-col gap-2 border border-border shadow-lg">
+          <Button onClick={undoMove} disabled={game.history().length === 0 || game.isGameOver()} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">
+            <Undo2 className="w-5 h-5 text-secondary-foreground" /> Undo Move
           </Button>
-          <Button onClick={resetGame} variant="ghost" className="w-full justify-start gap-4 h-14 rounded bg-[#312e2b]/50 hover:bg-[#312e2b] text-[#c3c3c2] font-semibold text-[15px]">
-            <RefreshCw className="w-5 h-5 text-[#8b8987]" /> Change Bot
+          <Button onClick={resetGame} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">
+            <RefreshCw className="w-5 h-5 text-secondary-foreground" /> Change Bot
           </Button>
-          <Button onClick={() => setGame(new Chess())} variant="ghost" className="w-full justify-start gap-4 h-14 rounded bg-[#312e2b]/50 hover:bg-[#312e2b] text-[#c3c3c2] font-semibold text-[15px]">
-            <RefreshCcw className="w-5 h-5 text-[#8b8987]" /> Restart Game
+          <Button onClick={flipBoard} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">
+            <RefreshCcw className="w-5 h-5 text-secondary-foreground" /> Flip Board
           </Button>
-          <Button variant="ghost" className="w-full justify-start gap-4 h-14 rounded bg-[#312e2b]/50 hover:bg-[#312e2b] text-destructive font-semibold mt-4 border-t border-[#312e2b] pt-6 text-[15px]">
+          <Button variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-destructive/20 hover:bg-destructive/10 text-destructive text-base font-medium transition-colors">
             <Flag className="w-5 h-5" /> Resign
           </Button>
         </div>
