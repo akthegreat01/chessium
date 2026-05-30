@@ -1,3 +1,5 @@
+#!/bin/bash
+cat << 'INNER_EOF' > /Users/akshathkataria/Desktop/chessium/src/components/chess/PlayVsAI.tsx
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
@@ -71,7 +73,7 @@ export default function PlayVsAI() {
   // Set skill level when personality changes
   useEffect(() => {
     if (workerRef.current && engineReady) {
-      workerRef.current.postMessage(`setoption name Skill Level value ${personality.engine.skillLevel}`);
+      workerRef.current.postMessage(\`setoption name Skill Level value \${personality.engine.skillLevel}\`);
     }
   }, [personality, engineReady]);
 
@@ -120,8 +122,8 @@ export default function PlayVsAI() {
 
     if (game.turn() !== playerColor && engineReady && !isThinking) {
       setIsThinking(true);
-      workerRef.current?.postMessage(`position fen ${game.fen()}`);
-      workerRef.current?.postMessage(`go depth ${personality.engine.depth}`);
+      workerRef.current?.postMessage(\`position fen \${game.fen()}\`);
+      workerRef.current?.postMessage(\`go depth \${personality.engine.depth}\`);
     }
   }, [game, playerColor, engineReady, hasMatchStarted, isThinking, personality]);
 
@@ -186,13 +188,13 @@ export default function PlayVsAI() {
               <button 
                 key={p.id}
                 onClick={() => setPersonality(p)}
-                className={`w-full text-left p-5 rounded-md bg-[#262421] transition-all flex gap-4 ${
+                className={\`w-full text-left p-5 rounded-md bg-[#262421] transition-all flex gap-4 \${
                   isSelected 
                     ? "border-2 border-primary bg-[#312e2b] shadow-lg shadow-primary/10" 
                     : "border-2 border-transparent hover:bg-[#312e2b]"
-                }`}
+                }\`}
               >
-                <div className={`w-14 h-14 rounded shrink-0 flex items-center justify-center ${p.colorClass} text-white`}>
+                <div className={\`w-14 h-14 rounded shrink-0 flex items-center justify-center \${p.colorClass} text-white\`}>
                   <Icon className="w-7 h-7" />
                 </div>
                 <div className="flex-1">
@@ -214,14 +216,14 @@ export default function PlayVsAI() {
             <div className="flex gap-2 w-full">
               <Button 
                 variant="secondary"
-                className={`flex-1 rounded-lg h-12 text-[15px] font-bold ${playerColor === "w" ? "bg-[#fff] text-[#262421] hover:bg-[#fff]" : "bg-[#312e2b] text-[#8b8987] hover:bg-[#3d3935]"}`}
+                className={\`flex-1 rounded-lg h-12 text-[15px] font-bold \${playerColor === "w" ? "bg-[#fff] text-[#262421] hover:bg-[#fff]" : "bg-[#312e2b] text-[#8b8987] hover:bg-[#3d3935]"}\`}
                 onClick={() => { setPlayerColor("w"); setIsFlipped(false); }}
               >
                 White
               </Button>
               <Button 
                 variant="secondary"
-                className={`flex-1 rounded-lg h-12 text-[15px] font-bold ${playerColor === "b" ? "bg-[#fff] text-[#262421] hover:bg-[#fff]" : "bg-[#312e2b] text-[#8b8987] hover:bg-[#3d3935]"}`}
+                className={\`flex-1 rounded-lg h-12 text-[15px] font-bold \${playerColor === "b" ? "bg-[#fff] text-[#262421] hover:bg-[#fff]" : "bg-[#312e2b] text-[#8b8987] hover:bg-[#3d3935]"}\`}
                 onClick={() => { setPlayerColor("b"); setIsFlipped(true); }}
               >
                 Black
@@ -249,15 +251,15 @@ export default function PlayVsAI() {
         {/* Opponent Info Header */}
         <div className="w-full bg-[#312e2b] px-5 py-4 flex items-center justify-between border-b border-[#262421]">
           <div className="flex items-center gap-4 relative">
-            <div className={`w-10 h-10 rounded flex items-center justify-center text-white shadow-md ${personality.colorClass}`}>
+            <div className={\`w-10 h-10 rounded flex items-center justify-center text-white shadow-md \${personality.colorClass}\`}>
               {React.createElement(personality.avatarIcon, { className: "w-5 h-5" })}
             </div>
             <h2 className="text-base font-bold text-[#fff]">{personality.name} <span className="text-[#8b8987] font-normal text-sm ml-1">(Lvl {personality.engine.skillLevel})</span></h2>
 
             {/* Dialogue Bubble */}
-            <div className={`absolute top-[50px] left-0 w-[250px] bg-[#fff] text-[#262421] p-3 rounded shadow-xl transition-all duration-300 z-10 ${
+            <div className={\`absolute top-[50px] left-0 w-[250px] bg-[#fff] text-[#262421] p-3 rounded shadow-xl transition-all duration-300 z-10 \${
               showDialogue ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
-            }`}>
+            }\`}>
               <div className="absolute -top-2 left-4 w-4 h-4 bg-[#fff] rotate-45"></div>
               <p className="text-[13px] font-bold relative z-10 leading-snug">{dialogue}</p>
             </div>
@@ -335,3 +337,4 @@ export default function PlayVsAI() {
     </div>
   );
 }
+INNER_EOF

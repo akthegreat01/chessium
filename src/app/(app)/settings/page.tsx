@@ -1,8 +1,14 @@
 import React from "react";
 import { Settings, Bell, Shield, Key, Monitor, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/utils/supabase/server";
+import ChangeNickname from "@/components/settings/ChangeNickname";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || "";
+
   return (
     <div className="p-6 md:p-8 max-w-[800px] mx-auto min-h-screen">
       <div className="mb-8">
@@ -28,6 +34,8 @@ export default function SettingsPage() {
               </div>
               <Button variant="outline" className="h-8 rounded text-[12px] border-border hover:bg-white/5">Update</Button>
             </div>
+            <div className="h-px w-full bg-border" />
+            <ChangeNickname currentName={displayName} />
             <div className="h-px w-full bg-border" />
             <div className="flex justify-between items-center">
               <div>

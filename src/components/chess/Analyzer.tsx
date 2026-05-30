@@ -16,6 +16,7 @@ import { Loader2, Save, ArrowUpDown } from "lucide-react";
 
 import { useSearchParams } from "next/navigation";
 import { useBoardTheme } from "./ThemeContext";
+import { createClient } from "@/utils/supabase/client";
 
 // Helper to chunk move history into pairs
 const chunkMoves = (moves: Move[]) => {
@@ -39,9 +40,18 @@ export default function Analyzer() {
   const [isAutoAnalyzing, setIsAutoAnalyzing] = useState(false);
   const [analyzedPercent, setAnalyzedPercent] = useState(0);
   const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>('white');
+  const [playerName, setPlayerName] = useState("Player");
   
   const engineRef = useRef<ChessEngine | null>(null);
   const moveListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setPlayerName(data.user.user_metadata?.display_name || data.user.email?.split('@')[0] || "Player");
+      }
+    });
+  }, []);
 
   
   const runFullAnalysis = async (gameHistory: Move[]) => {
@@ -385,9 +395,9 @@ export default function Analyzer() {
           <div className="w-full bg-[#312e2b] px-4 py-3 flex items-center justify-between border-t border-[#262421]">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded bg-[#262421] flex items-center justify-center overflow-hidden">
-                <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover" />
+                <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover p-1 opacity-80" />
               </div>
-              <h2 className="text-[15px] font-bold text-[#c3c3c2]">{(game.header().White && game.header().White !== '?') ? game.header().White : 'akshath2008'}</h2>
+              <h2 className="text-[15px] font-bold text-[#c3c3c2]">{(game.header().White && game.header().White !== '?') ? game.header().White : playerName}</h2>
             </div>
           </div>
         </div>

@@ -10,7 +10,7 @@ import ChesscomConnect from "@/components/home/ChesscomConnect";
 export default async function HomePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  const name = user?.email?.split('@')[0] || "Player";
+  const name = user?.user_metadata?.display_name || user?.email?.split('@')[0] || "Player";
   
   const chesscomUsername = user?.user_metadata?.chesscom_username;
 
