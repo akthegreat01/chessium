@@ -5,11 +5,14 @@ import { createClient } from "@/utils/supabase/server";
 import { PerformanceChart } from "@/components/home/DashboardCharts";
 import { StaticBoard } from "@/components/chess/StaticBoard";
 import DashboardImportButton from "@/components/home/DashboardImportButton";
+import ChesscomConnect from "@/components/home/ChesscomConnect";
 
 export default async function HomePage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   const name = user?.email?.split('@')[0] || "Player";
+  
+  const chesscomUsername = user?.user_metadata?.chesscom_username;
 
   let analyses: any[] = [];
   let profile = null;
@@ -34,6 +37,24 @@ export default async function HomePage() {
 
   const todayDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date());
 
+  let rapidRating = profile?.rapid_rating || 1200;
+  let blitzRating = 1200;
+  let puzzleRating = profile?.puzzle_rating || 1200;
+
+  if (chesscomUsername) {
+    try {
+      const res = await fetch(`https://api.chess.com/pub/player/${chesscomUsername}/stats`, { next: { revalidate: 3600 } });
+      if (res.ok) {
+        const stats = await res.json();
+        if (stats.chess_rapid?.last?.rating) rapidRating = stats.chess_rapid.last.rating;
+        if (stats.chess_blitz?.last?.rating) blitzRating = stats.chess_blitz.last.rating;
+        if (stats.tactics?.highest?.rating) puzzleRating = stats.tactics.highest.rating;
+      }
+    } catch (err) {
+      console.error("Failed to fetch chess.com stats", err);
+    }
+  }
+
   return (
     <div className="p-6 md:p-8 max-w-[1200px] mx-auto text-foreground min-h-screen">
       
@@ -43,24 +64,26 @@ export default async function HomePage() {
         <p className="text-secondary-foreground text-[15px]">{name}</p>
       </div>
 
+      {!chesscomUsername && user && <ChesscomConnect />}
+
       {/* Rating Cards Row */}
       {user ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-surface border border-border rounded-xl p-5">
             <div className="text-[12px] text-secondary-foreground font-medium mb-2">Rating</div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">{profile?.rapid_rating || 1200}</span>
+              <span className="text-3xl font-bold tracking-tight">{rapidRating}</span>
               <span className="text-[12px] font-semibold text-secondary-foreground flex items-center gap-0.5">
                 Rapid
               </span>
             </div>
           </div>
           <div className="bg-surface border border-border rounded-xl p-5">
-            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Puzzle</div>
+            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Rating</div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">{profile?.puzzle_rating || 1200}</span>
+              <span className="text-3xl font-bold tracking-tight">{blitzRating}</span>
               <span className="text-[12px] font-semibold text-secondary-foreground flex items-center gap-0.5">
-                Rating
+                Blitz
               </span>
             </div>
           </div>
@@ -198,7 +221,7 @@ export default async function HomePage() {
             <div className="bg-surface border border-border rounded-xl p-5 text-center">
               <Puzzle className="w-5 h-5 text-primary mx-auto mb-2" />
               <div className="text-[11px] text-secondary-foreground font-medium mb-1">Puzzle Rating</div>
-              <div className="text-2xl font-bold">{profile?.puzzle_rating || 1200}</div>
+              <div className="text-2xl font-bold">{puzzleRating}</div>
             </div>
           </div>
 
