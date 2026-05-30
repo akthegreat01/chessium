@@ -31,29 +31,43 @@ export default function LearnPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {courses.map((course, i) => (
-          <div key={i} className={`bg-surface border border-border rounded-xl p-6 flex flex-col justify-between ${course.locked ? 'opacity-60' : 'hover:border-white/20 transition-all cursor-pointer'}`}>
-            <div className="flex items-start gap-4 mb-8">
-              <div className="w-12 h-12 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
-                {course.locked ? <Lock className="w-6 h-6 text-secondary-foreground" /> : <course.icon className={`w-6 h-6 ${course.color}`} />}
+        {courses.map((course, i) => {
+          const slug = course.title.toLowerCase().replace(/\s+/g, '-');
+          const CardContent = (
+            <div className={`bg-surface border border-border rounded-xl p-6 flex flex-col justify-between h-full ${course.locked ? 'opacity-60 cursor-not-allowed' : 'hover:border-white/20 transition-all cursor-pointer'}`}>
+              <div className="flex items-start gap-4 mb-8">
+                <div className="w-12 h-12 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
+                  {course.locked ? <Lock className="w-6 h-6 text-secondary-foreground" /> : <course.icon className={`w-6 h-6 ${course.color}`} />}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-[16px] mb-1">{course.title}</h3>
+                  <p className="text-secondary-foreground text-[13px] leading-relaxed">{course.desc}</p>
+                </div>
               </div>
+              
               <div>
-                <h3 className="font-semibold text-[16px] mb-1">{course.title}</h3>
-                <p className="text-secondary-foreground text-[13px] leading-relaxed">{course.desc}</p>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[11px] text-secondary-foreground font-medium uppercase tracking-wider">Progress</span>
+                  <span className="text-[11px] text-foreground font-mono">{course.progress}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-background rounded-full overflow-hidden">
+                  <div className={`h-full rounded-full ${course.locked ? 'bg-secondary-foreground/20' : 'bg-foreground'}`} style={{ width: `${course.progress}%` }} />
+                </div>
               </div>
             </div>
-            
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-[11px] text-secondary-foreground font-medium uppercase tracking-wider">Progress</span>
-                <span className="text-[11px] text-foreground font-mono">{course.progress}%</span>
-              </div>
-              <div className="w-full h-1.5 bg-background rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${course.locked ? 'bg-secondary-foreground/20' : 'bg-foreground'}`} style={{ width: `${course.progress}%` }} />
-              </div>
-            </div>
-          </div>
-        ))}
+          );
+
+          if (course.locked) {
+            return <div key={i}>{CardContent}</div>;
+          }
+
+          return (
+            <Link href={`/learn/${slug}`} key={i} className="block">
+              {CardContent}
+            </Link>
+          );
+        })}
+      </div>
       </div>
     </div>
   );

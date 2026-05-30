@@ -1,56 +1,59 @@
 import React from "react";
 import Link from "next/link";
-import { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
 
-export const metadata: Metadata = {
-  title: "Chess Blog & News | Chessium",
-  description: "Read the latest news, strategy guides, and platform updates from the Chessium team.",
-  openGraph: {
-    title: "Chess Blog & News | Chessium",
-    description: "Read the latest news, strategy guides, and platform updates from the Chessium team.",
-    type: "website",
+const BLOG_POSTS = [
+  {
+    slug: "future-of-ai-chess",
+    title: "The Future of AI in Chess Training",
+    excerpt: "How modern neural networks are changing the way Grandmasters and amateurs alike prepare for tournaments.",
+    date: "May 28, 2026",
+    readTime: "5 min read"
+  },
+  {
+    slug: "mastering-sicilian",
+    title: "Mastering the Sicilian Defense",
+    excerpt: "A deep dive into the most aggressive response to 1.e4 and how to navigate the complex middlegames.",
+    date: "May 20, 2026",
+    readTime: "8 min read"
+  },
+  {
+    slug: "engine-evaluation-explained",
+    title: "Understanding Engine Evaluations",
+    excerpt: "What does +1.5 actually mean? We break down how Stockfish evaluates positions and how to interpret it.",
+    date: "May 15, 2026",
+    readTime: "4 min read"
   }
-};
+];
 
-export default function BlogPage() {
+export default function BlogIndexPage() {
   return (
-    <main className="flex-1 min-h-screen bg-background">
-      
-      {/* Header */}
-      <header className="w-full border-b border-white/5 bg-surface/50 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight flex items-center gap-2">
-            Chessium
-          </Link>
-          <nav className="flex items-center gap-6">
-            <Link href="/analyze" className="text-sm font-medium text-secondary-foreground hover:text-foreground">Analyzer</Link>
-            <Link href="/openings" className="text-sm font-medium text-secondary-foreground hover:text-foreground">Openings</Link>
-          </nav>
+    <div className="min-h-screen bg-background text-foreground py-20 px-6">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-5xl font-bold tracking-tight mb-4">The Chessium Blog</h1>
+        <p className="text-xl text-secondary-foreground mb-16">Insights, updates, and deep dives into the world of chess.</p>
+
+        <div className="flex flex-col gap-8">
+          {BLOG_POSTS.map((post) => (
+            <Link href={`/blog/${post.slug}`} key={post.slug} className="group block">
+              <article className="bg-surface border border-border p-8 rounded-2xl transition-all hover:border-primary/50 hover:shadow-[0_0_30px_rgba(212,175,55,0.05)]">
+                <div className="flex items-center gap-3 text-[13px] text-secondary-foreground mb-3">
+                  <time>{post.date}</time>
+                  <span>•</span>
+                  <span>{post.readTime}</span>
+                </div>
+                <h2 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">{post.title}</h2>
+                <p className="text-secondary-foreground text-lg mb-6 leading-relaxed">
+                  {post.excerpt}
+                </p>
+                <div className="inline-flex items-center text-sm font-medium text-primary">
+                  Read Article <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
+                </div>
+              </article>
+            </Link>
+          ))}
         </div>
-      </header>
-
-      {/* Hero Section */}
-      <section className="pt-24 pb-16 px-6 max-w-4xl mx-auto text-center">
-        <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6 text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
-          The Chessium Blog
-        </h1>
-        <p className="text-xl text-secondary-foreground font-medium mb-12">
-          Insights, updates, and deep dives into the royal game.
-        </p>
-      </section>
-
-      {/* Mock Articles */}
-      <section className="py-12 px-6 max-w-4xl mx-auto mb-20 space-y-8">
-        <article className="bg-surface border border-white/5 p-8 rounded-3xl transition-all hover:bg-white/5">
-          <div className="text-sm font-bold tracking-wider text-primary mb-3">PRODUCT UPDATE</div>
-          <h2 className="text-3xl font-bold tracking-tight mb-4">Introducing Chessium Analyzer V1</h2>
-          <p className="text-secondary-foreground leading-relaxed mb-6">
-            We've rebuilt the chess analysis experience from the ground up. Say goodbye to cluttered dashboards and heavy interfaces. Welcome to the future of chess improvement.
-          </p>
-          <div className="text-sm font-medium text-secondary-foreground/60">Published on Oct 24, 2025</div>
-        </article>
-      </section>
-
-    </main>
+      </div>
+    </div>
   );
 }

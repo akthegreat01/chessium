@@ -33,25 +33,28 @@ export default function OpeningsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {openings.map((op, i) => (
-          <Link href="#" key={i} className="group bg-surface border border-border rounded-xl overflow-hidden hover:border-white/20 transition-all flex flex-col">
-            <div className="aspect-square bg-background border-b border-border p-4 relative pointer-events-none">
-              <StaticBoard position={op.fen} />
-            </div>
-            <div className="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div className="flex justify-between items-start mb-1">
-                  <h3 className="font-semibold text-[15px]">{op.name}</h3>
-                  <span className="text-[11px] text-secondary-foreground font-mono bg-white/5 px-2 py-0.5 rounded">{op.eco}</span>
+        {openings.map((op, i) => {
+          const slug = op.name.toLowerCase().replace(/\s+/g, '-');
+          return (
+            <Link href={`/openings/${slug}`} key={i} className="group bg-surface border border-border rounded-xl overflow-hidden hover:border-white/20 transition-all flex flex-col">
+              <div className="aspect-square bg-background border-b border-border p-4 relative pointer-events-none">
+                <StaticBoard position={op.fen} />
+              </div>
+              <div className="p-5 flex-1 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-1">
+                    <h3 className="font-semibold text-[15px]">{op.name}</h3>
+                    <span className="text-[11px] text-secondary-foreground font-mono bg-white/5 px-2 py-0.5 rounded">{op.eco}</span>
+                  </div>
+                  <p className="text-secondary-foreground text-[13px] font-mono mb-4">{op.moves}</p>
                 </div>
-                <p className="text-secondary-foreground text-[13px] font-mono mb-4">{op.moves}</p>
+                <div className="flex items-center text-[12px] font-medium text-primary opacity-80 group-hover:opacity-100 transition-opacity">
+                  Study Opening <ChevronRight className="w-4 h-4 ml-1" />
+                </div>
               </div>
-              <div className="flex items-center text-[12px] font-medium text-primary opacity-80 group-hover:opacity-100 transition-opacity">
-                Study Opening <ChevronRight className="w-4 h-4 ml-1" />
-              </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
