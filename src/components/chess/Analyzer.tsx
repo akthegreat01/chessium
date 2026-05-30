@@ -6,7 +6,7 @@ import { Chessboard } from "react-chessboard";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, FastForward, Rewind, Upload } from "lucide-react";
 import { ChessEngine, EngineEvaluation } from "@/lib/analyzer/engine";
-import { classifyMove, MoveClassification, getClassificationColor, getClassificationExplanation } from "@/lib/analyzer/classification";
+import { classifyMove, getClassificationColor, getClassificationExplanation } from "@/lib/analyzer/classification";
 import { detectOpening } from "@/lib/analyzer/openings";
 import EvalGraph from "./EvalGraph";
 import ImportModal from "./ImportModal";
@@ -35,6 +35,7 @@ export default function Analyzer() {
   const [evaluations, setEvaluations] = useState<Record<number, EngineEvaluation>>({});
   const [classifications, setClassifications] = useState<Record<number, MoveClassification>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState<'review' | 'moves'>('review');
   
   const engineRef = useRef<ChessEngine | null>(null);
   const moveListRef = useRef<HTMLDivElement>(null);
@@ -92,7 +93,7 @@ export default function Analyzer() {
               currentIndex < 10, // crude book check
               move.flags.includes('c') || move.flags.includes('e') // capture
             );
-            setClassifications(prev => ({ ...prev, [currentIndex]: cls }));
+            setClassifications(prev => ({ ...prev, [currentIndex]: cls as any }));
           }
         }
       });
@@ -186,18 +187,7 @@ export default function Analyzer() {
     });
 
     if (result?.error) {
-      // In a real app we'd show a toast here. Fallback to localStorage for guests.
-      const localSaves = JSON.parse(localStorage.getItem('chessium_saves') || '[]');
-      localSaves.push({
-        id: Date.now().toString(),
-        pgn,
-        white_player: w,
-        black_player: b,
-        opening_name: opening.name,
-        date: new Date().toISOString()
-      });
-      localStorage.setItem('chessium_saves', JSON.stringify(localSaves));
-      alert("Analysis saved locally! Log in to sync to the cloud.");
+      alert("Please create an account to save your analysis to the cloud.");
     } else {
       alert("Analysis saved to cloud successfully!");
     }
@@ -220,6 +210,47 @@ export default function Analyzer() {
   const activeMove = currentIndex >= 0 ? history[currentIndex] : null;
   const activeClass = currentIndex >= 0 ? classifications[currentIndex] : null;
 
+  // Compute Game Review Stats
+  const reviewStats = useMemo(() => {
+    let wAcc = 0, bAcc = 0;
+    let wCount = 0, bCount = 0;
+    const wClass = { brilliant: 0, excellent: 0, best: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0, book: 0 };
+    const bClass = { brilliant: 0, excellent: 0, best: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0, book: 0 };
+
+    Object.entries(classifications).forEach(([idxStr, cls]) => {
+      const idx = parseInt(idxStr);
+      const isWhite = idx % 2 === 0;
+      const target = isWhite ? wClass : bClass;
+      
+      if (cls === "Brilliant") target.brilliant++;
+      else if (cls === "Excellent" || cls === "Great Move") target.excellent++;
+      else if (cls === "Best Move") target.best++;
+      else if (cls === "Good") target.good++;
+      else if (cls === "Inaccuracy") target.inaccuracy++;
+      else if (cls === "Mistake") target.mistake++;
+      else if (cls === "Blunder" || cls === "Miss") target.blunder++;
+      else if (cls === "Book") target.book++;
+
+      let score = 0;
+      if (cls === "Brilliant" || cls === "Best Move" || cls === "Book") score = 100;
+      else if (cls === "Excellent" || cls === "Great Move") score = 90;
+      else if (cls === "Good") score = 75;
+      else if (cls === "Inaccuracy") score = 40;
+      else if (cls === "Mistake" || cls === "Miss") score = 15;
+      else if (cls === "Blunder") score = 0;
+
+      if (isWhite) { wAcc += score; wCount++; }
+      else { bAcc += score; bCount++; }
+    });
+
+    return {
+      whiteAccuracy: wCount > 0 ? (wAcc / wCount).toFixed(1) : '--',
+      blackAccuracy: bCount > 0 ? (bAcc / bCount).toFixed(1) : '--',
+      white: wClass,
+      black: bClass
+    };
+  }, [classifications]);
+
   return (
     <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] lg:h-[calc(100vh-80px)] w-full max-w-[1500px] mx-auto gap-8 px-4 lg:px-6 py-4 lg:py-6 pb-24 lg:pb-6">
       
@@ -230,7 +261,6 @@ export default function Analyzer() {
         <div className="w-full flex justify-between items-end mb-4 px-1">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-foreground">{game.header().Black || 'Black Player'}</h2>
-            <div className="text-sm font-medium text-secondary-foreground mt-0.5">Accuracy: --%</div>
           </div>
           <div className="flex gap-2">
              <Button 
@@ -292,14 +322,29 @@ export default function Analyzer() {
         <div className="w-full flex justify-between items-start mt-4 px-1">
           <div>
             <h2 className="text-xl font-bold tracking-tight text-foreground">{game.header().White || 'White Player'}</h2>
-            <div className="text-sm font-medium text-secondary-foreground mt-0.5">Accuracy: --%</div>
           </div>
         </div>
       </div>
 
       {/* RIGHT COL: Move List, Graph, Explanation */}
-      <div className="flex-1 flex flex-col min-w-[320px] bg-surface border border-white/5 rounded-[24px] overflow-hidden shadow-xl shadow-black/10">
+      <div className="flex-1 flex flex-col min-w-[320px] max-w-[500px] lg:max-w-none bg-surface border border-white/5 rounded-[24px] overflow-hidden shadow-xl shadow-black/10">
         
+        {/* Tabs */}
+        <div className="flex border-b border-white/5 bg-background/50 text-[13px] font-bold tracking-wider uppercase">
+          <button 
+            onClick={() => setActiveTab('review')}
+            className={`flex-1 py-4 text-center transition-colors ${activeTab === 'review' ? 'text-primary border-b-2 border-primary bg-white/5' : 'text-secondary-foreground hover:text-foreground'}`}
+          >
+            Review
+          </button>
+          <button 
+            onClick={() => setActiveTab('moves')}
+            className={`flex-1 py-4 text-center transition-colors ${activeTab === 'moves' ? 'text-primary border-b-2 border-primary bg-white/5' : 'text-secondary-foreground hover:text-foreground'}`}
+          >
+            Moves
+          </button>
+        </div>
+
         {/* Header / Opening Info */}
         <div className="p-5 border-b border-white/5 bg-background/50">
           <div className="flex justify-between items-start mb-2">
@@ -314,9 +359,61 @@ export default function Analyzer() {
           <EvalGraph evaluations={evalArray} currentIndex={currentIndex} onPointClick={setCurrentIndex} />
         </div>
 
-        {/* Move List */}
-        <div className="flex-1 overflow-y-auto p-2" ref={moveListRef}>
-          <div className="grid grid-cols-[auto_1fr_1fr] w-full text-[15px] font-medium">
+        {activeTab === 'review' ? (
+          <div className="flex-1 overflow-y-auto p-5 space-y-6">
+            {/* Game Review Box */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-background border border-white/5 rounded-xl p-4 text-center flex flex-col items-center justify-center">
+                <div className="text-sm font-medium text-secondary-foreground mb-1">White Accuracy</div>
+                <div className="text-4xl font-bold tracking-tighter text-foreground">{reviewStats.whiteAccuracy}<span className="text-2xl text-secondary-foreground/50">%</span></div>
+              </div>
+              <div className="bg-background border border-white/5 rounded-xl p-4 text-center flex flex-col items-center justify-center">
+                <div className="text-sm font-medium text-secondary-foreground mb-1">Black Accuracy</div>
+                <div className="text-4xl font-bold tracking-tighter text-foreground">{reviewStats.blackAccuracy}<span className="text-2xl text-secondary-foreground/50">%</span></div>
+              </div>
+            </div>
+
+            {/* Classification Table */}
+            <div className="bg-background border border-white/5 rounded-xl overflow-hidden">
+              <div className="grid grid-cols-[1fr_2fr_1fr] bg-white/5 p-3 text-[11px] font-bold uppercase tracking-wider text-secondary-foreground text-center">
+                <div>White</div>
+                <div>Move Type</div>
+                <div>Black</div>
+              </div>
+              
+              {[
+                { label: 'Brilliant', key: 'brilliant', cls: "Brilliant" },
+                { label: 'Great Find', key: 'excellent', cls: "Excellent" },
+                { label: 'Best Move', key: 'best', cls: "Best Move" },
+                { label: 'Good', key: 'good', cls: "Good" },
+                { label: 'Book', key: 'book', cls: "Book" },
+                { label: 'Inaccuracy', key: 'inaccuracy', cls: "Inaccuracy" },
+                { label: 'Mistake', key: 'mistake', cls: "Mistake" },
+                { label: 'Blunder', key: 'blunder', cls: "Blunder" },
+              ].map((row) => {
+                // @ts-ignore
+                const wVal = reviewStats.white[row.key];
+                // @ts-ignore
+                const bVal = reviewStats.black[row.key];
+                if (wVal === 0 && bVal === 0 && row.key !== 'best' && row.key !== 'blunder') return null;
+
+                return (
+                  <div key={row.key} className="grid grid-cols-[1fr_2fr_1fr] p-3 text-sm font-medium border-t border-white/5 text-center items-center">
+                    <div className="text-foreground">{wVal}</div>
+                    <div className="flex items-center justify-center gap-2 text-secondary-foreground">
+                      <ClassificationIcon classification={row.cls} className="w-4 h-4" /> <span className="hidden sm:inline">{row.label}</span>
+                    </div>
+                    <div className="text-foreground">{bVal}</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <>
+          {/* Move List */}
+          <div className="flex-1 overflow-y-auto p-2" ref={moveListRef}>
+            <div className="grid grid-cols-[auto_1fr_1fr] w-full text-[15px] font-medium">
             {movePairs.map((pair, rowIdx) => (
               <div key={rowIdx} className="contents group">
                 <div className="py-2.5 px-4 text-secondary-foreground/50 font-mono text-sm border-b border-white/5 flex items-center">
@@ -362,6 +459,8 @@ export default function Analyzer() {
               {getClassificationExplanation(activeClass)}
             </p>
           </div>
+        )}
+        </>
         )}
 
         {/* Controls */}

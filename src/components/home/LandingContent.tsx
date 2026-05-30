@@ -144,9 +144,21 @@ const pricingPlans = [
 ];
 
 const footerLinks = {
-  Product: ["Features", "Pricing", "Changelog"],
-  Company: ["About", "Blog", "Careers"],
-  Legal: ["Terms", "Privacy", "Security"],
+  Product: [
+    { name: "Features", href: "#features" },
+    { name: "Pricing", href: "#pricing" },
+    { name: "Changelog", href: "#" }
+  ],
+  Company: [
+    { name: "About", href: "/about" },
+    { name: "Blog", href: "/blog" },
+    { name: "Careers", href: "#" }
+  ],
+  Legal: [
+    { name: "Terms", href: "/terms" },
+    { name: "Privacy", href: "/privacy" },
+    { name: "Security", href: "/security" }
+  ],
 };
 
 const fakeMoves = [
@@ -166,6 +178,7 @@ export default function LandingContent({ user }: { user: any }) {
             {/* Logo Visual Presentation (Moved to top) */}
             <motion.div
               className="relative mt-8 md:mt-12 mb-16 md:mb-24 flex items-center justify-center w-full max-w-5xl mx-auto"
+              style={{ perspective: "1000px" }}
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{
@@ -175,11 +188,16 @@ export default function LandingContent({ user }: { user: any }) {
               }}
             >
               {/* Massive Background Text */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+              <motion.div 
+                className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0"
+                initial={{ rotateX: 20, rotateY: -10, z: -100 }}
+                animate={{ rotateX: 0, rotateY: 0, z: 0 }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+              >
                 <span className="text-[15vw] md:text-[220px] font-black tracking-tighter leading-none whitespace-nowrap bg-gradient-to-b from-[#E2E2E2] via-[#BDBDBD] to-[#8F8F8F] bg-clip-text text-transparent drop-shadow-2xl opacity-60">
                   CHESSIUM
                 </span>
-              </div>
+              </motion.div>
 
               {/* Glowing Aura */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
@@ -187,13 +205,19 @@ export default function LandingContent({ user }: { user: any }) {
               </div>
 
               {/* Logo Image */}
-              <div className="relative z-10 w-[280px] h-[280px] md:w-[480px] md:h-[480px] drop-shadow-[0_0_40px_rgba(212,175,55,0.4)]">
+              <motion.div 
+                className="relative z-10 w-[280px] h-[280px] md:w-[480px] md:h-[480px] drop-shadow-[0_0_40px_rgba(212,175,55,0.4)]"
+                initial={{ rotateX: 10, rotateY: 15, z: 50 }}
+                animate={{ rotateX: 0, rotateY: 0, z: 0 }}
+                whileHover={{ rotateX: -5, rotateY: 5, z: 30, scale: 1.05 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              >
                 <img 
                   src="/chessium_logo.png" 
                   alt="Chessium Logo" 
                   className="w-full h-full object-contain" 
                 />
-              </div>
+              </motion.div>
             </motion.div>
 
             {/* Text Content */}
@@ -479,12 +503,12 @@ export default function LandingContent({ user }: { user: any }) {
                 </p>
                 <ul className="space-y-3">
                   {links.map((link) => (
-                    <li key={link}>
+                    <li key={link.name}>
                       <Link
-                        href="#"
+                        href={link.href}
                         className="text-[14px] text-secondary-foreground hover:text-foreground transition-colors"
                       >
-                        {link}
+                        {link.name}
                       </Link>
                     </li>
                   ))}

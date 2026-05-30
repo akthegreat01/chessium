@@ -125,7 +125,7 @@ export default function PlayVsAI() {
       const result = gameCopy.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: piece[1] ? piece[1].toLowerCase() : "q",
+        promotion: piece && piece.length > 1 ? piece[1].toLowerCase() : "q",
       });
       if (result) {
         setGame(gameCopy);

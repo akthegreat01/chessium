@@ -9,7 +9,9 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = async (formData: FormData) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
     setLoading(true);
     setError("");
     const result = await signup(formData);
@@ -58,7 +60,7 @@ export default function SignupPage() {
 
       {/* Form card */}
       <div className="w-full bg-surface/80 border border-border rounded-2xl p-6 backdrop-blur-sm">
-        <form action={handleSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label htmlFor="username" className="block text-[13px] font-medium text-secondary-foreground mb-2">
               Username

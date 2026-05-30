@@ -4,6 +4,7 @@ import { Search, Bot, Puzzle, ChevronRight, TrendingUp, Flame } from "lucide-rea
 import { createClient } from "@/utils/supabase/server";
 import { PerformanceChart } from "@/components/home/DashboardCharts";
 import { StaticBoard } from "@/components/chess/StaticBoard";
+import DashboardImportButton from "@/components/home/DashboardImportButton";
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -11,9 +12,13 @@ export default async function HomePage() {
   const name = user?.email?.split('@')[0] || "Player";
 
   let analyses: any[] = [];
+  let profile = null;
   if (user) {
-    const { data } = await supabase.from("saved_analyses").select("*").order("created_at", { ascending: false });
-    if (data) analyses = data;
+    const { data: pData } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+    if (pData) profile = pData;
+
+    const { data: aData } = await supabase.from("saved_analyses").select("*").order("created_at", { ascending: false });
+    if (aData) analyses = aData;
   }
 
   const totalAnalyzed = analyses.length;
@@ -44,18 +49,18 @@ export default async function HomePage() {
           <div className="bg-surface border border-border rounded-xl p-5">
             <div className="text-[12px] text-secondary-foreground font-medium mb-2">Rating</div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">2113</span>
-              <span className="text-[12px] font-semibold text-emerald-400 flex items-center gap-0.5">
-                <TrendingUp className="w-3 h-3" /> 35
+              <span className="text-3xl font-bold tracking-tight">{profile?.rapid_rating || 1200}</span>
+              <span className="text-[12px] font-semibold text-secondary-foreground flex items-center gap-0.5">
+                Rapid
               </span>
             </div>
           </div>
           <div className="bg-surface border border-border rounded-xl p-5">
             <div className="text-[12px] text-secondary-foreground font-medium mb-2">Puzzle</div>
             <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">836</span>
-              <span className="text-[12px] font-semibold text-emerald-400 flex items-center gap-0.5">
-                <TrendingUp className="w-3 h-3" /> 12
+              <span className="text-3xl font-bold tracking-tight">{profile?.puzzle_rating || 1200}</span>
+              <span className="text-[12px] font-semibold text-secondary-foreground flex items-center gap-0.5">
+                Rating
               </span>
             </div>
           </div>
@@ -86,6 +91,9 @@ export default async function HomePage() {
 
       {/* Action Buttons */}
       <div className="flex gap-3 mb-8">
+        <div className="flex-1">
+          <DashboardImportButton />
+        </div>
         <Link href="/analyze" className="flex-1">
           <Button variant="outline" className="w-full h-11 rounded-xl border-border bg-surface hover:bg-white/[0.06] text-foreground font-semibold text-[13px] gap-2 transition-all">
             <Search className="w-4 h-4" />
@@ -185,12 +193,12 @@ export default async function HomePage() {
             <div className="bg-surface border border-border rounded-xl p-5 text-center">
               <Flame className="w-5 h-5 text-orange-400 mx-auto mb-2" />
               <div className="text-[11px] text-secondary-foreground font-medium mb-1">Current Streak</div>
-              <div className="text-2xl font-bold">0</div>
+              <div className="text-2xl font-bold">{profile?.puzzle_streak || 0}</div>
             </div>
             <div className="bg-surface border border-border rounded-xl p-5 text-center">
               <Puzzle className="w-5 h-5 text-primary mx-auto mb-2" />
               <div className="text-[11px] text-secondary-foreground font-medium mb-1">Puzzle Rating</div>
-              <div className="text-2xl font-bold">2530</div>
+              <div className="text-2xl font-bold">{profile?.puzzle_rating || 1200}</div>
             </div>
           </div>
 
