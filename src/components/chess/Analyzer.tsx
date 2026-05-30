@@ -490,8 +490,8 @@ export default function Analyzer() {
                 { label: 'Miss', key: 'miss', cls: "Miss" },
                 { label: 'Blunder', key: 'blunder', cls: "Blunder" },
               ].map(stat => {
-                const wVal = classifications.filter(c => c.color === 'w' && c.classification === stat.cls).length;
-                const bVal = classifications.filter(c => c.color === 'b' && c.classification === stat.cls).length;
+                const wVal = Object.values(classifications).filter(c => c.color === 'w' && c.classification === stat.cls).length;
+                const bVal = Object.values(classifications).filter(c => c.color === 'b' && c.classification === stat.cls).length;
                 
                 if (wVal === 0 && bVal === 0 && !['best', 'inaccuracy', 'mistake', 'blunder'].includes(stat.key)) return null;
 
