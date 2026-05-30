@@ -162,81 +162,84 @@ export default function LandingContent({ user }: { user: any }) {
       {/* ─── Hero Section ─── */}
       <section className="relative pt-48 md:pt-56 pb-32 md:pb-40">
         <div className="max-w-7xl mx-auto px-6 md:px-8">
-          <div className="text-center max-w-4xl mx-auto">
-            <motion.h1
-              className="text-7xl md:text-[88px] font-bold tracking-tight leading-[1.05]"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-            >
-              Master Every Move.
-            </motion.h1>
-
-            <motion.p
-              className="mt-6 text-lg md:text-xl text-secondary-foreground max-w-2xl mx-auto leading-relaxed"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
+          <div className="flex flex-col items-center">
+            {/* Logo Visual Presentation (Moved to top) */}
+            <motion.div
+              className="relative mt-8 md:mt-12 mb-16 md:mb-24 flex items-center justify-center w-full max-w-5xl mx-auto"
+              initial={{ opacity: 0, y: 50, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
               transition={{
-                duration: 0.7,
+                duration: 0.9,
                 ease: [0.16, 1, 0.3, 1],
                 delay: 0.1,
               }}
             >
-              AI-powered chess analysis, personalized training, and beautiful
-              gameplay designed for ambitious players.
-            </motion.p>
+              {/* Massive Background Text */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+                <span className="text-[15vw] md:text-[220px] font-black tracking-tighter leading-none whitespace-nowrap bg-gradient-to-b from-[#E2E2E2] via-[#BDBDBD] to-[#8F8F8F] bg-clip-text text-transparent drop-shadow-2xl opacity-60">
+                  CHESSIUM
+                </span>
+              </div>
 
-            <motion.div
-              className="mt-10 flex items-center justify-center gap-4"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.7,
-                ease: [0.16, 1, 0.3, 1],
-                delay: 0.2,
-              }}
-            >
-              <Link href={user ? "/home" : "/signup"}>
-                <Button className="bg-foreground text-background hover:bg-foreground/90 h-12 px-8 text-[15px] font-medium rounded-lg">
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              {/* Glowing Aura */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                <div className="w-[400px] h-[400px] md:w-[700px] md:h-[700px] bg-primary/20 blur-[120px] rounded-full mix-blend-screen" />
+              </div>
+
+              {/* Logo Image */}
+              <div className="relative z-10 w-[280px] h-[280px] md:w-[480px] md:h-[480px] drop-shadow-[0_0_40px_rgba(212,175,55,0.4)]">
+                <img 
+                  src="/chessium_logo.png" 
+                  alt="Chessium Logo" 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
             </motion.div>
+
+            {/* Text Content */}
+            <div className="text-center max-w-4xl mx-auto">
+              <motion.h1
+                className="text-6xl md:text-[80px] font-bold tracking-tight leading-[1.05]"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+              >
+                Master Every Move.
+              </motion.h1>
+
+              <motion.p
+                className="mt-6 text-lg md:text-xl text-secondary-foreground max-w-2xl mx-auto leading-relaxed"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.16, 1, 0.3, 1],
+                  delay: 0.4,
+                }}
+              >
+                AI-powered chess analysis, personalized training, and beautiful
+                gameplay designed for ambitious players.
+              </motion.p>
+
+              <motion.div
+                className="mt-10 flex items-center justify-center gap-4"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.7,
+                  ease: [0.16, 1, 0.3, 1],
+                  delay: 0.5,
+                }}
+              >
+                <Link href={user ? "/home" : "/signup"}>
+                  <Button className="bg-foreground text-background hover:bg-foreground/90 h-12 px-8 text-[15px] font-medium rounded-lg">
+                    Get Started Free
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </motion.div>
+            </div>
           </div>
-
-          {/* Logo Visual Presentation */}
-          <motion.div
-            className="relative mt-32 md:mt-40 mb-10 flex items-center justify-center w-full max-w-5xl mx-auto"
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{
-              duration: 0.9,
-              ease: [0.16, 1, 0.3, 1],
-              delay: 0.35,
-            }}
-          >
-            {/* Massive Background Text */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
-              <span className="text-[12vw] md:text-[180px] font-black tracking-tighter leading-none whitespace-nowrap bg-gradient-to-b from-[#E2E2E2] via-[#BDBDBD] to-[#8F8F8F] bg-clip-text text-transparent drop-shadow-2xl opacity-60">
-                CHESSIUM
-              </span>
-            </div>
-
-            {/* Glowing Aura */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-              <div className="w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-primary/20 blur-[100px] rounded-full mix-blend-screen" />
-            </div>
-
-            {/* Logo Image */}
-            <div className="relative z-10 w-[200px] h-[200px] md:w-[320px] md:h-[320px] drop-shadow-[0_0_40px_rgba(212,175,55,0.4)]">
-              <img 
-                src="/chessium_logo.png" 
-                alt="Chessium Logo" 
-                className="w-full h-full object-contain" 
-              />
-            </div>
-          </motion.div>
         </div>
       </section>
 

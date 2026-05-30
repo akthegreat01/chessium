@@ -39,38 +39,50 @@ export default async function HomePage() {
       </div>
 
       {/* Rating Cards Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-surface border border-border rounded-xl p-5">
-          <div className="text-[12px] text-secondary-foreground font-medium mb-2">Rating</div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold tracking-tight">2113</span>
-            <span className="text-[12px] font-semibold text-emerald-400 flex items-center gap-0.5">
-              <TrendingUp className="w-3 h-3" /> 35
-            </span>
+      {user ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="bg-surface border border-border rounded-xl p-5">
+            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Rating</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight">2113</span>
+              <span className="text-[12px] font-semibold text-emerald-400 flex items-center gap-0.5">
+                <TrendingUp className="w-3 h-3" /> 35
+              </span>
+            </div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-5">
+            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Puzzle</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight">836</span>
+              <span className="text-[12px] font-semibold text-emerald-400 flex items-center gap-0.5">
+                <TrendingUp className="w-3 h-3" /> 12
+              </span>
+            </div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-5">
+            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Accuracy</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight">{avgAcc.toFixed(1)}%</span>
+            </div>
+          </div>
+          <div className="bg-surface border border-border rounded-xl p-5">
+            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Games</div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold tracking-tight">{totalAnalyzed}</span>
+            </div>
           </div>
         </div>
-        <div className="bg-surface border border-border rounded-xl p-5">
-          <div className="text-[12px] text-secondary-foreground font-medium mb-2">Puzzle</div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold tracking-tight">836</span>
-            <span className="text-[12px] font-semibold text-emerald-400 flex items-center gap-0.5">
-              <TrendingUp className="w-3 h-3" /> 12
-            </span>
-          </div>
+      ) : (
+        <div className="bg-surface border border-border rounded-xl p-8 mb-8 flex flex-col items-center justify-center text-center">
+          <h2 className="text-[16px] font-semibold mb-2">Unlock Your Dashboard</h2>
+          <p className="text-[13px] text-secondary-foreground mb-4">Create a free account to track your ratings, accuracy, and play history.</p>
+          <Link href="/signup">
+            <Button className="bg-foreground text-background hover:bg-foreground/90 h-9 px-6 text-[13px] font-medium rounded-lg">
+              Sign Up Free
+            </Button>
+          </Link>
         </div>
-        <div className="bg-surface border border-border rounded-xl p-5">
-          <div className="text-[12px] text-secondary-foreground font-medium mb-2">Accuracy</div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold tracking-tight">{avgAcc.toFixed(1)}%</span>
-          </div>
-        </div>
-        <div className="bg-surface border border-border rounded-xl p-5">
-          <div className="text-[12px] text-secondary-foreground font-medium mb-2">Games</div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold tracking-tight">{totalAnalyzed}</span>
-          </div>
-        </div>
-      </div>
+      )}
 
       {/* Action Buttons */}
       <div className="flex gap-3 mb-8">

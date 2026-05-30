@@ -53,20 +53,28 @@ export default async function ProfilePage() {
 
       {/* Right Column - Stats & Achievements */}
       <div className="flex-1 flex flex-col gap-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-surface border border-border rounded-xl p-6">
-            <div className="flex items-center gap-2 text-[12px] text-secondary-foreground font-medium mb-3">
-              <Activity className="w-4 h-4 text-emerald-400" /> Rapid Rating
+        {user ? (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-surface border border-border rounded-xl p-6">
+              <div className="flex items-center gap-2 text-[12px] text-secondary-foreground font-medium mb-3">
+                <Activity className="w-4 h-4 text-emerald-400" /> Rapid Rating
+              </div>
+              <div className="text-4xl font-bold tracking-tight">2113</div>
             </div>
-            <div className="text-4xl font-bold tracking-tight">2113</div>
-          </div>
-          <div className="bg-surface border border-border rounded-xl p-6">
-            <div className="flex items-center gap-2 text-[12px] text-secondary-foreground font-medium mb-3">
-              <Star className="w-4 h-4 text-primary" /> Puzzle Rating
+            <div className="bg-surface border border-border rounded-xl p-6">
+              <div className="flex items-center gap-2 text-[12px] text-secondary-foreground font-medium mb-3">
+                <Star className="w-4 h-4 text-primary" /> Puzzle Rating
+              </div>
+              <div className="text-4xl font-bold tracking-tight">2530</div>
             </div>
-            <div className="text-4xl font-bold tracking-tight">2530</div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-surface border border-border rounded-xl p-8 flex flex-col items-center justify-center text-center h-[140px]">
+            <h2 className="text-[16px] font-semibold mb-2">Unlock Your Stats</h2>
+            <p className="text-[13px] text-secondary-foreground mb-4">Create a free account to track your ratings and progress.</p>
+            <a href="/signup" className="text-[13px] font-medium text-primary hover:underline">Sign up now →</a>
+          </div>
+        )}
 
         <div className="bg-surface border border-border rounded-xl p-6 flex-1">
           <h2 className="text-[14px] font-semibold mb-6 flex items-center gap-2">
