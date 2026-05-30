@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import HeroBoard from "@/components/home/HeroBoard";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import React, { useRef } from "react";
 import {
   Brain,
   Target,
@@ -169,30 +170,70 @@ const fakeMoves = [
 ];
 
 export default function LandingContent({ user }: { user: any }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // 3D Mouse Tracking
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+  
+  // Smooth out the raw mouse values
+  const smoothX = useSpring(mouseX, { damping: 20, stiffness: 100, mass: 0.5 });
+  const smoothY = useSpring(mouseY, { damping: 20, stiffness: 100, mass: 0.5 });
+
+  // Transforms for Text (Background)
+  const textRotateX = useTransform(smoothY, [0, 1], [15, -15]);
+  const textRotateY = useTransform(smoothX, [0, 1], [-15, 15]);
+  const textX = useTransform(smoothX, [0, 1], [-20, 20]);
+  const textY = useTransform(smoothY, [0, 1], [-20, 20]);
+
+  // Transforms for Logo (Foreground)
+  const logoRotateX = useTransform(smoothY, [0, 1], [25, -25]);
+  const logoRotateY = useTransform(smoothX, [0, 1], [-25, 25]);
+  const logoX = useTransform(smoothX, [0, 1], [-40, 40]);
+  const logoY = useTransform(smoothY, [0, 1], [-40, 40]);
+  const logoZ = useTransform(smoothX, [0, 1], [30, 80]); // Pop out
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       {/* ─── Hero Section ─── */}
-      <section className="relative pt-48 md:pt-56 pb-32 md:pb-40">
+      <section 
+        className="relative pt-48 md:pt-56 pb-32 md:pb-40"
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => {
+          mouseX.set(0.5);
+          mouseY.set(0.5);
+        }}
+      >
         <div className="max-w-7xl mx-auto px-6 md:px-8">
           <div className="flex flex-col items-center">
             {/* Logo Visual Presentation (Moved to top) */}
             <motion.div
               className="relative mt-8 md:mt-12 mb-16 md:mb-24 flex items-center justify-center w-full max-w-5xl mx-auto"
-              style={{ perspective: "1000px" }}
+              style={{ perspective: "1200px" }}
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{
-                duration: 0.9,
-                ease: [0.16, 1, 0.3, 1],
-                delay: 0.1,
-              }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
             >
               {/* Massive Background Text */}
               <motion.div 
                 className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0"
-                initial={{ rotateX: 20, rotateY: -10, z: -100 }}
-                animate={{ rotateX: 0, rotateY: 0, z: 0 }}
-                transition={{ duration: 1.5, ease: "easeOut" }}
+                style={{ 
+                  rotateX: textRotateX, 
+                  rotateY: textRotateY, 
+                  x: textX, 
+                  y: textY,
+                  z: -100 
+                }}
               >
                 <span className="text-[15vw] md:text-[220px] font-black tracking-tighter leading-none whitespace-nowrap bg-gradient-to-b from-[#E2E2E2] via-[#BDBDBD] to-[#8F8F8F] bg-clip-text text-transparent drop-shadow-2xl opacity-60">
                   CHESSIUM
@@ -206,16 +247,20 @@ export default function LandingContent({ user }: { user: any }) {
 
               {/* Logo Image */}
               <motion.div 
-                className="relative z-10 w-[280px] h-[280px] md:w-[480px] md:h-[480px] drop-shadow-[0_0_40px_rgba(212,175,55,0.4)]"
-                initial={{ rotateX: 10, rotateY: 15, z: 50 }}
-                animate={{ rotateX: 0, rotateY: 0, z: 0 }}
-                whileHover={{ rotateX: -5, rotateY: 5, z: 30, scale: 1.05 }}
-                transition={{ duration: 1.2, ease: "easeOut" }}
+                className="relative z-10 w-[280px] h-[280px] md:w-[480px] md:h-[480px] drop-shadow-[0_0_50px_rgba(212,175,55,0.4)]"
+                style={{ 
+                  rotateX: logoRotateX, 
+                  rotateY: logoRotateY, 
+                  x: logoX, 
+                  y: logoY,
+                  z: logoZ,
+                  transformStyle: "preserve-3d" 
+                }}
               >
                 <img 
                   src="/chessium_logo.png" 
                   alt="Chessium Logo" 
-                  className="w-full h-full object-contain" 
+                  className="w-full h-full object-contain drop-shadow-2xl" 
                 />
               </motion.div>
             </motion.div>
@@ -313,7 +358,7 @@ export default function LandingContent({ user }: { user: any }) {
             {features.map((feature, i) => (
               <motion.div
                 key={feature.title}
-                className="bg-surface border border-border rounded-xl p-10 transition-all duration-300 hover:border-white/[0.15] hover:shadow-[0_0_40px_rgba(212,175,55,0.03)]"
+                className="bg-surface/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.3)] rounded-[24px] p-10 transition-all duration-300 hover:border-white/20 hover:bg-surface/60 hover:shadow-[0_0_60px_rgba(212,175,55,0.08)]"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}

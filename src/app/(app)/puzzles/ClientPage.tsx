@@ -87,9 +87,10 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
   const playerColor = new Chess(puzzle.fen).turn() === 'w' ? "White" : "Black";
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-6 md:p-10 flex flex-col md:flex-row gap-10 items-center justify-center min-h-[calc(100vh-100px)]">
+    <div className="w-full max-w-[1200px] mx-auto p-6 md:p-10 flex flex-col md:flex-row gap-12 lg:gap-16 items-center lg:items-start justify-center min-h-[calc(100vh-100px)] pt-12 lg:pt-16">
       
-      <div className="w-full max-w-[600px] aspect-square bg-background rounded-2xl overflow-hidden shadow-2xl border border-white/10 shrink-0">
+      <div className="w-full max-w-[650px] bg-surface/40 backdrop-blur-xl rounded-[32px] p-4 sm:p-6 shadow-[0_0_60px_rgba(0,0,0,0.5)] border border-white/10 shrink-0">
+        <div className="flex-1 aspect-square relative rounded-[16px] overflow-hidden border border-white/5 shadow-inner">
         {/* @ts-ignore */}
         <Chessboard 
           position={game.fen()}
@@ -99,10 +100,11 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
           customLightSquareStyle={boardTheme.lightSquareStyle}
           animationDuration={300}
         />
+        </div>
       </div>
 
-      <div className="w-full md:w-[400px] flex flex-col gap-6">
-        <div className="bg-surface border border-white/5 p-8 rounded-[32px] shadow-xl">
+      <div className="w-full md:w-[420px] flex flex-col gap-6">
+        <div className="bg-surface/50 backdrop-blur-md border border-white/10 p-8 rounded-[32px] shadow-2xl">
           <h1 className="text-3xl font-bold tracking-tight mb-2">Daily Puzzle</h1>
           <div className="flex gap-2 mb-6">
             <span className="text-xs font-bold uppercase tracking-wider bg-white/10 px-2 py-1 rounded">

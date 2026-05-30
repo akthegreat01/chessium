@@ -12,7 +12,7 @@ import EvalGraph from "./EvalGraph";
 import ImportModal from "./ImportModal";
 import ClassificationIcon from "./ClassificationIcon";
 import { saveAnalysis } from "@/app/actions/analysis";
-import { Loader2, Save } from "lucide-react";
+import { Loader2, Save, ArrowUpDown } from "lucide-react";
 
 import { useSearchParams } from "next/navigation";
 import { useBoardTheme } from "./ThemeContext";
@@ -36,9 +36,49 @@ export default function Analyzer() {
   const [classifications, setClassifications] = useState<Record<number, MoveClassification>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'review' | 'moves'>('review');
+  const [isAutoAnalyzing, setIsAutoAnalyzing] = useState(false);
+  const [analyzedPercent, setAnalyzedPercent] = useState(0);
+  const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>('white');
   
   const engineRef = useRef<ChessEngine | null>(null);
   const moveListRef = useRef<HTMLDivElement>(null);
+
+  
+  const runFullAnalysis = async (gameHistory: Move[]) => {
+    if (!engineRef.current) return;
+    setIsAutoAnalyzing(true);
+    setAnalyzedPercent(0);
+    
+    const tempGame = new Chess();
+    const initEval = await engineRef.current.evaluatePositionAsync(tempGame.fen(), 14);
+    setEvaluations(prev => ({ ...prev, [-1]: initEval }));
+
+    for (let i = 0; i < gameHistory.length; i++) {
+      tempGame.move(gameHistory[i]);
+      const res = await engineRef.current.evaluatePositionAsync(tempGame.fen(), 14);
+      
+      setEvaluations(prev => {
+        const next = { ...prev, [i]: res };
+        const prevEval = next[i - 1];
+        if (prevEval) {
+          const move = gameHistory[i];
+          const cls = classifyMove(
+            prevEval.score, 
+            res.score, 
+            move.color, 
+            res.bestMove === move.lan, 
+            i < 10,
+            move.flags.includes('c') || move.flags.includes('e')
+          );
+          setClassifications(c => ({ ...c, [i]: cls as any }));
+        }
+        return next;
+      });
+      setAnalyzedPercent(Math.round(((i + 1) / gameHistory.length) * 100));
+    }
+    
+    setIsAutoAnalyzing(false);
+  };
 
   // Initialize engine and optionally load PGN from query
   useEffect(() => {
@@ -48,13 +88,14 @@ export default function Analyzer() {
     if (pgnQuery) {
       const newGame = new Chess();
       try {
-        newGame.loadPgn(decodeURIComponent(pgnQuery));
+        newGame.loadPgn(pgnQuery);
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
         setCurrentIndex(moves.length - 1);
         setGame(newGame);
+        runFullAnalysis(moves as Move[]);
       } catch(e) {
-        console.error("Invalid PGN from query");
+        console.error("Invalid PGN from query:", e);
       }
     }
 
@@ -76,8 +117,8 @@ export default function Analyzer() {
 
   // Evaluate position when index changes
   useEffect(() => {
-    if (engineRef.current) {
-      engineRef.current.evaluatePosition(currentFen, 18, (evalData) => {
+    if (engineRef.current && !isAutoAnalyzing && !evaluations[currentIndex]) {
+      engineRef.current.evaluatePositionAsync(currentFen, 14).then((evalData) => {
         setEvaluations(prev => ({ ...prev, [currentIndex]: evalData }));
         
         // Try to classify if we have the previous eval
@@ -90,15 +131,15 @@ export default function Analyzer() {
               evalData.score, 
               move.color, 
               evalData.bestMove === move.lan, 
-              currentIndex < 10, // crude book check
-              move.flags.includes('c') || move.flags.includes('e') // capture
+              currentIndex < 10,
+              move.flags.includes('c') || move.flags.includes('e')
             );
             setClassifications(prev => ({ ...prev, [currentIndex]: cls as any }));
           }
         }
       });
     }
-  }, [currentFen, currentIndex, history]);
+  }, [currentFen, currentIndex, history, isAutoAnalyzing, evaluations]);
 
   // Keyboard Navigation
   useEffect(() => {
@@ -157,6 +198,7 @@ export default function Analyzer() {
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
         setCurrentIndex(moves.length - 1);
+        runFullAnalysis(moves as Move[]);
       } else {
         newGame.load(data);
         setHistory([]);
@@ -252,107 +294,145 @@ export default function Analyzer() {
   }, [classifications]);
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] lg:h-[calc(100vh-80px)] w-full max-w-[1500px] mx-auto gap-8 px-4 lg:px-6 py-4 lg:py-6 pb-24 lg:pb-6">
+    <div className="flex flex-col lg:flex-row min-h-[calc(100vh-80px)] lg:h-[calc(100vh-80px)] w-full max-w-[1400px] mx-auto gap-4 px-4 py-4 pb-24 lg:pb-4 bg-background">
       
-      {/* LEFT COL: Eval Bar & Board */}
+      {/* LEFT COL: Board Area */}
       <div className="flex flex-col items-center justify-center lg:w-[65%] min-w-0">
         
-        {/* Top Header */}
-        <div className="w-full flex justify-between items-end mb-4 px-1">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">{game.header().Black || 'Black Player'}</h2>
-          </div>
+        <div className="w-full flex justify-end items-center mb-2 px-1">
           <div className="flex gap-2">
              <Button 
-               variant="outline" 
+               variant="secondary" 
                size="sm" 
                onClick={handleSave}
                disabled={isSaving || history.length === 0}
-               className="rounded-full border-white/10 bg-surface gap-2 hover:bg-white/5 transition-colors"
+               className="h-8 rounded bg-[#312e2b] hover:bg-[#3d3935] text-[#c3c3c2] font-semibold border-none gap-2"
              >
-               {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+               {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                Save
              </Button>
              <ImportModal onImport={handleImport}>
-               <Button variant="outline" size="sm" className="rounded-full border-white/10 bg-surface gap-2">
-                 <Upload className="w-4 h-4" /> Import PGN
+               <Button variant="secondary" size="sm" className="h-8 rounded bg-[#312e2b] hover:bg-[#3d3935] text-[#c3c3c2] font-semibold border-none gap-2">
+                 <Upload className="w-3.5 h-3.5" /> Import Game
                </Button>
              </ImportModal>
           </div>
         </div>
 
         {/* Board & Eval Wrapper */}
-        <div className="flex w-full max-w-[70vh] bg-background rounded-[16px] overflow-hidden shadow-2xl shadow-black/20 border border-white/10 relative shrink-0">
+        <div className="flex flex-col w-full max-w-[85vh] flex-1 bg-[#312e2b] rounded-md overflow-hidden relative shrink-0">
           
-          {/* Eval Bar */}
-          <div className="w-6 md:w-8 bg-[#1e293b] flex flex-col relative shrink-0 overflow-hidden">
-            <div 
-              className="absolute bottom-0 left-0 right-0 bg-[#e2e8f0] transition-all duration-700 ease-out flex items-start justify-center pt-2"
-              style={{ height: `${clampPercent}%` }}
-            >
-              {displayScore >= 0 && (
-                <span className="text-[9px] md:text-[11px] font-bold text-[#1e293b] select-none tracking-tighter">
-                  {currentEvalData.mate ? `M${Math.abs(currentEvalData.mate)}` : `+${displayScore.toFixed(1)}`}
-                </span>
-              )}
+          {/* Top Header (Black Player) */}
+          <div className="w-full bg-[#312e2b] px-4 py-3 flex items-center justify-between border-b border-[#262421]">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded bg-[#262421] flex items-center justify-center">
+                <span className="text-[#8b8987] font-bold text-sm">?</span>
+              </div>
+              <h2 className="text-[15px] font-bold text-[#c3c3c2]">{(game.header().Black && game.header().Black !== '?') ? game.header().Black : 'Opponent'}</h2>
             </div>
-            <div className="absolute top-0 left-0 right-0 h-12 flex items-end justify-center pb-2 z-10">
-              {displayScore < 0 && (
-                <span className="text-[11px] font-bold text-[#e2e8f0] select-none tracking-tighter">
-                  {currentEvalData.mate ? `-M${Math.abs(currentEvalData.mate)}` : displayScore.toFixed(1)}
-                </span>
-              )}
+            <div className="bg-[#262421] text-[#c3c3c2] font-mono text-[15px] font-bold px-3 py-1 rounded">5:00</div>
+          </div>
+
+          <div className="flex w-full flex-1 overflow-hidden">
+            {/* Eval Bar */}
+            <div className="w-5 bg-[#262421] flex flex-col relative shrink-0 overflow-hidden">
+              <div 
+                className="absolute bottom-0 left-0 right-0 bg-[#fff] transition-all duration-700 ease-out flex items-start justify-center pt-1"
+                style={{ height: `${clampPercent}%` }}
+              >
+                {displayScore >= 0 && (
+                  <span className="text-[9px] font-bold text-[#262421] select-none tracking-tighter">
+                    {currentEvalData.mate ? `M${Math.abs(currentEvalData.mate)}` : `+${displayScore.toFixed(1)}`}
+                  </span>
+                )}
+              </div>
+              <div className="absolute top-0 left-0 right-0 h-12 flex items-end justify-center pb-1 z-10">
+                {displayScore < 0 && (
+                  <span className="text-[9px] font-bold text-[#fff] select-none tracking-tighter">
+                    {currentEvalData.mate ? `-M${Math.abs(currentEvalData.mate)}` : displayScore.toFixed(1)}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Board */}
+            <div className="flex-1 aspect-square relative bg-[#262421]">
+              {/* @ts-ignore */}
+              <Chessboard 
+                position={currentFen}
+                onPieceDrop={onDrop}
+                customDarkSquareStyle={boardTheme.darkSquareStyle}
+                customLightSquareStyle={boardTheme.lightSquareStyle}
+                animationDuration={250}
+                boardOrientation={boardOrientation}
+              />
+            </div>
+
+            {/* Board Controls Bar */}
+            <div className="w-12 bg-[#262421] flex flex-col items-center py-4 shrink-0 gap-3">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setBoardOrientation(prev => prev === 'white' ? 'black' : 'white')}
+                className="w-10 h-10 rounded text-[#8b8987] hover:bg-[#312e2b] hover:text-[#c3c3c2]"
+                title="Flip Board"
+              >
+                <ArrowUpDown className="w-5 h-5" />
+              </Button>
             </div>
           </div>
 
-          {/* Board */}
-          <div className="flex-1 aspect-square relative">
-            {/* @ts-ignore */}
-            <Chessboard 
-              position={currentFen}
-              onPieceDrop={onDrop}
-              customDarkSquareStyle={boardTheme.darkSquareStyle}
-              customLightSquareStyle={boardTheme.lightSquareStyle}
-              animationDuration={250}
-            />
-          </div>
-        </div>
-
-        {/* Bottom Header */}
-        <div className="w-full flex justify-between items-start mt-4 px-1">
-          <div>
-            <h2 className="text-xl font-bold tracking-tight text-foreground">{game.header().White || 'White Player'}</h2>
+          {/* Bottom Header (White Player) */}
+          <div className="w-full bg-[#312e2b] px-4 py-3 flex items-center justify-between border-t border-[#262421]">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded bg-[#262421] flex items-center justify-center overflow-hidden">
+                <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover" />
+              </div>
+              <h2 className="text-[15px] font-bold text-[#c3c3c2]">{(game.header().White && game.header().White !== '?') ? game.header().White : 'akshath2008'}</h2>
+            </div>
+            <div className="bg-white/10 text-[#c3c3c2] font-mono text-[15px] font-bold px-3 py-1 rounded">5:00</div>
           </div>
         </div>
       </div>
 
       {/* RIGHT COL: Move List, Graph, Explanation */}
-      <div className="flex-1 flex flex-col min-w-[320px] max-w-[500px] lg:max-w-none bg-surface border border-white/5 rounded-[24px] overflow-hidden shadow-xl shadow-black/10">
+      <div className="flex-1 flex flex-col min-w-[320px] max-w-[500px] lg:max-w-none bg-[#262421] rounded-md overflow-hidden text-[#c3c3c2]">
         
+        {isAutoAnalyzing && (
+          <div className="p-3 bg-[#312e2b] border-b border-[#1e1c1a] flex flex-col gap-2">
+            <div className="flex justify-between items-center text-[11px] font-bold text-[#81b64c] uppercase tracking-wider">
+              <span>Running Game Review</span>
+              <span>{analyzedPercent}%</span>
+            </div>
+            <div className="w-full h-1 bg-[#1e1c1a] rounded-full overflow-hidden">
+              <div className="h-full bg-[#81b64c] transition-all duration-300" style={{ width: `${analyzedPercent}%` }}></div>
+            </div>
+          </div>
+        )}
         {/* Tabs */}
-        <div className="flex border-b border-white/5 bg-background/50 text-[13px] font-bold tracking-wider uppercase">
+        <div className="flex bg-[#1e1c1a] text-[13px] font-bold tracking-wider capitalize border-b border-[#312e2b]">
           <button 
             onClick={() => setActiveTab('review')}
-            className={`flex-1 py-4 text-center transition-colors ${activeTab === 'review' ? 'text-primary border-b-2 border-primary bg-white/5' : 'text-secondary-foreground hover:text-foreground'}`}
+            className={`flex-1 py-3 text-center transition-colors ${activeTab === 'review' ? 'bg-[#262421] text-[#fff]' : 'text-[#8b8987] hover:bg-[#312e2b] hover:text-[#c3c3c2]'}`}
           >
             Review
           </button>
           <button 
             onClick={() => setActiveTab('moves')}
-            className={`flex-1 py-4 text-center transition-colors ${activeTab === 'moves' ? 'text-primary border-b-2 border-primary bg-white/5' : 'text-secondary-foreground hover:text-foreground'}`}
+            className={`flex-1 py-3 text-center transition-colors ${activeTab === 'moves' ? 'bg-[#262421] text-[#fff]' : 'text-[#8b8987] hover:bg-[#312e2b] hover:text-[#c3c3c2]'}`}
           >
             Moves
           </button>
         </div>
 
         {/* Header / Opening Info */}
-        <div className="p-5 border-b border-white/5 bg-background/50">
+        <div className="p-4 border-b border-[#312e2b] bg-[#262421]">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <h3 className="text-lg font-bold tracking-tight text-foreground">{opening.name}</h3>
-              <p className="text-xs font-mono text-secondary-foreground mt-1 px-2 py-0.5 bg-white/5 rounded w-fit">{opening.eco}</p>
+              <h3 className="text-[15px] font-bold tracking-tight text-[#fff]">{opening.name}</h3>
+              <p className="text-[11px] font-mono text-[#8b8987] mt-1">{opening.eco}</p>
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-1 rounded-full">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-[#8b8987] bg-[#312e2b] px-2 py-1 rounded">
               Depth {currentEvalData.depth}
             </div>
           </div>
@@ -360,22 +440,40 @@ export default function Analyzer() {
         </div>
 
         {activeTab === 'review' ? (
-          <div className="flex-1 overflow-y-auto p-5 space-y-6">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* Game Review Box */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-background border border-white/5 rounded-xl p-4 text-center flex flex-col items-center justify-center">
-                <div className="text-sm font-medium text-secondary-foreground mb-1">White Accuracy</div>
-                <div className="text-4xl font-bold tracking-tighter text-foreground">{reviewStats.whiteAccuracy}<span className="text-2xl text-secondary-foreground/50">%</span></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-[#312e2b] rounded-lg p-5 text-center flex flex-col items-center justify-center relative overflow-hidden">
+                <div className="text-[12px] font-bold uppercase tracking-widest text-[#8b8987] mb-3 z-10">White Accuracy</div>
+                
+                <div className="relative w-24 h-24 flex items-center justify-center z-10">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" className="text-[#262421]" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.whiteAccuracy) || 0)) / 100} className="text-[#fff] transition-all duration-1000 ease-out" />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <span className="text-2xl font-bold tracking-tighter text-[#fff] leading-none">{reviewStats.whiteAccuracy}</span>
+                  </div>
+                </div>
               </div>
-              <div className="bg-background border border-white/5 rounded-xl p-4 text-center flex flex-col items-center justify-center">
-                <div className="text-sm font-medium text-secondary-foreground mb-1">Black Accuracy</div>
-                <div className="text-4xl font-bold tracking-tighter text-foreground">{reviewStats.blackAccuracy}<span className="text-2xl text-secondary-foreground/50">%</span></div>
+              <div className="bg-[#312e2b] rounded-lg p-5 text-center flex flex-col items-center justify-center relative overflow-hidden">
+                <div className="text-[12px] font-bold uppercase tracking-widest text-[#8b8987] mb-3 z-10">Black Accuracy</div>
+                
+                <div className="relative w-24 h-24 flex items-center justify-center z-10">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" className="text-[#262421]" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.blackAccuracy) || 0)) / 100} className="text-[#fff] transition-all duration-1000 ease-out" />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <span className="text-2xl font-bold tracking-tighter text-[#fff] leading-none">{reviewStats.blackAccuracy}</span>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Classification Table */}
-            <div className="bg-background border border-white/5 rounded-xl overflow-hidden">
-              <div className="grid grid-cols-[1fr_2fr_1fr] bg-white/5 p-3 text-[11px] font-bold uppercase tracking-wider text-secondary-foreground text-center">
+            <div className="bg-[#312e2b] rounded-lg overflow-hidden">
+              <div className="grid grid-cols-[1fr_2fr_1fr] bg-[#1e1c1a] p-2.5 text-[10px] font-bold uppercase tracking-wider text-[#8b8987] text-center border-b border-[#312e2b]">
                 <div>White</div>
                 <div>Move Type</div>
                 <div>Black</div>
@@ -389,88 +487,62 @@ export default function Analyzer() {
                 { label: 'Book', key: 'book', cls: "Book" },
                 { label: 'Inaccuracy', key: 'inaccuracy', cls: "Inaccuracy" },
                 { label: 'Mistake', key: 'mistake', cls: "Mistake" },
+                { label: 'Miss', key: 'miss', cls: "Miss" },
                 { label: 'Blunder', key: 'blunder', cls: "Blunder" },
-              ].map((row) => {
-                // @ts-ignore
-                const wVal = reviewStats.white[row.key];
-                // @ts-ignore
-                const bVal = reviewStats.black[row.key];
-                if (wVal === 0 && bVal === 0 && row.key !== 'best' && row.key !== 'blunder') return null;
+              ].map(stat => {
+                const wVal = classifications.filter(c => c.color === 'w' && c.classification === stat.cls).length;
+                const bVal = classifications.filter(c => c.color === 'b' && c.classification === stat.cls).length;
+                
+                if (wVal === 0 && bVal === 0 && !['best', 'inaccuracy', 'mistake', 'blunder'].includes(stat.key)) return null;
 
                 return (
-                  <div key={row.key} className="grid grid-cols-[1fr_2fr_1fr] p-3 text-sm font-medium border-t border-white/5 text-center items-center">
-                    <div className="text-foreground">{wVal}</div>
-                    <div className="flex items-center justify-center gap-2 text-secondary-foreground">
-                      <ClassificationIcon classification={row.cls} className="w-4 h-4" /> <span className="hidden sm:inline">{row.label}</span>
+                  <div key={stat.key} className="grid grid-cols-[1fr_2fr_1fr] border-t border-[#262421] p-2 text-[13px] text-center items-center">
+                    <div className="font-bold text-[#fff]">{wVal}</div>
+                    <div className="flex items-center justify-center gap-2 text-[#8b8987]">
+                      <ClassificationIcon cls={stat.cls} />
+                      <span className="hidden sm:inline">{stat.label}</span>
                     </div>
-                    <div className="text-foreground">{bVal}</div>
+                    <div className="font-bold text-[#fff]">{bVal}</div>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
         ) : (
-          <>
-          {/* Move List */}
-          <div className="flex-1 overflow-y-auto p-2" ref={moveListRef}>
-            <div className="grid grid-cols-[auto_1fr_1fr] w-full text-[15px] font-medium">
-            {movePairs.map((pair, rowIdx) => (
-              <div key={rowIdx} className="contents group">
-                <div className="py-2.5 px-4 text-secondary-foreground/50 font-mono text-sm border-b border-white/5 flex items-center">
-                  {rowIdx + 1}
-                </div>
-                {/* White Move */}
-                <div 
-                  onClick={() => setCurrentIndex(rowIdx * 2)}
-                  className={`py-2.5 px-3 border-b border-white/5 cursor-pointer flex items-center justify-between transition-colors ${
-                    currentIndex === rowIdx * 2 ? 'bg-primary/20 text-foreground active-move rounded-l-md' : 'hover:bg-white/5 text-secondary-foreground'
-                  }`}
-                >
-                  {pair[0].san}
-                  {classifications[rowIdx * 2] && (
-                     <ClassificationIcon classification={classifications[rowIdx * 2]} className="w-5 h-5 text-[10px]" />
-                  )}
-                </div>
-                {/* Black Move */}
-                <div 
-                  onClick={() => pair[1] && setCurrentIndex(rowIdx * 2 + 1)}
-                  className={`py-2.5 px-3 border-b border-white/5 cursor-pointer flex items-center justify-between transition-colors ${
-                    currentIndex === rowIdx * 2 + 1 ? 'bg-primary/20 text-foreground active-move rounded-r-md' : 'hover:bg-white/5 text-secondary-foreground bg-black/10'
-                  }`}
-                >
-                  {pair[1] ? pair[1].san : ""}
-                  {pair[1] && classifications[rowIdx * 2 + 1] && (
-                     <ClassificationIcon classification={classifications[rowIdx * 2 + 1]} className="w-5 h-5 text-[10px]" />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Explanation Panel */}
-        {activeMove && activeClass && (
-          <div className="p-5 bg-background border-t border-white/5 min-h-[140px]">
-            <div className="flex items-center gap-3 mb-2">
-              <ClassificationIcon classification={activeClass} className="w-6 h-6 text-xs" />
-              <div className="font-mono font-bold text-foreground">{activeMove.san}</div>
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto p-2 font-mono text-[13px]">
+              {history.map((_, i) => {
+                if (i % 2 !== 0) return null;
+                const wMove = history[i];
+                const bMove = history[i + 1];
+                const turnNum = Math.floor(i / 2) + 1;
+                
+                return (
+                  <div key={turnNum} className={`grid grid-cols-[30px_1fr_1fr] px-2 py-1.5 rounded ${currentIndex >= i && currentIndex <= i + 1 ? 'bg-[#312e2b]' : 'hover:bg-[#312e2b]'}`}>
+                    <div className="text-[#8b8987]">{turnNum}.</div>
+                    <div className={`cursor-pointer flex items-center gap-1 ${currentIndex === i ? 'text-[#fff] font-black' : 'text-[#c3c3c2]'}`} onClick={() => setCurrentIndex(i)}>
+                      {wMove.san}
+                      {classifications[i] && <ClassificationIcon cls={classifications[i].classification} />}
+                    </div>
+                    {bMove && (
+                      <div className={`cursor-pointer flex items-center gap-1 ${currentIndex === i + 1 ? 'text-[#fff] font-black' : 'text-[#c3c3c2]'}`} onClick={() => setCurrentIndex(i + 1)}>
+                        {bMove.san}
+                        {classifications[i + 1] && <ClassificationIcon cls={classifications[i + 1].classification} />}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
-            <p className="text-secondary-foreground text-sm font-medium leading-relaxed">
-              {getClassificationExplanation(activeClass)}
-            </p>
+            
+            <div className="p-2 bg-[#1e1c1a] border-t border-[#312e2b] flex justify-center gap-1">
+              <Button variant="ghost" size="icon" className="text-[#8b8987] hover:text-[#fff] h-10 w-12 rounded" onClick={() => setCurrentIndex(-1)}><ChevronFirst className="w-5 h-5" /></Button>
+              <Button variant="ghost" size="icon" className="text-[#8b8987] hover:text-[#fff] h-10 w-12 rounded" onClick={() => setCurrentIndex(prev => Math.max(-1, prev - 1))}><ChevronLeft className="w-5 h-5" /></Button>
+              <Button variant="ghost" size="icon" className="text-[#8b8987] hover:text-[#fff] h-10 w-12 rounded" onClick={() => setCurrentIndex(prev => Math.min(history.length - 1, prev + 1))}><ChevronRight className="w-5 h-5" /></Button>
+              <Button variant="ghost" size="icon" className="text-[#8b8987] hover:text-[#fff] h-10 w-12 rounded" onClick={() => setCurrentIndex(history.length - 1)}><ChevronLast className="w-5 h-5" /></Button>
+            </div>
           </div>
         )}
-        </>
-        )}
-
-        {/* Controls */}
-        <div className="p-3 bg-surface border-t border-white/5 flex justify-center gap-2">
-          <Button onClick={() => setCurrentIndex(-1)} variant="ghost" size="icon" className="w-12 h-12 rounded-xl hover:bg-white/10"><Rewind className="w-5 h-5" /></Button>
-          <Button onClick={() => setCurrentIndex(p => Math.max(-1, p - 1))} variant="ghost" size="icon" className="w-12 h-12 rounded-xl hover:bg-white/10"><ChevronLeft className="w-6 h-6" /></Button>
-          <Button onClick={() => setCurrentIndex(p => Math.min(history.length - 1, p + 1))} variant="ghost" size="icon" className="w-12 h-12 rounded-xl hover:bg-white/10"><ChevronRight className="w-6 h-6" /></Button>
-          <Button onClick={() => setCurrentIndex(history.length - 1)} variant="ghost" size="icon" className="w-12 h-12 rounded-xl hover:bg-white/10"><FastForward className="w-5 h-5" /></Button>
-        </div>
-
       </div>
     </div>
   );

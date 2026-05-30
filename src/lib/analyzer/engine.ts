@@ -84,6 +84,33 @@ export class ChessEngine {
     this.worker.postMessage(`go depth ${depth}`);
   }
 
+  evaluatePositionAsync(fen: string, depth: number): Promise<EngineEvaluation> {
+    return new Promise((resolve) => {
+      // Use a custom callback that resolves the promise only when analysis is fully done (bestmove is sent)
+      // We know it's fully done when isAnalyzing becomes false. But the onMessage handles it.
+      // We can patch currentCallback to resolve.
+      this.init();
+      if (!this.worker) return resolve({ score: 0, mate: null, depth: 0, bestMove: "", pv: "" });
+      
+      this.stop();
+      this.currentEval = { score: 0, mate: null, depth: 0, bestMove: "", pv: "" };
+      this.isAnalyzing = true;
+      
+      this.currentCallback = (data) => {
+        // If we want to resolve only on completion, we check if isAnalyzing is false.
+        // Wait, currentCallback is called on depth updates too! 
+        // We will modify onMessage slightly or just resolve when it's done.
+        if (!this.isAnalyzing) {
+          resolve(data);
+        }
+      };
+
+      this.worker.postMessage('ucinewgame');
+      this.worker.postMessage(`position fen ${fen}`);
+      this.worker.postMessage(`go depth ${depth}`);
+    });
+  }
+
   stop() {
     if (this.worker && this.isAnalyzing) {
       this.worker.postMessage('stop');

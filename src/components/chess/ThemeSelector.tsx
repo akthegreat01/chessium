@@ -21,8 +21,10 @@ export default function ThemeSelector() {
       </Button>
 
       {open && (
-        <div className="absolute left-full bottom-0 ml-2 w-48 bg-surface border border-border rounded shadow-2xl p-2 z-50">
-          <div className="text-[10px] font-bold text-secondary-foreground mb-2 px-2 uppercase tracking-widest">Select Theme</div>
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="fixed left-16 md:left-[220px] bottom-16 ml-2 w-48 bg-surface border border-border rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.8)] p-2 z-50">
+            <div className="text-[10px] font-bold text-secondary-foreground mb-2 px-2 uppercase tracking-widest">Select Theme</div>
           <div className="flex flex-col gap-[2px]">
             {(Object.keys(themes) as BoardThemeName[]).map(themeKey => (
               <button
@@ -40,7 +42,8 @@ export default function ThemeSelector() {
               </button>
             ))}
           </div>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );
