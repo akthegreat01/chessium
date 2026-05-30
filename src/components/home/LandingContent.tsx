@@ -202,13 +202,6 @@ export default function LandingContent({ user }: { user: any }) {
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                className="border-border bg-transparent hover:bg-white/[0.04] h-12 px-8 text-[15px] font-medium rounded-lg"
-              >
-                <Play className="mr-2 h-4 w-4" />
-                Watch Demo
-              </Button>
             </motion.div>
           </div>
 
@@ -407,6 +400,9 @@ export default function LandingContent({ user }: { user: any }) {
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
               Simple, transparent pricing.
             </h2>
+            <p className="mt-4 text-lg text-secondary-foreground font-medium">
+              Memberships coming soon.
+            </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
