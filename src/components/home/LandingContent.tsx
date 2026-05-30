@@ -225,7 +225,7 @@ export default function LandingContent({ user }: { user: any }) {
           >
             {/* Massive Background Text */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
-              <span className="text-[12vw] md:text-[180px] font-black tracking-tighter text-white/[0.03] leading-none whitespace-nowrap">
+              <span className="text-[12vw] md:text-[180px] font-black tracking-tighter leading-none whitespace-nowrap bg-gradient-to-b from-[#E2E2E2] via-[#BDBDBD] to-[#8F8F8F] bg-clip-text text-transparent drop-shadow-2xl opacity-60">
                 CHESSIUM
               </span>
             </div>
