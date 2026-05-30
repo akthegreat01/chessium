@@ -212,104 +212,36 @@ export default function LandingContent({ user }: { user: any }) {
             </motion.div>
           </div>
 
-          {/* Product Mockup */}
+          {/* Logo Visual Presentation */}
           <motion.div
-            className="relative mt-20 md:mt-28"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
+            className="relative mt-32 md:mt-40 mb-10 flex items-center justify-center w-full max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{
               duration: 0.9,
               ease: [0.16, 1, 0.3, 1],
               delay: 0.35,
             }}
           >
-            {/* Golden glow */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[600px] h-[400px] bg-primary/5 blur-[150px] rounded-full" />
+            {/* Massive Background Text */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0">
+              <span className="text-[12vw] md:text-[180px] font-black tracking-tighter text-white/[0.03] leading-none whitespace-nowrap">
+                CHESSIUM
+              </span>
             </div>
 
-            <div className="relative bg-surface border border-border rounded-2xl overflow-hidden shadow-2xl shadow-black/40">
-              {/* Window chrome */}
-              <div className="flex items-center gap-2 px-5 py-4 border-b border-border">
-                <div className="w-2 h-2 rounded-full bg-[#FF5F56]" />
-                <div className="w-2 h-2 rounded-full bg-[#FFBD2E]" />
-                <div className="w-2 h-2 rounded-full bg-[#27C93F]" />
-                <span className="ml-4 text-[13px] text-secondary-foreground font-medium">
-                  Chessium — AI Analysis
-                </span>
-              </div>
+            {/* Glowing Aura */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+              <div className="w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-primary/20 blur-[100px] rounded-full mix-blend-screen" />
+            </div>
 
-              {/* Dashboard content */}
-              <div className="grid grid-cols-1 md:grid-cols-[1fr_320px] gap-0">
-                {/* Chessboard */}
-                <div className="p-6 md:p-8 flex items-center justify-center">
-                  <div className="w-full max-w-[480px]">
-                    <HeroBoard />
-                  </div>
-                </div>
-
-                {/* Analysis panel */}
-                <div className="border-t md:border-t-0 md:border-l border-border p-6 md:p-8 flex flex-col gap-6">
-                  <div>
-                    <p className="text-[13px] uppercase tracking-widest font-medium text-secondary-foreground">
-                      AI Analysis
-                    </p>
-                  </div>
-
-                  {/* Accuracy */}
-                  <div>
-                    <p className="text-[13px] text-secondary-foreground mb-1">
-                      Accuracy
-                    </p>
-                    <p className="text-4xl font-bold tracking-tight">94.2%</p>
-                  </div>
-
-                  {/* Best Move */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <div>
-                      <p className="text-[13px] text-secondary-foreground">
-                        Best Move
-                      </p>
-                      <p className="text-lg font-bold">Nf3</p>
-                    </div>
-                  </div>
-
-                  {/* Mistakes */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                    <div>
-                      <p className="text-[13px] text-secondary-foreground">
-                        Mistakes
-                      </p>
-                      <p className="text-lg font-bold">2</p>
-                    </div>
-                  </div>
-
-                  {/* Move list */}
-                  <div className="mt-auto">
-                    <p className="text-[13px] uppercase tracking-widest font-medium text-secondary-foreground mb-3">
-                      Moves
-                    </p>
-                    <div className="space-y-0">
-                      {fakeMoves.map((move) => (
-                        <div
-                          key={move.number}
-                          className="flex items-center text-[14px] py-1.5 border-b border-border last:border-0"
-                        >
-                          <span className="w-8 text-secondary-foreground font-medium">
-                            {move.number}.
-                          </span>
-                          <span className="w-16 font-medium">{move.white}</span>
-                          <span className="w-16 text-secondary-foreground">
-                            {move.black}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* Logo Image */}
+            <div className="relative z-10 w-[200px] h-[200px] md:w-[320px] md:h-[320px] drop-shadow-[0_0_40px_rgba(212,175,55,0.4)]">
+              <img 
+                src="/chessium_logo.png" 
+                alt="Chessium Logo" 
+                className="w-full h-full object-contain filter invert" 
+              />
             </div>
           </motion.div>
         </div>
