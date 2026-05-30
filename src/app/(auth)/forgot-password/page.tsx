@@ -59,7 +59,7 @@ export default function ForgotPasswordPage() {
     <div className="flex flex-col items-center">
       {/* Logo mark */}
       <div className="w-10 h-10 flex items-center justify-center mb-8 opacity-80">
-        <img src="/logo.png" alt="Chessium" className="w-full h-full object-contain filter invert" />
+        <img src="/chessium_logo.png" alt="Chessium" className="w-full h-full object-contain" />
       </div>
 
       {/* Header */}

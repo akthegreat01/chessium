@@ -19,7 +19,7 @@ export default async function LandingPage() {
           {/* Left: Brand */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-6 h-6 flex items-center justify-center shrink-0 opacity-80 group-hover:opacity-100 transition-opacity">
-              <img src="/logo.png" alt="Chessium" className="w-full h-full object-contain filter invert" />
+              <img src="/chessium_logo.png" alt="Chessium" className="w-full h-full object-contain" />
             </div>
             <span className="font-semibold tracking-wide text-foreground text-[15px]">Chessium</span>
           </Link>

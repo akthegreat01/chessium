@@ -26,7 +26,7 @@ export default async function AppLayout({
         <div className="h-14 flex items-center justify-center md:justify-start px-5 border-b border-border shrink-0">
           <Link href="/home" className="flex items-center gap-2.5 opacity-80 hover:opacity-100 transition-opacity">
             <div className="w-5 h-5 flex items-center justify-center shrink-0">
-              <img src="/logo.png" alt="Chessium" className="w-full h-full object-contain filter invert" />
+              <img src="/chessium_logo.png" alt="Chessium" className="w-full h-full object-contain" />
             </div>
             <span className="font-bold tracking-[0.2em] uppercase hidden md:block text-[11px]">Chessium</span>
           </Link>

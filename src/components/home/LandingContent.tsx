@@ -240,7 +240,7 @@ export default function LandingContent({ user }: { user: any }) {
               <img 
                 src="/chessium_logo.png" 
                 alt="Chessium Logo" 
-                className="w-full h-full object-contain filter invert" 
+                className="w-full h-full object-contain" 
               />
             </div>
           </motion.div>
