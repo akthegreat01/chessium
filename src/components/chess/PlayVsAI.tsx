@@ -222,7 +222,7 @@ export default function PlayVsAI() {
       </div>
 
       {/* Board Column (Center) */}
-      <div className="flex flex-col w-full max-w-[85vh] flex-1 bg-[#312e2b] rounded-md overflow-hidden relative shrink-0">
+      <div className="flex flex-col w-full max-w-[calc(100vh-200px)] min-w-[300px] flex-1 bg-[#312e2b] rounded-md overflow-hidden relative shrink-0">
         
         {/* Opponent Info Header */}
         <div className="w-full bg-[#312e2b] px-4 py-3 flex items-center justify-between border-b border-[#262421]">
@@ -247,7 +247,6 @@ export default function PlayVsAI() {
                 <span className="w-1.5 h-1.5 rounded-full bg-[#81b64c] animate-pulse" /> Thinking
               </div>
             )}
-            <div className="bg-[#262421] text-[#c3c3c2] font-mono text-[15px] font-bold px-3 py-1 rounded">10:00</div>
           </div>
         </div>
 
@@ -287,7 +286,6 @@ export default function PlayVsAI() {
             </div>
             <h2 className="text-[15px] font-bold text-[#c3c3c2]">akshath2008</h2>
           </div>
-          <div className="bg-[#262421] text-[#c3c3c2] font-mono text-[15px] font-bold px-3 py-1 rounded">10:00</div>
         </div>
       </div>
 

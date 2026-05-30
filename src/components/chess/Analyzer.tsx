@@ -320,7 +320,7 @@ export default function Analyzer() {
         </div>
 
         {/* Board & Eval Wrapper */}
-        <div className="flex flex-col w-full max-w-[85vh] flex-1 bg-[#312e2b] rounded-md overflow-hidden relative shrink-0">
+        <div className="flex flex-col w-full max-w-[calc(100vh-240px)] min-w-[300px] flex-1 bg-[#312e2b] rounded-md overflow-hidden relative shrink-0">
           
           {/* Top Header (Black Player) */}
           <div className="w-full bg-[#312e2b] px-4 py-3 flex items-center justify-between border-b border-[#262421]">
@@ -330,7 +330,6 @@ export default function Analyzer() {
               </div>
               <h2 className="text-[15px] font-bold text-[#c3c3c2]">{(game.header().Black && game.header().Black !== '?') ? game.header().Black : 'Opponent'}</h2>
             </div>
-            <div className="bg-[#262421] text-[#c3c3c2] font-mono text-[15px] font-bold px-3 py-1 rounded">5:00</div>
           </div>
 
           <div className="flex w-full flex-1 overflow-hidden">
@@ -390,7 +389,6 @@ export default function Analyzer() {
               </div>
               <h2 className="text-[15px] font-bold text-[#c3c3c2]">{(game.header().White && game.header().White !== '?') ? game.header().White : 'akshath2008'}</h2>
             </div>
-            <div className="bg-white/10 text-[#c3c3c2] font-mono text-[15px] font-bold px-3 py-1 rounded">5:00</div>
           </div>
         </div>
       </div>
