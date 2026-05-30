@@ -408,72 +408,21 @@ export default function LandingContent({ user }: { user: any }) {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {pricingPlans.map((plan, i) => (
-              <motion.div
-                key={plan.name}
-                className={`relative rounded-xl p-8 md:p-10 border flex flex-col ${
-                  plan.highlighted
-                    ? "bg-surface border-primary/30 shadow-[0_0_60px_rgba(212,175,55,0.06)]"
-                    : "bg-surface border-border"
-                }`}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{
-                  duration: 0.7,
-                  ease: [0.16, 1, 0.3, 1],
-                  delay: i * 0.1,
-                }}
-              >
-                {plan.highlighted && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-
-                <div className="mb-8">
-                  <p className="text-[13px] uppercase tracking-widest font-medium text-secondary-foreground mb-4">
-                    {plan.name}
-                  </p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-5xl font-bold tracking-tight">
-                      {plan.price}
-                    </span>
-                    <span className="text-secondary-foreground text-[15px]">
-                      {plan.period}
-                    </span>
-                  </div>
-                </div>
-
-                <ul className="space-y-3.5 mb-10 flex-1">
-                  {plan.features.map((feature) => (
-                    <li
-                      key={feature}
-                      className="flex items-start gap-3 text-[15px]"
-                    >
-                      <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-secondary-foreground">
-                        {feature}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button
-                  className={`w-full h-11 text-[14px] font-medium rounded-lg ${
-                    plan.highlighted
-                      ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                      : "bg-surface border border-border hover:bg-white/[0.04]"
-                  }`}
-                >
-                  {plan.cta}
-                </Button>
-              </motion.div>
-            ))}
-          </div>
+          <motion.div 
+            className="flex flex-col items-center justify-center p-16 md:p-24 bg-surface border border-border rounded-2xl max-w-3xl mx-auto text-center relative overflow-hidden"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.05),transparent_60%)] pointer-events-none" />
+            <h3 className="text-2xl md:text-3xl font-bold tracking-tight mb-3">
+              Coming Soon
+            </h3>
+            <p className="text-secondary-foreground">
+              We are working hard to bring you premium tiers with incredible features.
+            </p>
+          </motion.div>
         </div>
       </section>
 
