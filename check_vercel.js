@@ -4,10 +4,19 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   const page = await browser.newPage();
   
-  page.on('console', msg => console.log('BROWSER LOG:', msg.type(), msg.text()));
-  page.on('pageerror', error => console.log('BROWSER ERROR:', error.message));
+  page.on('console', msg => {
+    if (msg.type() === 'error') {
+      console.log('BROWSER ERROR:', msg.text());
+    }
+  });
   page.on('requestfailed', request => {
-    console.log('NETWORK ERROR:', request.url(), request.failure().errorText);
+    console.log('NETWORK ERROR:', request.url(), request.failure()?.errorText);
+  });
+
+  page.on('response', response => {
+    if (response.status() === 404) {
+      console.log('404 Not Found:', response.url());
+    }
   });
 
   const urlsToTry = [
@@ -21,13 +30,6 @@ const puppeteer = require('puppeteer');
       const response = await page.goto(url, { waitUntil: 'networkidle0', timeout: 15000 });
       if (response && response.status() === 200) {
         console.log("Found live site!");
-        
-        // Let's check headers
-        const headers = response.headers();
-        console.log("COEP:", headers['cross-origin-embedder-policy']);
-        console.log("COOP:", headers['cross-origin-opener-policy']);
-        
-        await new Promise(r => setTimeout(r, 2000));
         break;
       }
     } catch (e) {
