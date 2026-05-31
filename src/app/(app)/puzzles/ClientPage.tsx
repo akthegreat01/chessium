@@ -58,8 +58,12 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
   }, [moveIndex, status, fen, puzzle.moves, makeMove]);
 
   const onDrop = (sourceSquare: string, targetSquare: string) => {
-    if (status !== "playing") return false;
+    if (status === "solved") return false;
     if (moveIndex % 2 !== 0) return false; // Not player's turn
+
+    if (status === "incorrect") {
+      setStatus("playing");
+    }
 
     // First create a temporary game to check what the move's SAN would be
     const tempGame = new Chess(fen);
@@ -93,8 +97,12 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
   };
 
   const onSquareClick = (square: string) => {
-    if (status !== "playing") return;
+    if (status === "solved") return;
     if (moveIndex % 2 !== 0) return; // Not player's turn
+
+    if (status === "incorrect") {
+      setStatus("playing");
+    }
 
     if (moveFrom === null) {
       const g = new Chess(fen);
