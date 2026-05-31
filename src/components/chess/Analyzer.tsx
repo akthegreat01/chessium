@@ -362,8 +362,10 @@ export default function Analyzer() {
               <div className="w-full h-full absolute inset-0">
                 {/* @ts-ignore */}
                 <Chessboard 
+                  id="AnalyzerBoard"
                   position={currentFen}
                   onPieceDrop={onDrop}
+                  arePiecesDraggable={true}
                   customDarkSquareStyle={boardTheme.darkSquareStyle}
                   customLightSquareStyle={boardTheme.lightSquareStyle}
                   animationDuration={250}

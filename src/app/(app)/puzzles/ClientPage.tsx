@@ -22,6 +22,7 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
 
   // Determine whose turn it is visually
   const [playerColor, setPlayerColor] = useState<"White" | "Black">("White");
+  const [moveFrom, setMoveFrom] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -91,6 +92,61 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
     return false;
   };
 
+  const onSquareClick = (square: string) => {
+    if (status !== "playing") return;
+    if (moveIndex % 2 !== 0) return; // Not player's turn
+
+    if (moveFrom === null) {
+      const g = new Chess(fen);
+      const piece = g.get(square as any);
+      if (piece && piece.color === (playerColor === "White" ? 'w' : 'b')) {
+        setMoveFrom(square);
+      }
+      return;
+    }
+
+    const tempGame = new Chess(fen);
+    try {
+      const moveResult = tempGame.move({
+        from: moveFrom,
+        to: square,
+        promotion: "q"
+      });
+
+      if (moveResult) {
+        if (moveResult.san === puzzle.moves[moveIndex]) {
+          makeMove({ from: moveFrom, to: square, promotion: "q" });
+          if (moveIndex + 1 === puzzle.moves.length) {
+            setStatus("solved");
+            triggerConfetti();
+          } else {
+            setMoveIndex(m => m + 1);
+          }
+          setMoveFrom(null);
+        } else {
+          setStatus("incorrect");
+          setMoveFrom(null);
+        }
+      } else {
+        const g = new Chess(fen);
+        const piece = g.get(square as any);
+        if (piece && piece.color === (playerColor === "White" ? 'w' : 'b')) {
+          setMoveFrom(square);
+        } else {
+          setMoveFrom(null);
+        }
+      }
+    } catch (e) {
+      const g = new Chess(fen);
+      const piece = g.get(square as any);
+      if (piece && piece.color === (playerColor === "White" ? 'w' : 'b')) {
+        setMoveFrom(square);
+      } else {
+        setMoveFrom(null);
+      }
+    }
+  };
+
   const retry = () => {
     loadFen(puzzle.fen);
     setMoveIndex(0);
@@ -121,8 +177,11 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
           <div className="w-full h-full absolute inset-0">
             {/* @ts-ignore */}
             <Chessboard 
+              id="PuzzleBoard"
               position={fen}
               onPieceDrop={onDrop}
+              onSquareClick={onSquareClick}
+              arePiecesDraggable={true}
               boardOrientation={playerColor === "White" ? "white" : "black"}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}

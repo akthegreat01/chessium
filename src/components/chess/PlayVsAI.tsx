@@ -28,6 +28,7 @@ export default function PlayVsAI() {
   const [showDialogue, setShowDialogue] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const dialogueTimer = useRef<NodeJS.Timeout | null>(null);
+  const [moveFrom, setMoveFrom] = useState<string | null>(null);
   
   const workerRef = useRef<Worker | null>(null);
 
@@ -125,7 +126,7 @@ export default function PlayVsAI() {
     }
   }, [game, fen, turn, isGameOver, playerColor, engineReady, hasMatchStarted, isThinking, personality, displayDialogue]);
 
-  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
+  const onDrop = (sourceSquare: string, targetSquare: string) => {
     if (turn !== playerColor || isGameOver) return false;
 
     const move = makeMove({
@@ -135,6 +136,35 @@ export default function PlayVsAI() {
     });
 
     return move !== null;
+  };
+
+  const onSquareClick = (square: string) => {
+    if (turn !== playerColor || isGameOver) return;
+
+    if (moveFrom === null) {
+      const piece = game.get(square as any);
+      if (piece && piece.color === playerColor) {
+        setMoveFrom(square);
+      }
+      return;
+    }
+
+    const move = makeMove({
+      from: moveFrom,
+      to: square,
+      promotion: "q"
+    });
+
+    if (move) {
+      setMoveFrom(null);
+    } else {
+      const piece = game.get(square as any);
+      if (piece && piece.color === playerColor) {
+        setMoveFrom(square);
+      } else {
+        setMoveFrom(null);
+      }
+    }
   };
 
   const handleUndo = () => {
@@ -265,8 +295,11 @@ export default function PlayVsAI() {
           <div className="w-full h-full absolute inset-0">
             {/* @ts-ignore */}
             <Chessboard 
+              id="PlayVsAIBoard"
               position={fen}
               onPieceDrop={onDrop}
+              onSquareClick={onSquareClick}
+              arePiecesDraggable={true}
               boardOrientation={playerColor === "w" ? (isFlipped ? "black" : "white") : (isFlipped ? "white" : "black")}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}
