@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight, ChevronLeft } from "lucide-react";
-import { Chessboard } from "react-chessboard";
+import dynamic from "next/dynamic";
+const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false });
 import { Button } from "@/components/ui/button";
 
 const COURSE_DATA = {

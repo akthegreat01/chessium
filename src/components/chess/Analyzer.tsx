@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Chess, Move } from "chess.js";
-import { Chessboard } from "react-chessboard";
+import dynamic from "next/dynamic";
+const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false });
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, FastForward, Rewind, Upload } from "lucide-react";
 import { ChessEngine, EngineEvaluation } from "@/lib/analyzer/engine";

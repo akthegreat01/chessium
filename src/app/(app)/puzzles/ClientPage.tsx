@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Chess, Move } from "chess.js";
-import { Chessboard } from "react-chessboard";
+import dynamic from "next/dynamic";
+const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false });
 import { Puzzle } from "@/lib/puzzles/data";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";

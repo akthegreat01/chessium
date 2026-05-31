@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Chessboard } from "react-chessboard";
+import dynamic from "next/dynamic";
+const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false });
 import { useBoardTheme } from "./ThemeContext";
 
 export function StaticBoard({ position, width, allowDragging = false }: { position: string, width?: number, allowDragging?: boolean }) {
