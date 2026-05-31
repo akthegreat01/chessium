@@ -9,12 +9,16 @@ import { AIPersonality, aiPersonalities } from "@/lib/ai/personalities";
 import { useBoardTheme } from "./ThemeContext";
 import { createClient } from "@/utils/supabase/client";
 import { useChessGame } from "@/hooks/useChessGame";
+import { useChessComStats } from "@/hooks/useChessComStats";
 
 export default function PlayVsAI() {
   const { boardTheme } = useBoardTheme();
   
   // Custom hook for unified chess state
   const { game, fen, turn, isGameOver, makeMove, undoMove, resetGame } = useChessGame();
+  
+  // Chess.com Stats
+  const { stats, username: chessComUsername } = useChessComStats();
   
   const [personality, setPersonality] = useState<AIPersonality>(aiPersonalities[1]); // Default Aggressor
   const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
@@ -312,7 +316,14 @@ export default function PlayVsAI() {
             <div className="w-10 h-10 rounded bg-background flex items-center justify-center overflow-hidden shadow-inner">
               <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover p-1 opacity-80" />
             </div>
-            <h2 className="text-base font-bold text-foreground">{playerName}</h2>
+            <div className="flex flex-col">
+              <h2 className="text-base font-bold text-foreground">
+                {chessComUsername ? chessComUsername : playerName}
+              </h2>
+              {stats?.rapid && (
+                <span className="text-xs text-secondary-foreground font-bold">Rapid ELO: {stats.rapid}</span>
+              )}
+            </div>
           </div>
         </div>
       </div>

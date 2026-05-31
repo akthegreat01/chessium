@@ -5,7 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { PerformanceChart } from "@/components/home/DashboardCharts";
 import { StaticBoard } from "@/components/chess/StaticBoard";
 import DashboardImportButton from "@/components/home/DashboardImportButton";
-import ChesscomConnect from "@/components/home/ChesscomConnect";
+import ChessComConnect from "@/components/home/ChessComConnect";
 
 export default async function HomePage() {
   const supabase = await createClient();

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import HeroBoard from "@/components/home/HeroBoard";
+import ChessComConnect from "@/components/home/ChessComConnect";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import React, { useRef } from "react";
 import {
@@ -311,6 +312,9 @@ export default function LandingContent({ user }: { user: any }) {
           </div>
         </div>
       </section>
+
+      {/* ─── Chess.com Sync Section ─── */}
+      <ChessComConnect />
 
       {/* ─── Trust / Social Proof Section ─── */}
       <section className="border-y border-border">
