@@ -291,8 +291,7 @@ export default function PlayVsAI() {
           </div>
         </div>
 
-        <div className="w-full aspect-square relative bg-background/50">
-          <div className="w-full h-full absolute inset-0">
+        <div className="w-full bg-background/50">
             {/* @ts-ignore */}
             <Chessboard 
               id="PlayVsAIBoard"
@@ -305,7 +304,6 @@ export default function PlayVsAI() {
               customLightSquareStyle={boardTheme.lightSquareStyle}
               animationDuration={250}
             />
-          </div>
         </div>
 
         {/* Player Info Footer */}

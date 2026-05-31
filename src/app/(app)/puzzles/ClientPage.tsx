@@ -173,8 +173,7 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
           </div>
         </div>
 
-        <div className="w-full aspect-square relative bg-background/50">
-          <div className="w-full h-full absolute inset-0">
+        <div className="w-full bg-background/50">
             {/* @ts-ignore */}
             <Chessboard 
               id="PuzzleBoard"
@@ -187,7 +186,6 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
               customLightSquareStyle={boardTheme.lightSquareStyle}
               animationDuration={300}
             />
-          </div>
         </div>
       </div>
 

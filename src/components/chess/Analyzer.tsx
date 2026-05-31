@@ -357,9 +357,7 @@ export default function Analyzer() {
               </div>
             </div>
 
-            {/* Board */}
-            <div className="flex-1 aspect-square relative bg-background/50">
-              <div className="w-full h-full absolute inset-0">
+            <div className="flex-1 bg-background/50">
                 {/* @ts-ignore */}
                 <Chessboard 
                   id="AnalyzerBoard"
@@ -371,7 +369,6 @@ export default function Analyzer() {
                   animationDuration={250}
                   boardOrientation={boardOrientation}
                 />
-              </div>
             </div>
 
             {/* Board Controls Bar */}
