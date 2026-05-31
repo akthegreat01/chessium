@@ -1,18 +1,21 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Chess, Move } from "chess.js";
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false });
 import { Button } from "@/components/ui/button";
-import { Undo2, Flag, RefreshCw, RefreshCcw, CheckCircle2, ArrowUpDown } from "lucide-react";
+import { Undo2, Flag, RefreshCw, RefreshCcw, CheckCircle2 } from "lucide-react";
 import { AIPersonality, aiPersonalities } from "@/lib/ai/personalities";
 import { useBoardTheme } from "./ThemeContext";
 import { createClient } from "@/utils/supabase/client";
+import { useChessGame } from "@/hooks/useChessGame";
 
 export default function PlayVsAI() {
   const { boardTheme } = useBoardTheme();
-  const [game, setGame] = useState(new Chess());
+  
+  // Custom hook for unified chess state
+  const { game, fen, turn, isGameOver, makeMove, undoMove, resetGame } = useChessGame();
+  
   const [personality, setPersonality] = useState<AIPersonality>(aiPersonalities[1]); // Default Aggressor
   const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
   const [engineReady, setEngineReady] = useState(false);
@@ -56,8 +59,8 @@ export default function PlayVsAI() {
       if (msg.startsWith("bestmove")) {
         const match = msg.match(/bestmove ([a-h][1-8][a-h][1-8][qrbn]?)/);
         if (match) {
-          const move = match[1];
-          makeEngineMove(move);
+          const moveLan = match[1];
+          makeEngineMove(moveLan);
         }
       }
     };
@@ -77,40 +80,36 @@ export default function PlayVsAI() {
   }, [personality, engineReady]);
 
   // Handle engine move
-  const makeEngineMove = (lan: string) => {
-    try {
-      const g = new Chess(game.fen());
-      const move = g.move({
-        from: lan.substring(0, 2),
-        to: lan.substring(2, 4),
-        promotion: lan.length > 4 ? lan.charAt(4) : undefined
-      });
-      if (move) {
-        setGame(g);
+  const makeEngineMove = useCallback((lan: string) => {
+    const move = makeMove({
+      from: lan.substring(0, 2),
+      to: lan.substring(2, 4),
+      promotion: lan.length > 4 ? lan.charAt(4) : undefined
+    });
+    
+    if (move) {
+      // Random chance for dialogue on move
+      if (Math.random() < 0.3) {
+        let pool = personality.dialogue.advantage;
+        if (game.inCheck()) pool = personality.dialogue.blunder;
+        else if (game.history().length > 20) pool = personality.dialogue.losing;
         
-        // Random chance for dialogue on move
-        if (Math.random() < 0.3) {
-          let pool = personality.dialogue.advantage;
-          
-          if (game.inCheck()) pool = personality.dialogue.blunder;
-          else if (game.history().length > 20) pool = personality.dialogue.losing;
-          
-          const randomMsg = pool[Math.floor(Math.random() * pool.length)];
-          displayDialogue(randomMsg);
-        }
+        const randomMsg = pool[Math.floor(Math.random() * pool.length)];
+        displayDialogue(randomMsg);
       }
-    } catch (e) {
+    } else {
       console.error("Engine provided invalid move:", lan);
     }
     setIsThinking(false);
-  };
+  }, [game, makeMove, personality, displayDialogue]);
 
   // Trigger engine if it's its turn
   useEffect(() => {
     if (!hasMatchStarted) return;
-    if (game.isGameOver()) {
+    
+    if (isGameOver) {
       if (game.isCheckmate()) {
-        const isEngineWin = game.turn() === playerColor;
+        const isEngineWin = turn === playerColor;
         const msg = isEngineWin 
           ? personality.dialogue.winning[Math.floor(Math.random() * personality.dialogue.winning.length)]
           : personality.dialogue.losing[Math.floor(Math.random() * personality.dialogue.losing.length)];
@@ -119,45 +118,34 @@ export default function PlayVsAI() {
       return;
     }
 
-    if (game.turn() !== playerColor && engineReady && !isThinking) {
+    if (turn !== playerColor && engineReady && !isThinking) {
       setIsThinking(true);
-      workerRef.current?.postMessage(`position fen ${game.fen()}`);
+      workerRef.current?.postMessage(`position fen ${fen}`);
       workerRef.current?.postMessage(`go depth ${personality.engine.depth}`);
     }
-  }, [game, playerColor, engineReady, hasMatchStarted, isThinking, personality]);
+  }, [game, fen, turn, isGameOver, playerColor, engineReady, hasMatchStarted, isThinking, personality, displayDialogue]);
 
   const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
-    if (game.turn() !== playerColor || game.isGameOver()) return false;
+    if (turn !== playerColor || isGameOver) return false;
 
-    const g = new Chess(game.fen());
-    try {
-      const move = g.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: "q"
-      });
+    const move = makeMove({
+      from: sourceSquare,
+      to: targetSquare,
+      promotion: "q" // Auto queen for now
+    });
 
-      if (move) {
-        setGame(g);
-        return true;
-      }
-    } catch (e) {
-      return false;
-    }
-    return false;
+    return move !== null;
   };
 
-  const undoMove = () => {
-    const g = new Chess(game.fen());
-    g.undo(); // Undo engine move
-    if (g.turn() !== playerColor) g.undo(); // Undo player move if needed
-    setGame(g);
+  const handleUndo = () => {
+    undoMove(); // Undo engine move
+    if (game.turn() !== playerColor) undoMove(); // Undo player move if needed
     if (workerRef.current) workerRef.current.postMessage("stop");
     setIsThinking(false);
   };
 
-  const resetGame = () => {
-    setGame(new Chess());
+  const handleReset = () => {
+    resetGame();
     setHasMatchStarted(false);
     if (workerRef.current) workerRef.current.postMessage("stop");
     setIsThinking(false);
@@ -168,7 +156,7 @@ export default function PlayVsAI() {
   };
 
   const startGame = () => {
-    setGame(new Chess());
+    resetGame();
     setHasMatchStarted(true);
     const randomMsg = personality.dialogue.start[Math.floor(Math.random() * personality.dialogue.start.length)];
     displayDialogue(randomMsg, 5000);
@@ -277,7 +265,7 @@ export default function PlayVsAI() {
           <div className="w-full h-full absolute inset-0">
             {/* @ts-ignore */}
             <Chessboard 
-              position={game.fen()}
+              position={fen}
               onPieceDrop={onDrop}
               boardOrientation={playerColor === "w" ? (isFlipped ? "black" : "white") : (isFlipped ? "white" : "black")}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
@@ -303,10 +291,10 @@ export default function PlayVsAI() {
         
         {/* Actions */}
         <div className="bg-surface rounded-2xl p-3 flex flex-col gap-2 border border-border shadow-lg">
-          <Button onClick={undoMove} disabled={game.history().length === 0 || game.isGameOver()} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">
+          <Button onClick={handleUndo} disabled={game.history().length === 0 || isGameOver} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">
             <Undo2 className="w-5 h-5 text-secondary-foreground" /> Undo Move
           </Button>
-          <Button onClick={resetGame} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">
+          <Button onClick={handleReset} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">
             <RefreshCw className="w-5 h-5 text-secondary-foreground" /> Change Bot
           </Button>
           <Button onClick={flipBoard} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">

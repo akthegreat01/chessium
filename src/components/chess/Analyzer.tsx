@@ -5,7 +5,7 @@ import { Chess, Move } from "chess.js";
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false });
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, FastForward, Rewind, Upload } from "lucide-react";
+import { ChevronLeft, ChevronRight, FastForward, Rewind, Upload, ChevronFirst, ChevronLast } from "lucide-react";
 import { ChessEngine, EngineEvaluation } from "@/lib/analyzer/engine";
 import { classifyMove, getClassificationColor, getClassificationExplanation } from "@/lib/analyzer/classification";
 import { detectOpening } from "@/lib/analyzer/openings";
@@ -54,7 +54,6 @@ export default function Analyzer() {
     });
   }, []);
 
-  
   const runFullAnalysis = async (gameHistory: Move[]) => {
     if (!engineRef.current) return;
     setIsAutoAnalyzing(true);
@@ -91,7 +90,6 @@ export default function Analyzer() {
     setIsAutoAnalyzing(false);
   };
 
-  // Initialize engine and optionally load PGN from query
   useEffect(() => {
     engineRef.current = new ChessEngine();
     
@@ -115,7 +113,6 @@ export default function Analyzer() {
     };
   }, [searchParams]);
 
-  // Sync game state to current index
   const currentFen = useMemo(() => {
     const tempGame = new Chess();
     if (history.length > 0 && currentIndex >= 0) {
@@ -126,13 +123,11 @@ export default function Analyzer() {
     return tempGame.fen();
   }, [history, currentIndex]);
 
-  // Evaluate position when index changes
   useEffect(() => {
     if (engineRef.current && !isAutoAnalyzing && !evaluations[currentIndex]) {
       engineRef.current.evaluatePositionAsync(currentFen, 14).then((evalData) => {
         setEvaluations(prev => ({ ...prev, [currentIndex]: evalData }));
         
-        // Try to classify if we have the previous eval
         if (currentIndex > 0) {
           const prevEval = evaluations[currentIndex - 1];
           if (prevEval) {
@@ -152,7 +147,6 @@ export default function Analyzer() {
     }
   }, [currentFen, currentIndex, history, isAutoAnalyzing, evaluations]);
 
-  // Keyboard Navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
@@ -169,7 +163,6 @@ export default function Analyzer() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [history.length]);
 
-  // Scroll to active move
   useEffect(() => {
     if (moveListRef.current) {
       const activeEl = moveListRef.current.querySelector('.active-move');
@@ -179,17 +172,16 @@ export default function Analyzer() {
     }
   }, [currentIndex]);
 
-  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
-    // If not at the end of history, truncate history
+  const onDrop = (sourceSquare: string, targetSquare: string) => {
     const tempGame = new Chess(currentFen);
     try {
-      const move = tempGame.move({
+      const moveResult = tempGame.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: piece[1] ? piece[1].toLowerCase() : "q",
+        promotion: "q",
       });
-      if (move) {
-        const newHistory = [...history.slice(0, currentIndex + 1), move];
+      if (moveResult) {
+        const newHistory = [...history.slice(0, currentIndex + 1), moveResult];
         setHistory(newHistory);
         setCurrentIndex(newHistory.length - 1);
         setGame(tempGame);
@@ -208,7 +200,6 @@ export default function Analyzer() {
         try {
           newGame.loadPgn(data);
         } catch (e) {
-          // If strict parsing fails, strip headers and try again
           const rawMoves = data.replace(/\[.*?\]\s*/g, '').trim();
           newGame.loadPgn(rawMoves);
         }
@@ -241,7 +232,7 @@ export default function Analyzer() {
       white_player: w,
       black_player: b,
       opening_name: opening.name,
-      accuracy_w: 0, // Placeholder: implement full accuracy calculation later
+      accuracy_w: 0, 
       accuracy_b: 0,
       result: game.header().Result || '*'
     });
@@ -254,7 +245,6 @@ export default function Analyzer() {
     setIsSaving(false);
   };
 
-  // UI Derived State
   const currentEvalData = evaluations[currentIndex] || { score: 0, mate: null, depth: 0 };
   const evalScore = currentEvalData.mate ? (currentEvalData.mate > 0 ? 100 : -100) : currentEvalData.score / 100;
   const isBlackTurn = new Chess(currentFen).turn() === 'b';
@@ -264,13 +254,8 @@ export default function Analyzer() {
   
   const pgnMoves = history.map(m => m.san);
   const opening = detectOpening(pgnMoves);
-  const movePairs = chunkMoves(history);
   const evalArray = history.map((_, i) => evaluations[i] ? evaluations[i].score : 0);
 
-  const activeMove = currentIndex >= 0 ? history[currentIndex] : null;
-  const activeClass = currentIndex >= 0 ? classifications[currentIndex] : null;
-
-  // Compute Game Review Stats
   const reviewStats = useMemo(() => {
     let wAcc = 0, bAcc = 0;
     let wCount = 0, bCount = 0;
@@ -324,13 +309,13 @@ export default function Analyzer() {
                size="sm" 
                onClick={handleSave}
                disabled={isSaving || history.length === 0}
-               className="h-8 rounded bg-[#312e2b] hover:bg-[#3d3935] text-[#c3c3c2] font-semibold border-none gap-2"
+               className="h-8 rounded bg-surface border border-border hover:bg-white/5 text-foreground font-semibold gap-2 transition-colors"
              >
                {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                Save
              </Button>
              <ImportModal onImport={handleImport}>
-               <Button variant="secondary" size="sm" className="h-8 rounded bg-[#312e2b] hover:bg-[#3d3935] text-[#c3c3c2] font-semibold border-none gap-2">
+               <Button variant="secondary" size="sm" className="h-8 rounded bg-surface border border-border hover:bg-white/5 text-foreground font-semibold gap-2 transition-colors">
                  <Upload className="w-3.5 h-3.5" /> Import Game
                </Button>
              </ImportModal>
@@ -338,34 +323,34 @@ export default function Analyzer() {
         </div>
 
         {/* Board & Eval Wrapper */}
-        <div className="flex flex-col w-full max-w-[calc(100vh-240px)] min-w-[300px] flex-1 bg-[#312e2b] rounded-md overflow-hidden relative shrink-0">
+        <div className="flex flex-col w-full max-w-[calc(100vh-240px)] min-w-[300px] flex-1 bg-surface border border-border rounded-xl overflow-hidden relative shrink-0 shadow-2xl">
           
           {/* Top Header (Black Player) */}
-          <div className="w-full bg-[#312e2b] px-4 py-3 flex items-center justify-between border-b border-[#262421]">
+          <div className="w-full bg-surface px-4 py-3 flex items-center justify-between border-b border-border">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded bg-[#262421] flex items-center justify-center">
-                <span className="text-[#8b8987] font-bold text-sm">?</span>
+              <div className="w-8 h-8 rounded bg-background flex items-center justify-center">
+                <span className="text-secondary-foreground font-bold text-sm">?</span>
               </div>
-              <h2 className="text-[15px] font-bold text-[#c3c3c2]">{(game.header().Black && game.header().Black !== '?') ? game.header().Black : 'Opponent'}</h2>
+              <h2 className="text-[15px] font-bold text-foreground">{(game.header().Black && game.header().Black !== '?') ? game.header().Black : 'Opponent'}</h2>
             </div>
           </div>
 
           <div className="flex w-full flex-1 overflow-hidden">
             {/* Eval Bar */}
-            <div className="w-5 bg-[#262421] flex flex-col relative shrink-0 overflow-hidden">
+            <div className="w-5 bg-background border-r border-border flex flex-col relative shrink-0 overflow-hidden">
               <div 
-                className="absolute bottom-0 left-0 right-0 bg-[#fff] transition-all duration-700 ease-out flex items-start justify-center pt-1"
+                className="absolute bottom-0 left-0 right-0 bg-white transition-all duration-700 ease-out flex items-start justify-center pt-1"
                 style={{ height: `${clampPercent}%` }}
               >
                 {displayScore >= 0 && (
-                  <span className="text-[9px] font-bold text-[#262421] select-none tracking-tighter">
+                  <span className="text-[9px] font-bold text-black select-none tracking-tighter">
                     {currentEvalData.mate ? `M${Math.abs(currentEvalData.mate)}` : `+${displayScore.toFixed(1)}`}
                   </span>
                 )}
               </div>
               <div className="absolute top-0 left-0 right-0 h-12 flex items-end justify-center pb-1 z-10">
                 {displayScore < 0 && (
-                  <span className="text-[9px] font-bold text-[#fff] select-none tracking-tighter">
+                  <span className="text-[9px] font-bold text-white select-none tracking-tighter">
                     {currentEvalData.mate ? `-M${Math.abs(currentEvalData.mate)}` : displayScore.toFixed(1)}
                   </span>
                 )}
@@ -373,25 +358,27 @@ export default function Analyzer() {
             </div>
 
             {/* Board */}
-            <div className="flex-1 aspect-square relative bg-[#262421]">
-              {/* @ts-ignore */}
-              <Chessboard 
-                position={currentFen}
-                onPieceDrop={onDrop}
-                customDarkSquareStyle={boardTheme.darkSquareStyle}
-                customLightSquareStyle={boardTheme.lightSquareStyle}
-                animationDuration={250}
-                boardOrientation={boardOrientation}
-              />
+            <div className="flex-1 aspect-square relative bg-background/50">
+              <div className="w-full h-full absolute inset-0">
+                {/* @ts-ignore */}
+                <Chessboard 
+                  position={currentFen}
+                  onPieceDrop={onDrop}
+                  customDarkSquareStyle={boardTheme.darkSquareStyle}
+                  customLightSquareStyle={boardTheme.lightSquareStyle}
+                  animationDuration={250}
+                  boardOrientation={boardOrientation}
+                />
+              </div>
             </div>
 
             {/* Board Controls Bar */}
-            <div className="w-12 bg-[#262421] flex flex-col items-center py-4 shrink-0 gap-3">
+            <div className="w-12 bg-surface border-l border-border flex flex-col items-center py-4 shrink-0 gap-3">
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setBoardOrientation(prev => prev === 'white' ? 'black' : 'white')}
-                className="w-10 h-10 rounded text-[#8b8987] hover:bg-[#312e2b] hover:text-[#c3c3c2]"
+                className="w-10 h-10 rounded text-secondary-foreground hover:bg-white/5 hover:text-foreground"
                 title="Flip Board"
               >
                 <ArrowUpDown className="w-5 h-5" />
@@ -400,55 +387,55 @@ export default function Analyzer() {
           </div>
 
           {/* Bottom Header (White Player) */}
-          <div className="w-full bg-[#312e2b] px-4 py-3 flex items-center justify-between border-t border-[#262421]">
+          <div className="w-full bg-surface px-4 py-3 flex items-center justify-between border-t border-border">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded bg-[#262421] flex items-center justify-center overflow-hidden">
+              <div className="w-8 h-8 rounded bg-background flex items-center justify-center overflow-hidden">
                 <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover p-1 opacity-80" />
               </div>
-              <h2 className="text-[15px] font-bold text-[#c3c3c2]">{(game.header().White && game.header().White !== '?') ? game.header().White : playerName}</h2>
+              <h2 className="text-[15px] font-bold text-foreground">{(game.header().White && game.header().White !== '?') ? game.header().White : playerName}</h2>
             </div>
           </div>
         </div>
       </div>
 
       {/* RIGHT COL: Move List, Graph, Explanation */}
-      <div className="flex-1 flex flex-col min-w-[320px] max-w-[500px] lg:max-w-none bg-[#262421] rounded-md overflow-hidden text-[#c3c3c2]">
+      <div className="flex-1 flex flex-col min-w-[320px] max-w-[500px] lg:max-w-none bg-surface border border-border rounded-xl overflow-hidden text-foreground shadow-2xl">
         
         {isAutoAnalyzing && (
-          <div className="p-3 bg-[#312e2b] border-b border-[#1e1c1a] flex flex-col gap-2">
-            <div className="flex justify-between items-center text-[11px] font-bold text-[#81b64c] uppercase tracking-wider">
+          <div className="p-3 bg-surface border-b border-border flex flex-col gap-2">
+            <div className="flex justify-between items-center text-[11px] font-bold text-success uppercase tracking-wider">
               <span>Running Game Review</span>
               <span>{analyzedPercent}%</span>
             </div>
-            <div className="w-full h-1 bg-[#1e1c1a] rounded-full overflow-hidden">
-              <div className="h-full bg-[#81b64c] transition-all duration-300" style={{ width: `${analyzedPercent}%` }}></div>
+            <div className="w-full h-1 bg-background rounded-full overflow-hidden">
+              <div className="h-full bg-success transition-all duration-300" style={{ width: `${analyzedPercent}%` }}></div>
             </div>
           </div>
         )}
         {/* Tabs */}
-        <div className="flex bg-[#1e1c1a] text-[13px] font-bold tracking-wider capitalize border-b border-[#312e2b]">
+        <div className="flex bg-background text-[13px] font-bold tracking-wider capitalize border-b border-border">
           <button 
             onClick={() => setActiveTab('review')}
-            className={`flex-1 py-3 text-center transition-colors ${activeTab === 'review' ? 'bg-[#262421] text-[#fff]' : 'text-[#8b8987] hover:bg-[#312e2b] hover:text-[#c3c3c2]'}`}
+            className={`flex-1 py-3 text-center transition-colors ${activeTab === 'review' ? 'bg-surface text-foreground' : 'text-secondary-foreground hover:bg-white/5 hover:text-foreground'}`}
           >
             Review
           </button>
           <button 
             onClick={() => setActiveTab('moves')}
-            className={`flex-1 py-3 text-center transition-colors ${activeTab === 'moves' ? 'bg-[#262421] text-[#fff]' : 'text-[#8b8987] hover:bg-[#312e2b] hover:text-[#c3c3c2]'}`}
+            className={`flex-1 py-3 text-center transition-colors ${activeTab === 'moves' ? 'bg-surface text-foreground' : 'text-secondary-foreground hover:bg-white/5 hover:text-foreground'}`}
           >
             Moves
           </button>
         </div>
 
         {/* Header / Opening Info */}
-        <div className="p-4 border-b border-[#312e2b] bg-[#262421]">
+        <div className="p-4 border-b border-border bg-surface">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <h3 className="text-[15px] font-bold tracking-tight text-[#fff]">{opening.name}</h3>
-              <p className="text-[11px] font-mono text-[#8b8987] mt-1">{opening.eco}</p>
+              <h3 className="text-[15px] font-bold tracking-tight text-foreground">{opening.name}</h3>
+              <p className="text-[11px] font-mono text-secondary-foreground mt-1">{opening.eco}</p>
             </div>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#8b8987] bg-[#312e2b] px-2 py-1 rounded">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-secondary-foreground bg-background px-2 py-1 rounded">
               Depth {currentEvalData.depth}
             </div>
           </div>
@@ -459,37 +446,37 @@ export default function Analyzer() {
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* Game Review Box */}
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#312e2b] rounded-lg p-5 text-center flex flex-col items-center justify-center relative overflow-hidden">
-                <div className="text-[12px] font-bold uppercase tracking-widest text-[#8b8987] mb-3 z-10">White Accuracy</div>
+              <div className="bg-background border border-border rounded-lg p-5 text-center flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
+                <div className="text-[12px] font-bold uppercase tracking-widest text-secondary-foreground mb-3 z-10">White Accuracy</div>
                 
                 <div className="relative w-24 h-24 flex items-center justify-center z-10">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" className="text-[#262421]" />
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.whiteAccuracy) || 0)) / 100} className="text-[#fff] transition-all duration-1000 ease-out" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" className="text-surface" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.whiteAccuracy) || 0)) / 100} className="text-foreground transition-all duration-1000 ease-out" />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <span className="text-2xl font-bold tracking-tighter text-[#fff] leading-none">{reviewStats.whiteAccuracy}</span>
+                    <span className="text-2xl font-bold tracking-tighter text-foreground leading-none">{reviewStats.whiteAccuracy}</span>
                   </div>
                 </div>
               </div>
-              <div className="bg-[#312e2b] rounded-lg p-5 text-center flex flex-col items-center justify-center relative overflow-hidden">
-                <div className="text-[12px] font-bold uppercase tracking-widest text-[#8b8987] mb-3 z-10">Black Accuracy</div>
+              <div className="bg-background border border-border rounded-lg p-5 text-center flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
+                <div className="text-[12px] font-bold uppercase tracking-widest text-secondary-foreground mb-3 z-10">Black Accuracy</div>
                 
                 <div className="relative w-24 h-24 flex items-center justify-center z-10">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" className="text-[#262421]" />
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.blackAccuracy) || 0)) / 100} className="text-[#fff] transition-all duration-1000 ease-out" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" className="text-surface" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="8" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.blackAccuracy) || 0)) / 100} className="text-foreground transition-all duration-1000 ease-out" />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center flex-col">
-                    <span className="text-2xl font-bold tracking-tighter text-[#fff] leading-none">{reviewStats.blackAccuracy}</span>
+                    <span className="text-2xl font-bold tracking-tighter text-foreground leading-none">{reviewStats.blackAccuracy}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Classification Table */}
-            <div className="bg-[#312e2b] rounded-lg overflow-hidden">
-              <div className="grid grid-cols-[1fr_2fr_1fr] bg-[#1e1c1a] p-2.5 text-[10px] font-bold uppercase tracking-wider text-[#8b8987] text-center border-b border-[#312e2b]">
+            <div className="bg-background border border-border rounded-lg overflow-hidden shadow-inner">
+              <div className="grid grid-cols-[1fr_2fr_1fr] bg-surface p-2.5 text-[10px] font-bold uppercase tracking-wider text-secondary-foreground text-center border-b border-border">
                 <div>White</div>
                 <div>Move Type</div>
                 <div>Black</div>
@@ -512,13 +499,13 @@ export default function Analyzer() {
                 if (wVal === 0 && bVal === 0 && !['best', 'inaccuracy', 'mistake', 'blunder'].includes(stat.key)) return null;
 
                 return (
-                  <div key={stat.key} className="grid grid-cols-[1fr_2fr_1fr] border-t border-[#262421] p-2 text-[13px] text-center items-center">
-                    <div className="font-bold text-[#fff]">{wVal}</div>
-                    <div className="flex items-center justify-center gap-2 text-[#8b8987]">
+                  <div key={stat.key} className="grid grid-cols-[1fr_2fr_1fr] border-t border-border p-2 text-[13px] text-center items-center hover:bg-white/5 transition-colors">
+                    <div className="font-bold text-foreground">{wVal}</div>
+                    <div className="flex items-center justify-center gap-2 text-secondary-foreground">
                       <ClassificationIcon cls={stat.cls} />
                       <span className="hidden sm:inline">{stat.label}</span>
                     </div>
-                    <div className="font-bold text-[#fff]">{bVal}</div>
+                    <div className="font-bold text-foreground">{bVal}</div>
                   </div>
                 )
               })}
@@ -534,14 +521,14 @@ export default function Analyzer() {
                 const turnNum = Math.floor(i / 2) + 1;
                 
                 return (
-                  <div key={turnNum} className={`grid grid-cols-[30px_1fr_1fr] px-2 py-1.5 rounded ${currentIndex >= i && currentIndex <= i + 1 ? 'bg-[#312e2b]' : 'hover:bg-[#312e2b]'}`}>
-                    <div className="text-[#8b8987]">{turnNum}.</div>
-                    <div className={`cursor-pointer flex items-center gap-1 ${currentIndex === i ? 'text-[#fff] font-black' : 'text-[#c3c3c2]'}`} onClick={() => setCurrentIndex(i)}>
+                  <div key={turnNum} className={`grid grid-cols-[30px_1fr_1fr] px-2 py-1.5 rounded transition-colors ${currentIndex >= i && currentIndex <= i + 1 ? 'bg-background border border-border' : 'hover:bg-white/5'}`}>
+                    <div className="text-secondary-foreground">{turnNum}.</div>
+                    <div className={`cursor-pointer flex items-center gap-1 ${currentIndex === i ? 'text-foreground font-black' : 'text-secondary-foreground'}`} onClick={() => setCurrentIndex(i)}>
                       {wMove.san}
                       {classifications[i] && <ClassificationIcon cls={classifications[i].classification} />}
                     </div>
                     {bMove && (
-                      <div className={`cursor-pointer flex items-center gap-1 ${currentIndex === i + 1 ? 'text-[#fff] font-black' : 'text-[#c3c3c2]'}`} onClick={() => setCurrentIndex(i + 1)}>
+                      <div className={`cursor-pointer flex items-center gap-1 ${currentIndex === i + 1 ? 'text-foreground font-black' : 'text-secondary-foreground'}`} onClick={() => setCurrentIndex(i + 1)}>
                         {bMove.san}
                         {classifications[i + 1] && <ClassificationIcon cls={classifications[i + 1].classification} />}
                       </div>
@@ -551,11 +538,11 @@ export default function Analyzer() {
               })}
             </div>
             
-            <div className="p-2 bg-[#1e1c1a] border-t border-[#312e2b] flex justify-center gap-1">
-              <Button variant="ghost" size="icon" className="text-[#8b8987] hover:text-[#fff] h-10 w-12 rounded" onClick={() => setCurrentIndex(-1)}><ChevronFirst className="w-5 h-5" /></Button>
-              <Button variant="ghost" size="icon" className="text-[#8b8987] hover:text-[#fff] h-10 w-12 rounded" onClick={() => setCurrentIndex(prev => Math.max(-1, prev - 1))}><ChevronLeft className="w-5 h-5" /></Button>
-              <Button variant="ghost" size="icon" className="text-[#8b8987] hover:text-[#fff] h-10 w-12 rounded" onClick={() => setCurrentIndex(prev => Math.min(history.length - 1, prev + 1))}><ChevronRight className="w-5 h-5" /></Button>
-              <Button variant="ghost" size="icon" className="text-[#8b8987] hover:text-[#fff] h-10 w-12 rounded" onClick={() => setCurrentIndex(history.length - 1)}><ChevronLast className="w-5 h-5" /></Button>
+            <div className="p-2 bg-background border-t border-border flex justify-center gap-1">
+              <Button variant="ghost" size="icon" className="text-secondary-foreground hover:text-foreground hover:bg-white/5 h-10 w-12 rounded" onClick={() => setCurrentIndex(-1)}><ChevronFirst className="w-5 h-5" /></Button>
+              <Button variant="ghost" size="icon" className="text-secondary-foreground hover:text-foreground hover:bg-white/5 h-10 w-12 rounded" onClick={() => setCurrentIndex(prev => Math.max(-1, prev - 1))}><ChevronLeft className="w-5 h-5" /></Button>
+              <Button variant="ghost" size="icon" className="text-secondary-foreground hover:text-foreground hover:bg-white/5 h-10 w-12 rounded" onClick={() => setCurrentIndex(prev => Math.min(history.length - 1, prev + 1))}><ChevronRight className="w-5 h-5" /></Button>
+              <Button variant="ghost" size="icon" className="text-secondary-foreground hover:text-foreground hover:bg-white/5 h-10 w-12 rounded" onClick={() => setCurrentIndex(history.length - 1)}><ChevronLast className="w-5 h-5" /></Button>
             </div>
           </div>
         )}
