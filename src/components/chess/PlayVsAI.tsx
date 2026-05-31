@@ -51,9 +51,21 @@ export default function PlayVsAI() {
     dialogueTimer.current = setTimeout(() => setShowDialogue(false), duration);
   }, []);
 
-  // Initialize Stockfish worker
+  // Initialize Stockfish worker only once
   useEffect(() => {
     workerRef.current = new Worker("/stockfish/stockfish.js");
+    workerRef.current.postMessage("uci");
+    
+    return () => {
+      workerRef.current?.terminate();
+      if (dialogueTimer.current) clearTimeout(dialogueTimer.current);
+    };
+  }, []);
+
+  // Update worker message handler with fresh dependencies
+  useEffect(() => {
+    if (!workerRef.current) return;
+    
     workerRef.current.onmessage = (event) => {
       const msg = event.data;
       if (msg === "uciok") {
@@ -69,13 +81,7 @@ export default function PlayVsAI() {
         }
       }
     };
-    workerRef.current.postMessage("uci");
-    
-    return () => {
-      workerRef.current?.terminate();
-      if (dialogueTimer.current) clearTimeout(dialogueTimer.current);
-    };
-  }, []);
+  }, [makeEngineMove]);
 
   // Set skill level when personality changes
   useEffect(() => {
