@@ -313,12 +313,11 @@ export default function PlayVsAI() {
         <div className="w-full bg-background/50">
             {/* @ts-ignore */}
             <Chessboard 
-              id="PlayVsAIBoard"
               position={fen}
               onPieceDrop={onDrop}
               onSquareClick={onSquareClick}
-              arePiecesDraggable={true}
-              boardOrientation={(playerColor === "w" ? !isFlipped : isFlipped) ? "white" : "black"}
+              arePiecesDraggable={hasMatchStarted && !isGameOver && turn === (playerColor === "White" ? "w" : "b")}
+              boardOrientation={isFlipped ? "black" : "white"}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}
               animationDuration={250}

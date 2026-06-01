@@ -24,7 +24,7 @@ const sectionAnim = {
   initial: { opacity: 0, y: 40 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-100px" },
-  transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+  transition: { duration: 0.7, ease: "easeOut" },
 };
 
 const features = [
@@ -233,7 +233,7 @@ export default function LandingContent({ user }: { user: any }) {
               style={{ perspective: "1200px" }}
               initial={{ opacity: 0, y: 50, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+              transition={{ duration: 0.8, ease: "easeOut", delay: 0.1 }}
             >
               {/* Massive Background Text */}
               <motion.div 
@@ -285,7 +285,7 @@ export default function LandingContent({ user }: { user: any }) {
                 className="text-6xl md:text-[80px] font-bold tracking-tight leading-[1.05]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+                transition={{ duration: 0.7, ease: "easeOut", delay: 0.3 }}
               >
                 Master Every Move.
               </motion.h1>
@@ -296,7 +296,7 @@ export default function LandingContent({ user }: { user: any }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   duration: 0.7,
-                  ease: [0.16, 1, 0.3, 1],
+                  ease: "easeOut",
                   delay: 0.4,
                 }}
               >
@@ -310,7 +310,7 @@ export default function LandingContent({ user }: { user: any }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
                   duration: 0.7,
-                  ease: [0.16, 1, 0.3, 1],
+                  ease: "easeOut",
                   delay: 0.5,
                 }}
               >
@@ -346,7 +346,7 @@ export default function LandingContent({ user }: { user: any }) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{
                   duration: 0.7,
-                  ease: [0.16, 1, 0.3, 1],
+                  ease: "easeOut",
                   delay: i * 0.1,
                 }}
               >
@@ -381,7 +381,7 @@ export default function LandingContent({ user }: { user: any }) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{
                   duration: 0.7,
-                  ease: [0.16, 1, 0.3, 1],
+                  ease: "easeOut",
                   delay: i * 0.1,
                 }}
               >
@@ -417,7 +417,7 @@ export default function LandingContent({ user }: { user: any }) {
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{
                   duration: 0.6,
-                  ease: [0.16, 1, 0.3, 1],
+                  ease: "easeOut",
                   delay: i * 0.06,
                 }}
               >
@@ -455,7 +455,7 @@ export default function LandingContent({ user }: { user: any }) {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{
                   duration: 0.7,
-                  ease: [0.16, 1, 0.3, 1],
+                  ease: "easeOut",
                   delay: i * 0.1,
                 }}
               >

@@ -70,7 +70,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 export function useBoardTheme() {
   const context = useContext(ThemeContext);
   if (!context) {
-    return { boardTheme: themes.classic, setBoardThemeName: () => {} };
+    return { boardTheme: themes.obsidian, setBoardThemeName: () => {} };
   }
   return context;
 }

@@ -12,7 +12,6 @@ export default function HeroBoard() {
   return (
     <div className="w-full aspect-square pointer-events-none">
       <Chessboard
-        position="r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 4 4"
         customDarkSquareStyle={boardTheme.darkSquareStyle}
         customLightSquareStyle={boardTheme.lightSquareStyle}
         arePiecesDraggable={false}
