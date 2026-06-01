@@ -24,7 +24,7 @@ export default function ImportModal({ onImport, children }: ImportModalProps) {
 
   const handleImport = (data: string) => {
     if (!data.trim()) return;
-    const isFen = data.split('/').length > 4;
+    const isFen = data.trim().split(' ').length === 6 && data.split('/').length > 4 && !data.includes('[Event');
     onImport(isFen ? 'fen' : 'pgn', data.trim());
     setOpen(false);
     setInputData("");
