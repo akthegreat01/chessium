@@ -38,10 +38,10 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
 
-  --shadow-neumorph: 8px 8px 16px rgba(0, 0, 0, 0.8), -8px -8px 16px rgba(255, 255, 255, 0.15);
-  --shadow-neumorph-sm: 4px 4px 8px rgba(0, 0, 0, 0.8), -4px -4px 8px rgba(255, 255, 255, 0.15);
-  --shadow-neumorph-inset: inset 4px 4px 8px rgba(0, 0, 0, 0.8), inset -4px -4px 8px rgba(255, 255, 255, 0.15);
-  --shadow-neumorph-lg: 12px 12px 24px rgba(0, 0, 0, 0.9), -12px -12px 24px rgba(255, 255, 255, 0.12);
+  --shadow-neumorph: 10px 10px 20px rgba(0, 0, 0, 0.4), -10px -10px 20px rgba(255, 255, 255, 0.05);
+  --shadow-neumorph-sm: 5px 5px 10px rgba(0, 0, 0, 0.4), -5px -5px 10px rgba(255, 255, 255, 0.05);
+  --shadow-neumorph-inset: inset 5px 5px 10px rgba(0, 0, 0, 0.4), inset -5px -5px 10px rgba(255, 255, 255, 0.05);
+  --shadow-neumorph-lg: 15px 15px 30px rgba(0, 0, 0, 0.5), -15px -15px 30px rgba(255, 255, 255, 0.04);
 }
 
 :root {
