@@ -39,6 +39,7 @@ import { calculateAccuracyFromLosses } from "@/lib/analyzer/accuracy";
 import ImportModal from "./ImportModal";
 import ClassificationIcon from "./ClassificationIcon";
 import { saveAnalysis } from "@/app/actions/analysis";
+import { AdUnit } from "@/components/ui/AdUnit";
 import { useSearchParams } from "next/navigation";
 import { useBoardTheme } from "./ThemeContext";
 import { createClient } from "@/utils/supabase/client";
@@ -557,8 +558,10 @@ export default function Analyzer() {
           </div>
         )}
 
-        {/* Spacer */}
-        <div className="flex-1" />
+        {/* Spacer / Ad Rail */}
+        <div className="flex-1 px-5 py-4 min-h-[120px] flex items-end">
+          <AdUnit className="w-full min-h-[100px] rounded-2xl" />
+        </div>
 
         {/* Player Info */}
         <div className="px-5 py-4 border-t border-white/5 bg-white/[0.02] backdrop-blur-md">
@@ -934,9 +937,7 @@ export default function Analyzer() {
 
         {/* AdSense */}
         <div className="mt-auto pt-5">
-          <div className="bg-white/[0.01] border border-white/5 rounded-3xl min-h-[250px] flex items-center justify-center">
-            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Advertisement</span>
-          </div>
+          <AdUnit className="w-full min-h-[300px] rounded-[24px]" />
         </div>
       </div>
     </div>

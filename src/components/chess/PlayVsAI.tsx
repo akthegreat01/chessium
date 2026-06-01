@@ -231,8 +231,12 @@ export default function PlayVsAI() {
                     : "border-2 border-transparent hover:border-border"
                 }`}
               >
-                <div className={`w-14 h-14 rounded shrink-0 flex items-center justify-center ${p.colorClass} text-white`}>
-                  <Icon className="w-7 h-7" />
+                <div className={`w-14 h-14 rounded overflow-hidden shrink-0 flex items-center justify-center ${p.colorClass} text-white`}>
+                  {p.avatarImage ? (
+                    <Image src={p.avatarImage} alt={p.name} width={56} height={56} className="object-cover w-full h-full" />
+                  ) : (
+                    <Icon className="w-7 h-7" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
@@ -288,17 +292,21 @@ export default function PlayVsAI() {
         {/* Opponent Info Header */}
         <div className="w-full bg-surface px-5 py-4 flex items-center justify-between border-b border-border">
           <div className="flex items-center gap-4 relative">
-            <div className={`w-10 h-10 rounded flex items-center justify-center text-white shadow-md ${personality.colorClass}`}>
-              {React.createElement(personality.avatarIcon, { className: "w-5 h-5" })}
+            <div className={`w-10 h-10 rounded overflow-hidden flex items-center justify-center text-white shadow-md ${personality.colorClass}`}>
+              {personality.avatarImage ? (
+                <Image src={personality.avatarImage} alt={personality.name} width={40} height={40} className="object-cover w-full h-full" />
+              ) : (
+                React.createElement(personality.avatarIcon, { className: "w-5 h-5" })
+              )}
             </div>
             <h2 className="text-base font-bold text-foreground">{personality.name} <span className="text-secondary-foreground font-normal text-sm ml-1">(Lvl {personality.engine.skillLevel})</span></h2>
 
             {/* Dialogue Bubble */}
-            <div className={`absolute top-[50px] left-0 w-[250px] bg-foreground text-background p-3 rounded-xl shadow-xl transition-all duration-300 z-10 ${
+            <div className={`absolute top-[55px] left-0 w-[280px] bg-primary text-primary-foreground p-4 rounded-xl rounded-tl-none shadow-2xl transition-all duration-300 z-50 ${
               showDialogue ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
             }`}>
-              <div className="absolute -top-2 left-4 w-4 h-4 bg-foreground rotate-45"></div>
-              <p className="text-[13px] font-bold relative z-10 leading-snug">{dialogue}</p>
+              <div className="absolute -top-3 left-0 w-0 h-0 border-l-[12px] border-l-transparent border-b-[12px] border-b-primary border-r-[12px] border-r-transparent"></div>
+              <p className="text-[14px] font-bold relative z-10 leading-snug">{dialogue}</p>
             </div>
           </div>
           

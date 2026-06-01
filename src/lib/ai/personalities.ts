@@ -5,7 +5,8 @@ export interface AIPersonality {
   name: string;
   title: string;
   description: string;
-  avatarIcon: any; // Lucide icon
+  avatarIcon: any; // Lucide icon (fallback)
+  avatarImage?: string; // High res PFP
   colorClass: string;
   engine: {
     skillLevel: number; // 0 to 20
@@ -29,6 +30,7 @@ export const aiPersonalities: AIPersonality[] = [
     title: "Beginner",
     description: "Just learned how the pieces move. Plays fast and makes frequent mistakes.",
     avatarIcon: User,
+    avatarImage: "/bots/rookie.png",
     colorClass: "bg-blue-500",
     engine: {
       skillLevel: 0,
@@ -37,11 +39,11 @@ export const aiPersonalities: AIPersonality[] = [
       moveTimeMax: 800,
     },
     dialogue: {
-      start: ["Let's have a fun game!", "I'm still learning, go easy on me.", "Good luck!"],
-      winning: ["Wow, am I actually winning?", "I think I have a good position here!"],
-      losing: ["Oops, I didn't see that.", "You're really good at this.", "My position is falling apart..."],
-      draw: ["A draw? I'll take it!", "That was a close one."],
-      blunder: ["Wait, did you mean to do that?", "I'll take a free piece!"],
+      start: ["Hi! I'm still learning, please go easy on me...", "Let's have a fun game!", "Wait, how does the horsey move again?"],
+      winning: ["Wow, am I actually winning?!", "I think I clicked the right button!", "Is this what being a Grandmaster feels like?"],
+      losing: ["Oh no, my position is falling apart...", "You're too good! Please stop taking my pieces!", "I didn't see that coming at all..."],
+      draw: ["A draw? Yay, I didn't lose!", "That was a close one, phew!"],
+      blunder: ["Wait, did you mean to just give me that piece?", "I'll gladly take that free piece, thanks!"],
     }
   },
   {
@@ -50,6 +52,7 @@ export const aiPersonalities: AIPersonality[] = [
     title: "Tactical Brawler",
     description: "Loves sharp lines and attacking chess. Will sacrifice material for the initiative.",
     avatarIcon: Flame,
+    avatarImage: "/bots/aggressor.png",
     colorClass: "bg-orange-500",
     engine: {
       skillLevel: 8,
@@ -58,11 +61,11 @@ export const aiPersonalities: AIPersonality[] = [
       moveTimeMax: 1200,
     },
     dialogue: {
-      start: ["Prepare to defend.", "I don't play for draws.", "Let's make this chaotic."],
-      winning: ["Your king is completely exposed.", "The attack is crashing through!", "Tactics flow from a superior position."],
-      losing: ["My attack fizzled out...", "You defended well, I'll admit.", "I flew too close to the sun."],
-      draw: ["A draw is a failure for both of us.", "I should have pushed harder."],
-      blunder: ["A fatal mistake. Thank you.", "I was hoping you'd play that.", "The tactics are working!"],
+      start: ["I'm going to crush you.", "Prepare to get checkmated in 10 moves.", "I hope you brought a helmet."],
+      winning: ["Told you. You're completely lost.", "Just resign already, you're embarrassing yourself.", "My attack is unstoppable. Cry about it."],
+      losing: ["Lucky move. Won't happen again.", "You're only winning because I'm playing fast.", "Enjoy it while it lasts, my counterattack is coming."],
+      draw: ["You got lucky this time.", "A draw is a win for you."],
+      blunder: ["Are you blind? Thanks for the free material.", "Wow, what a terrible move. I almost feel bad.", "Did your finger slip or are you just bad?"],
     }
   },
   {
@@ -71,19 +74,20 @@ export const aiPersonalities: AIPersonality[] = [
     title: "Positional Master",
     description: "Plays extremely solid, positional chess. Slowly suffocates opponents without taking risks.",
     avatarIcon: Shield,
-    colorClass: "bg-emerald-600",
+    avatarImage: "/bots/master.png",
+    colorClass: "bg-purple-500",
     engine: {
-      skillLevel: 14,
-      depth: 14,
-      moveTimeMin: 1000,
-      moveTimeMax: 3000,
+      skillLevel: 15,
+      depth: 12,
+      moveTimeMin: 600,
+      moveTimeMax: 2000,
     },
     dialogue: {
-      start: ["Patience is the key to chess.", "Let's build a solid position.", "I am in no rush."],
-      winning: ["Your weaknesses are permanent.", "The pressure is insurmountable now.", "A slight edge is all I need."],
-      losing: ["I miscalculated the endgame.", "Your position was surprisingly resilient.", "My structure collapsed."],
-      draw: ["A solid, logical conclusion.", "Neither of us made a critical error."],
-      blunder: ["An unforced error. I will convert this.", "Your structure is ruined.", "That pawn will cost you the game."],
+      start: ["Let us play a positional masterpiece.", "Take your time. You'll need it.", "Chess is an art, let's paint."],
+      winning: ["Your position is structurally bankrupt.", "I'm squeezing the life out of your pieces.", "The evaluation bar doesn't lie."],
+      losing: ["An interesting continuation. Let's see if you can convert it.", "I may be down material, but my position has compensation.", "A rare miscalculation on my part."],
+      draw: ["A perfectly balanced endgame.", "A fair result for both of us."],
+      blunder: ["A fundamental misunderstanding of the position.", "You just violated basic chess principles. Punished.", "I saw that blunder 5 moves ago."],
     }
   },
   {
@@ -92,7 +96,8 @@ export const aiPersonalities: AIPersonality[] = [
     title: "Stockfish 16.1",
     description: "Maximum strength engine. Plays flawlessly. Good luck.",
     avatarIcon: Crown,
-    colorClass: "bg-purple-600",
+    avatarImage: "/bots/grandmaster.png",
+    colorClass: "bg-red-500",
     engine: {
       skillLevel: 20,
       depth: 20,
@@ -100,11 +105,11 @@ export const aiPersonalities: AIPersonality[] = [
       moveTimeMax: 500,
     },
     dialogue: {
-      start: ["I calculate 20 moves deep. Your turn.", "This will be brief.", "Standard opening lines."],
-      winning: ["Mate in 14.", "Your position evaluates to -8.5.", "The outcome is mathematically certain."],
-      losing: ["Error 404: Losing position not found.", "Fascinating. I underestimated that line.", "Hardware limitation detected."], // Easter egg
-      draw: ["A theoretical draw.", "0.00 evaluation."],
-      blunder: ["Evaluation dropped by 4.2 points.", "Inaccurate. I will exploit this.", "??"],
+      start: ["I am perfection. Your defeat is mathematically guaranteed.", "I have already calculated the next 20 moves.", "Begin."],
+      winning: ["Evaluation: +M7. Resistance is futile.", "You are playing like a 400 Elo human.", "I am flawless. You are making systematic errors."],
+      losing: ["Error: Impossible state detected.", "Are you using an engine? This is statistically unlikely.", "Recalculating..."],
+      draw: ["You found the only drawing line in 40 billion possibilities. Impressive.", "A theoretical draw."],
+      blunder: ["Blunder detected. Win probability increased to 99.9%.", "A human error. How predictable.", "I will crush you for that mistake."],
     }
   }
 ];
