@@ -64,7 +64,7 @@ export default async function HomePage() {
         <p className="text-secondary-foreground text-[15px]">{name}</p>
       </div>
 
-      {!chesscomUsername && user && <ChesscomConnect />}
+      {!chesscomUsername && user && <ChessComConnect />}
 
       {/* Rating Cards Row */}
       {user ? (
