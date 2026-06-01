@@ -10,8 +10,10 @@ import { Button } from "@/components/ui/button";
 import { AdUnit } from "@/components/ui/AdUnit";
 import { getOpeningBySlug } from "@/lib/data/openings";
 import { notFound } from "next/navigation";
+import { useBoardTheme } from "@/components/chess/ThemeContext";
 
 export default function OpeningTheoryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { boardTheme } = useBoardTheme();
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
   const { slug } = React.use(params);
   
@@ -55,9 +57,11 @@ export default function OpeningTheoryPage({ params }: { params: Promise<{ slug: 
           <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
           <div className="w-full max-w-[600px] aspect-square rounded-xl overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.4)] relative z-10">
             <Chessboard 
+              key={boardTheme.name}
+              id="OpeningBoard"
               position={currentStep.fen}
-              customDarkSquareStyle={{ backgroundColor: "#779556" }}
-              customLightSquareStyle={{ backgroundColor: "#ebecd0" }}
+              customDarkSquareStyle={boardTheme.darkSquareStyle}
+              customLightSquareStyle={boardTheme.lightSquareStyle}
               arePiecesDraggable={false}
               animationDuration={300}
             />

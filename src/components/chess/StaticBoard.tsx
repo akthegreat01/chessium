@@ -11,6 +11,7 @@ export function StaticBoard({ position, width, allowDragging = false }: { positi
   
   return (
     <Chessboard 
+      key={boardTheme.name}
       position={position}
       customDarkSquareStyle={boardTheme.darkSquareStyle}
       customLightSquareStyle={boardTheme.lightSquareStyle}

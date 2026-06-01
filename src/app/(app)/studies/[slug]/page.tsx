@@ -210,6 +210,7 @@ export default function StudyViewerPage() {
           <div className="w-full aspect-square bg-black/40 relative" key={`${study.id}-${currentStepIndex}`}>
             {/* @ts-ignore */}
             <Chessboard 
+              key={boardTheme.name}
               id="StudyBoard"
               position={fen}
               onPieceDrop={onDrop}

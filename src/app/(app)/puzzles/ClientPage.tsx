@@ -164,6 +164,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
         <div className="w-full bg-background" key={puzzle.id}>
             {/* @ts-ignore */}
             <Chessboard 
+              key={boardTheme.name}
               id="PuzzleBoard"
               position={fen}
               onPieceDrop={onDrop}

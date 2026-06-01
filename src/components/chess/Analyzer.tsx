@@ -660,6 +660,7 @@ export default function Analyzer() {
             <div className="w-full aspect-square bg-black/40 relative">
               {/* @ts-ignore */}
               <Chessboard 
+                key={boardTheme.name}
                 id="AnalyzerBoard"
                 position={currentFen}
                 onPieceDrop={onDrop}

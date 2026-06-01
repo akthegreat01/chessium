@@ -327,7 +327,7 @@ export default function PlayVsAI() {
             {/* @ts-ignore */}
             <Chessboard 
               id="PlayVsAIBoard"
-              key={`board-${boardKey}`}
+              key={`board-${boardKey}-${boardTheme.name}`}
               position={fen}
               onPieceDrop={onDrop}
               onSquareClick={onSquareClick}
