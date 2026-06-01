@@ -19,32 +19,37 @@ export function useChessGame(initialFen: string = 'start') {
   const turn = useMemo(() => game.turn(), [game]);
   const history = useMemo(() => game.history({ verbose: true }) as Move[], [game]);
 
+  const gameRef = useRef(game);
+  
+  // Keep ref in sync
+  useEffect(() => {
+    gameRef.current = game;
+  }, [game]);
+
   const makeMove = useCallback((moveDetails: { from: string; to: string; promotion?: string }) => {
-    let moveResult: Move | null = null;
-    setGame((prevGame) => {
-      const gameCopy = new Chess(prevGame.fen());
-      try {
-        const move = gameCopy.move({
-          from: moveDetails.from,
-          to: moveDetails.to,
-          promotion: moveDetails.promotion || 'q',
-        });
-        if (move) {
-          moveResult = move;
-          return gameCopy;
-        }
-      } catch (e) {
-        // Invalid move
+    const gameCopy = new Chess(gameRef.current.fen());
+    try {
+      const move = gameCopy.move({
+        from: moveDetails.from,
+        to: moveDetails.to,
+        promotion: moveDetails.promotion || 'q',
+      });
+      if (move) {
+        gameRef.current = gameCopy; // Update ref synchronously
+        setGame(gameCopy);          // Trigger react render
+        return move;
       }
-      return prevGame;
-    });
-    return moveResult;
+    } catch (e) {
+      // Invalid move
+    }
+    return null;
   }, []);
 
   const loadFen = useCallback((newFen: string) => {
     const gameCopy = new Chess();
     try {
       gameCopy.load(newFen);
+      gameRef.current = gameCopy;
       setGame(gameCopy);
       return true;
     } catch (e) {
@@ -56,6 +61,7 @@ export function useChessGame(initialFen: string = 'start') {
     const gameCopy = new Chess();
     try {
       gameCopy.loadPgn(pgn);
+      gameRef.current = gameCopy;
       setGame(gameCopy);
       return true;
     } catch (e) {
@@ -64,21 +70,20 @@ export function useChessGame(initialFen: string = 'start') {
   }, []);
 
   const resetGame = useCallback(() => {
-    setGame(new Chess());
+    const newGame = new Chess();
+    gameRef.current = newGame;
+    setGame(newGame);
   }, []);
 
   const undoMove = useCallback(() => {
-    let moveResult: Move | null = null;
-    setGame((prevGame) => {
-      const gameCopy = new Chess(prevGame.fen());
-      const move = gameCopy.undo();
-      if (move) {
-        moveResult = move;
-        return gameCopy;
-      }
-      return prevGame;
-    });
-    return moveResult;
+    const gameCopy = new Chess(gameRef.current.fen());
+    const move = gameCopy.undo();
+    if (move) {
+      gameRef.current = gameCopy; // Update ref synchronously
+      setGame(gameCopy);          // Trigger react render
+      return move;
+    }
+    return null;
   }, []);
 
   return {
