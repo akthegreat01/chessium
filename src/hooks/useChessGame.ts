@@ -1,35 +1,43 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { Chess, Move } from 'chess.js';
 
-export function useChessGame(initialFen: string = 'start') {
-  // Use a single Chess instance stored in a ref for the source of truth.
-  // React state holds a version counter to trigger re-renders.
-  const gameRef = useRef<Chess>(() => {
-    const g = new Chess();
-    if (initialFen !== 'start') {
-      try {
-        g.load(initialFen);
-      } catch (e) {
-        console.error('Invalid FEN loaded into useChessGame', e);
-      }
+function createGame(initialFen: string): Chess {
+  const g = new Chess();
+  if (initialFen !== 'start') {
+    try {
+      g.load(initialFen);
+    } catch (e) {
+      console.error('Invalid FEN loaded into useChessGame', e);
     }
-    return g;
-  });
+  }
+  return g;
+}
 
-  // Version counter to force re-renders when the game state changes
+export function useChessGame(initialFen: string = 'start') {
+  // Single Chess instance as source of truth, stored in a ref.
+  // A version counter triggers React re-renders.
+  const gameRef = useRef<Chess | null>(null);
+  if (gameRef.current === null) {
+    gameRef.current = createGame(initialFen);
+  }
+
   const [version, setVersion] = useState(0);
   const bump = useCallback(() => setVersion(v => v + 1), []);
 
   // Derived values — recalculate when version changes
   const game = gameRef.current;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fen = useMemo(() => game.fen(), [version]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const isGameOver = useMemo(() => game.isGameOver(), [version]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const turn = useMemo(() => game.turn(), [version]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const history = useMemo(() => game.history({ verbose: true }) as Move[], [version]);
 
   const makeMove = useCallback((moveDetails: { from: string; to: string; promotion?: string }): Move | null => {
     try {
-      const move = gameRef.current.move({
+      const move = gameRef.current!.move({
         from: moveDetails.from,
         to: moveDetails.to,
         promotion: moveDetails.promotion || 'q',
@@ -74,7 +82,7 @@ export function useChessGame(initialFen: string = 'start') {
   }, [bump]);
 
   const undoMove = useCallback((): Move | null => {
-    const move = gameRef.current.undo();
+    const move = gameRef.current!.undo();
     if (move) {
       bump();
       return move;
