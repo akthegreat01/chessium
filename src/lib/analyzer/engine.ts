@@ -13,6 +13,7 @@ export class ChessEngine {
   private currentCallback: EvaluationCallback | null = null;
   private currentEval: EngineEvaluation = { score: 0, mate: null, depth: 0, bestMove: "", pv: "" };
   private isAnalyzing = false;
+  private isBlackTurn = false;
   
   init() {
     if (typeof window !== 'undefined' && !this.worker) {
@@ -34,13 +35,15 @@ export class ChessEngine {
       if (msg.includes('score cp')) {
         const cpMatch = msg.match(/score cp (-?\d+)/);
         if (cpMatch) {
-          this.currentEval.score = parseInt(cpMatch[1], 10);
+          const rawScore = parseInt(cpMatch[1], 10);
+          this.currentEval.score = this.isBlackTurn ? -rawScore : rawScore;
           this.currentEval.mate = null;
         }
       } else if (msg.includes('score mate')) {
         const mateMatch = msg.match(/score mate (-?\d+)/);
         if (mateMatch) {
-          this.currentEval.mate = parseInt(mateMatch[1], 10);
+          const rawMate = parseInt(mateMatch[1], 10);
+          this.currentEval.mate = this.isBlackTurn ? -rawMate : rawMate;
           // High score for mate
           this.currentEval.score = this.currentEval.mate > 0 ? 10000 : -10000;
         }
@@ -79,6 +82,7 @@ export class ChessEngine {
     this.currentEval = { score: 0, mate: null, depth: 0, bestMove: "", pv: "" };
     this.isAnalyzing = true;
     
+    this.isBlackTurn = fen.split(' ')[1] === 'b';
     this.worker.postMessage('ucinewgame');
     this.worker.postMessage(`position fen ${fen}`);
     this.worker.postMessage(`go depth ${depth}`);
@@ -105,6 +109,7 @@ export class ChessEngine {
         }
       };
 
+      this.isBlackTurn = fen.split(' ')[1] === 'b';
       this.worker.postMessage('ucinewgame');
       this.worker.postMessage(`position fen ${fen}`);
       this.worker.postMessage(`go depth ${depth}`);

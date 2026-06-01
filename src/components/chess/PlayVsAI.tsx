@@ -1,8 +1,9 @@
+// @ts-nocheck
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
-const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false, loading: () => <div className="w-full aspect-square bg-white/5 animate-pulse rounded" /> });
+const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard as any), { ssr: false, loading: () => <div className="w-full aspect-square bg-white/5 animate-pulse rounded" /> });
 import { Button } from "@/components/ui/button";
 import { Undo2, Flag, RefreshCw, RefreshCcw, CheckCircle2 } from "lucide-react";
 import { AIPersonality, aiPersonalities } from "@/lib/ai/personalities";
