@@ -330,6 +330,7 @@ export default function PlayVsAI() {
               boardOrientation={isFlipped ? "black" : "white"}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}
+              animationDuration={0}
             />
         </div>
 

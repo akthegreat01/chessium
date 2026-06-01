@@ -42,8 +42,10 @@ export function classifyMove(
     if (isCapture && wpDrop <= 2 && (turn === 'w' ? wpAfter > 80 : wpAfter < 20)) {
       return "Brilliant";
     }
-    if (wpDrop <= 0) return "Best Move";
-    return "Great Move";
+    // A Great Move is a best move that was the ONLY move to prevent a massive drop (wpDrop would be > 20 for other moves)
+    // Since we don't have the 2nd best move eval, we'll just restrict Great Move to rare engine cases or huge swings.
+    // For now, default to Best Move.
+    return "Best Move";
   }
 
   // Blunders are severe drops in win probability
