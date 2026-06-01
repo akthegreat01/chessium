@@ -37,11 +37,11 @@ import EvalGraph from "./EvalGraph";
 import ImportModal from "./ImportModal";
 import ClassificationIcon from "./ClassificationIcon";
 import { saveAnalysis } from "@/app/actions/analysis";
-
 import { useSearchParams } from "next/navigation";
 import { useBoardTheme } from "./ThemeContext";
 import { createClient } from "@/utils/supabase/client";
 import { AdSenseBanner } from "@/components/ui/AdSenseBanner";
+import { robustLoadPgn } from "@/lib/chess/pgnParser";
 
 export default function Analyzer() {
   const { boardTheme } = useBoardTheme();
@@ -125,28 +125,8 @@ export default function Analyzer() {
     }
 
     if (pgnQuery) {
-      const newGame = new Chess();
       try {
-        const cleanPgn = (raw: string) => {
-          return raw
-            .replace(/\{[^}]*\}/g, '')
-            .replace(/;[^\n]*/g, '')
-            .replace(/\d+\.{3}/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-        };
-
-        try {
-          newGame.loadPgn(pgnQuery);
-        } catch (e1) {
-          try {
-            newGame.loadPgn(cleanPgn(pgnQuery));
-          } catch (e2) {
-            const rawMoves = cleanPgn(pgnQuery.replace(/\[.*?\]\s*/g, ''));
-            newGame.loadPgn(rawMoves);
-          }
-        }
-
+        const newGame = robustLoadPgn(pgnQuery);
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
         setCurrentIndex(moves.length - 1);
@@ -160,9 +140,8 @@ export default function Analyzer() {
       try {
         newGame.load(fenQuery);
         setGame(newGame);
-        // FEN starts from index -1 with no history
-      } catch(e) {
-        console.error("Invalid FEN from query/session:", e);
+      } catch (e) {
+        console.error("Invalid FEN:", e);
       }
     }
 
@@ -310,43 +289,21 @@ export default function Analyzer() {
   };
 
   const handleImport = (type: 'pgn' | 'fen', data: string) => {
-    const newGame = new Chess();
     try {
       if (type === 'pgn') {
-        // Clean PGN: strip clock annotations, eval comments, and other curly-brace content
-        // that chess.js cannot parse (Chess.com uses {[%clk ...]}, {[%eval ...]}, etc.)
-        const cleanPgn = (raw: string) => {
-          return raw
-            .replace(/\{[^}]*\}/g, '')       // Remove all {comments}
-            .replace(/;[^\n]*/g, '')          // Remove semicolon comments  
-            .replace(/\d+\.{3}/g, '')         // Remove move-number ellipsis like "1..."
-            .replace(/\s+/g, ' ')             // Collapse whitespace
-            .trim();
-        };
-
-        // Try raw first
-        try {
-          newGame.loadPgn(data);
-        } catch (e1) {
-          // Try with cleaned PGN (strips Chess.com annotations)
-          try {
-            newGame.loadPgn(cleanPgn(data));
-          } catch (e2) {
-            // Last resort: strip headers too and try just the movetext
-            const rawMoves = cleanPgn(data.replace(/\[.*?\]\s*/g, ''));
-            newGame.loadPgn(rawMoves);
-          }
-        }
+        const newGame = robustLoadPgn(data);
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
         setCurrentIndex(moves.length - 1);
+        setGame(newGame);
         runFullAnalysis(moves as Move[]);
       } else {
+        const newGame = new Chess();
         newGame.load(data);
+        setGame(newGame);
         setHistory([]);
         setCurrentIndex(-1);
       }
-      setGame(newGame);
       setEvaluations({});
       setClassifications({});
     } catch (e) {

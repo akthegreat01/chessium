@@ -8,7 +8,7 @@ import { Undo2, Flag, RefreshCw, RefreshCcw, CheckCircle2 } from "lucide-react";
 import { AIPersonality, aiPersonalities } from "@/lib/ai/personalities";
 import { useBoardTheme } from "./ThemeContext";
 import { createClient } from "@/utils/supabase/client";
-import { useChessGame } from "@/hooks/useChessGame";
+import { useChess } from "@/hooks/useChess";
 import { useChessComStats } from "@/hooks/useChessComStats";
 import Image from "next/image";
 
@@ -16,7 +16,7 @@ export default function PlayVsAI() {
   const { boardTheme } = useBoardTheme();
   
   // Custom hook for unified chess state
-  const { game, fen, turn, isGameOver, makeMove, undoMove, resetGame } = useChessGame();
+  const { game, fen, turn, isGameOver, makeMove, undoMove, resetGame } = useChess();
   
   // Chess.com Stats
   const { stats, username: chessComUsername } = useChessComStats();

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, RefreshCw } from "lucide-react";
 import confetti from "canvas-confetti";
 import { useBoardTheme } from "@/components/chess/ThemeContext";
-import { useChessGame } from "@/hooks/useChessGame";
+import { useChess } from "@/hooks/useChess";
 import { Chess } from "chess.js";
 
 export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuzzle: Puzzle, allPuzzles: Puzzle[] }) {
@@ -16,21 +16,20 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
   
   const [puzzle, setPuzzle] = useState(initialPuzzle);
 
-  // Custom hook to handle game logic cleanly
-  const { fen, makeMove, loadFen, resetGame } = useChessGame(puzzle.fen);
+  // Initialize unified hook with puzzle FEN
+  const { game, fen, makeMove, loadFen } = useChess({ initialFen: puzzle.fen });
   
   const [moveIndex, setMoveIndex] = useState(0);
   const [status, setStatus] = useState<"playing" | "incorrect" | "solved">("playing");
 
-  // Determine whose turn it is visually
   const [playerColor, setPlayerColor] = useState<"White" | "Black">("White");
   const [moveFrom, setMoveFrom] = useState<string | null>(null);
 
   useEffect(() => {
     try {
+      // Determine player color from the turn in the FEN
       const g = new Chess(puzzle.fen);
       setPlayerColor(g.turn() === 'w' ? "Black" : "White");
-      // Reset game on puzzle change
       loadFen(puzzle.fen);
       setMoveIndex(0);
       setStatus("playing");
@@ -43,21 +42,17 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
     try {
       // @ts-ignore
       (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (err) {
-      console.error("AdSense error:", err);
-    }
+    } catch (err) {}
   }, []);
 
   useEffect(() => {
-    // If it's the opponent's turn (even index), auto-play their move
     if (status === "playing" && moveIndex < puzzle.moves.length) {
       if (moveIndex % 2 === 0) {
         const timeout = setTimeout(() => {
           const moveString = puzzle.moves[moveIndex];
-          // Determine from and to from SAN is tricky without the game instance
-          // We can use the loaded `game` from hook, but the easiest way is to load the move directly via chess.js
-          const g = new Chess(fen);
-          const m = g.move(moveString);
+          // We can just use the exposed game instance to parse SAN -> from/to
+          const tempGame = new Chess(fen);
+          const m = tempGame.move(moveString);
           if (m) {
             makeMove({ from: m.from, to: m.to, promotion: m.promotion || 'q' });
             setMoveIndex(prev => prev + 1);
@@ -68,27 +63,18 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
     }
   }, [moveIndex, status, fen, puzzle.moves, makeMove]);
 
-  const onDrop = (sourceSquare: string, targetSquare: string) => {
+  const validateUserMove = (sourceSquare: string, targetSquare: string) => {
     if (status === "solved") return false;
-    if (moveIndex % 2 === 0) return false; // Not player's turn
+    if (moveIndex % 2 === 0) return false;
 
-    if (status === "incorrect") {
-      setStatus("playing");
-    }
+    if (status === "incorrect") setStatus("playing");
 
-    // First create a temporary game to check what the move's SAN would be
     const tempGame = new Chess(fen);
     try {
-      const moveResult = tempGame.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: "q"
-      });
-
+      const moveResult = tempGame.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
       if (moveResult) {
         if (moveResult.san === puzzle.moves[moveIndex]) {
           makeMove({ from: sourceSquare, to: targetSquare, promotion: "q" });
-          
           if (moveIndex + 1 === puzzle.moves.length) {
             setStatus("solved");
             triggerConfetti();
@@ -101,68 +87,35 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
           return false;
         }
       }
-    } catch (e) {
-      return false;
-    }
+    } catch (e) {}
     return false;
   };
 
-  const onSquareClick = (square: string) => {
-    if (status === "solved") return;
-    if (moveIndex % 2 === 0) return; // Not player's turn
+  const onDrop = (sourceSquare: string, targetSquare: string) => {
+    return validateUserMove(sourceSquare, targetSquare);
+  };
 
-    if (status === "incorrect") {
-      setStatus("playing");
-    }
+  const onSquareClick = (square: string) => {
+    if (status === "solved" || moveIndex % 2 === 0) return;
 
     if (moveFrom === null) {
-      const g = new Chess(fen);
-      const piece = g.get(square as any);
+      const piece = game.get(square as any);
       if (piece && piece.color === (playerColor === "White" ? 'w' : 'b')) {
         setMoveFrom(square);
       }
       return;
     }
 
-    const tempGame = new Chess(fen);
-    try {
-      const moveResult = tempGame.move({
-        from: moveFrom,
-        to: square,
-        promotion: "q"
-      });
-
-      if (moveResult) {
-        if (moveResult.san === puzzle.moves[moveIndex]) {
-          makeMove({ from: moveFrom, to: square, promotion: "q" });
-          if (moveIndex + 1 === puzzle.moves.length) {
-            setStatus("solved");
-            triggerConfetti();
-          } else {
-            setMoveIndex(m => m + 1);
-          }
-          setMoveFrom(null);
-        } else {
-          setStatus("incorrect");
-          setMoveFrom(null);
-        }
-      } else {
-        const g = new Chess(fen);
-        const piece = g.get(square as any);
-        if (piece && piece.color === (playerColor === "White" ? 'w' : 'b')) {
-          setMoveFrom(square);
-        } else {
-          setMoveFrom(null);
-        }
-      }
-    } catch (e) {
-      const g = new Chess(fen);
-      const piece = g.get(square as any);
+    const success = validateUserMove(moveFrom, square);
+    if (!success) {
+      const piece = game.get(square as any);
       if (piece && piece.color === (playerColor === "White" ? 'w' : 'b')) {
         setMoveFrom(square);
       } else {
         setMoveFrom(null);
       }
+    } else {
+      setMoveFrom(null);
     }
   };
 
