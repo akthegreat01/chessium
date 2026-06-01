@@ -649,11 +649,6 @@ export default function Analyzer() {
               )}
             </div>
 
-            {/* DEBUGGER: Show current fen string to see if React state is actually changing */}
-            <div className="w-full text-[10px] text-white/30 text-center mt-2 font-mono truncate px-4">
-              DEBUG FEN: {currentFen}
-            </div>
-
             {/* Bottom player bar */}
             <div className="flex items-center justify-between px-4 py-3 bg-black/20 border-t border-white/5 backdrop-blur-md">
               <div className="flex items-center gap-3">
