@@ -47,7 +47,7 @@ export default async function ProfilePage() {
         
         {/* Left Column - Profile Info */}
         <div className="w-full md:w-[320px] shrink-0 flex flex-col gap-6">
-          <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-3xl p-8 flex flex-col items-center text-center shadow-xl">
+          <div className="bg-white/[0.02]  border border-white/10 rounded-3xl p-8 flex flex-col items-center text-center shadow-xl">
             <div className="w-32 h-32 rounded-full bg-background border-4 border-white/10 flex items-center justify-center mb-6 shadow-2xl overflow-hidden relative">
               <User className="w-12 h-12 text-white/50" />
             </div>
@@ -59,7 +59,7 @@ export default async function ProfilePage() {
             </Button>
           </div>
 
-          <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-3xl p-7">
+          <div className="bg-white/[0.02]  border border-white/10 rounded-3xl p-7">
             <h2 className="text-[14px] uppercase tracking-wider font-bold mb-6 text-white/90">Overview</h2>
             <div className="flex flex-col gap-5 text-[14px] font-medium">
               <div className="flex justify-between items-center pb-5 border-b border-white/10">
@@ -78,7 +78,7 @@ export default async function ProfilePage() {
         <div className="flex-1 flex flex-col gap-6 pt-20 md:pt-0">
           {user ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-white/20 transition-all hover:-translate-y-1">
+              <div className="bg-white/[0.02]  border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-white/20 transition-all hover:-translate-y-1">
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-emerald-500/10 rounded-full blur-[40px] group-hover:bg-emerald-500/20 transition-colors pointer-events-none" />
                 <div className="flex items-center gap-3 text-[13px] uppercase tracking-wider text-secondary-foreground/80 font-bold mb-4 relative z-10">
                   <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-400">
@@ -89,7 +89,7 @@ export default async function ProfilePage() {
                 <div className="text-5xl font-extrabold tracking-tight text-white relative z-10">{rapidRating}</div>
               </div>
               
-              <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-white/20 transition-all hover:-translate-y-1">
+              <div className="bg-white/[0.02]  border border-white/10 rounded-3xl p-8 relative overflow-hidden group hover:border-white/20 transition-all hover:-translate-y-1">
                 <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full blur-[40px] group-hover:bg-primary/20 transition-colors pointer-events-none" />
                 <div className="flex items-center gap-3 text-[13px] uppercase tracking-wider text-secondary-foreground/80 font-bold mb-4 relative z-10">
                   <div className="p-2 bg-primary/10 rounded-lg text-primary">
@@ -101,7 +101,7 @@ export default async function ProfilePage() {
               </div>
             </div>
           ) : (
-            <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center text-center h-[240px]">
+            <div className="bg-white/[0.02]  border border-white/10 rounded-3xl p-10 flex flex-col items-center justify-center text-center h-[240px]">
               <h2 className="text-xl font-bold mb-3 text-white">Unlock Your Stats</h2>
               <p className="text-[14px] text-secondary-foreground/70 mb-6">Create a free account to track your ratings and progress globally.</p>
               <a href="/signup">

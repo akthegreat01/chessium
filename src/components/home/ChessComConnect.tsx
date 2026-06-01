@@ -28,7 +28,7 @@ export default function ChessComConnect() {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="bg-surface/60 backdrop-blur-xl border border-white/10 p-8 md:p-12 rounded-[32px] shadow-2xl relative z-10"
+        className="bg-surface  border border-white/10 p-8 md:p-12 rounded-[32px] shadow-2xl relative z-10"
       >
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 flex items-center justify-center gap-3">
@@ -76,17 +76,17 @@ export default function ChessComConnect() {
               </div>
             ) : stats ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-2xl">
-                <div className="bg-background/80 border border-border p-6 rounded-2xl flex flex-col items-center gap-2 shadow-inner">
+                <div className="bg-background border border-border p-6 rounded-2xl flex flex-col items-center gap-2 shadow-inner">
                   <Zap className="w-6 h-6 text-yellow-500" />
                   <span className="text-sm font-semibold text-secondary-foreground uppercase tracking-widest">Blitz</span>
                   <span className="text-3xl font-black">{stats.blitz || "N/A"}</span>
                 </div>
-                <div className="bg-background/80 border border-border p-6 rounded-2xl flex flex-col items-center gap-2 shadow-inner">
+                <div className="bg-background border border-border p-6 rounded-2xl flex flex-col items-center gap-2 shadow-inner">
                   <Target className="w-6 h-6 text-green-500" />
                   <span className="text-sm font-semibold text-secondary-foreground uppercase tracking-widest">Rapid</span>
                   <span className="text-3xl font-black">{stats.rapid || "N/A"}</span>
                 </div>
-                <div className="bg-background/80 border border-border p-6 rounded-2xl flex flex-col items-center gap-2 shadow-inner">
+                <div className="bg-background border border-border p-6 rounded-2xl flex flex-col items-center gap-2 shadow-inner">
                   <Flame className="w-6 h-6 text-orange-500" />
                   <span className="text-sm font-semibold text-secondary-foreground uppercase tracking-widest">Bullet</span>
                   <span className="text-3xl font-black">{stats.bullet || "N/A"}</span>

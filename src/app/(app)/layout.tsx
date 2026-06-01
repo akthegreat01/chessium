@@ -88,7 +88,7 @@ export default async function AppLayout({
       </main>
 
       {/* Bottom Navigation Bar - Visible only on mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/90 backdrop-blur-xl border-t border-border flex items-center justify-around z-50 px-2 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface  border-t border-border flex items-center justify-around z-50 px-2 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
         <BottomNavItem href="/home" active={activePath === "/home"} icon={<LayoutDashboard className="w-5 h-5" />} label="Home" />
         <BottomNavItem href="/play/ai" active={activePath.includes("/play")} icon={<Bot className="w-5 h-5" />} label="Play" />
         <BottomNavItem href="/analyze" active={activePath.includes("/analyze")} icon={<Search className="w-5 h-5" />} label="Analyze" />

@@ -8,7 +8,7 @@ export default function TermsPage() {
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
-        <Link href="/" className="inline-flex items-center text-sm font-semibold text-secondary-foreground hover:text-foreground transition-colors mb-12 bg-surface/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 shadow-sm">
+        <Link href="/" className="inline-flex items-center text-sm font-semibold text-secondary-foreground hover:text-foreground transition-colors mb-12 bg-surface  px-4 py-2 rounded-full border border-white/5 shadow-sm">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
         </Link>
         
@@ -24,7 +24,7 @@ export default function TermsPage() {
           <p className="text-secondary-foreground font-medium">Last updated: May 30, 2026</p>
         </div>
 
-        <div className="bg-surface/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 md:p-14 shadow-[0_0_60px_rgba(0,0,0,0.5)]">
+        <div className="bg-surface  border border-white/10 rounded-[32px] p-8 md:p-14 shadow-[0_0_60px_rgba(0,0,0,0.5)]">
           <div className="prose prose-invert prose-p:text-secondary-foreground/90 prose-headings:text-foreground prose-a:text-primary max-w-none prose-lg">
             <h2>1. Introduction</h2>
             <p>

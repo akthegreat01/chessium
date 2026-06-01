@@ -38,7 +38,7 @@ export default function LoginPage() {
       </p>
 
       {/* Form card */}
-      <div className="w-full bg-surface/80 border border-border rounded-2xl p-6 backdrop-blur-sm">
+      <div className="w-full bg-surface border border-border rounded-2xl p-6 ">
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-[13px] font-medium text-secondary-foreground mb-2">
@@ -105,7 +105,7 @@ export default function LoginPage() {
       <button
         type="button"
         disabled
-        className="w-full h-11 bg-surface/80 border border-border rounded-2xl text-[14px] font-medium text-secondary-foreground hover:text-foreground hover:bg-surface transition-all duration-200 flex items-center justify-center gap-2.5 cursor-not-allowed opacity-50"
+        className="w-full h-11 bg-surface border border-border rounded-2xl text-[14px] font-medium text-secondary-foreground hover:text-foreground hover:bg-surface transition-all duration-200 flex items-center justify-center gap-2.5 cursor-not-allowed opacity-50"
       >
         <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>

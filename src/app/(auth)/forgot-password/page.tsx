@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
       </p>
 
       {/* Form card */}
-      <div className="w-full bg-surface/80 border border-border rounded-2xl p-6 backdrop-blur-sm">
+      <div className="w-full bg-surface border border-border rounded-2xl p-6 ">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-[13px] font-medium text-secondary-foreground mb-2">

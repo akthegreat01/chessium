@@ -161,7 +161,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
           </div>
         </div>
 
-        <div className="w-full bg-background/50" key={puzzle.id}>
+        <div className="w-full bg-background" key={puzzle.id}>
             {/* @ts-ignore */}
             <Chessboard 
               id="PuzzleBoard"
@@ -194,7 +194,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
           </p>
 
           {status === "playing" && (
-            <div className="p-4 bg-background/50 rounded-xl text-center text-secondary-foreground font-medium border border-border">
+            <div className="p-4 bg-background rounded-xl text-center text-secondary-foreground font-medium border border-border">
               Make your move on the board.
             </div>
           )}
@@ -222,7 +222,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
         </div>
 
         {/* Ad Sidebar */}
-        <div className="bg-surface/50 border border-border p-6 rounded-[32px] flex flex-col items-center justify-center min-h-[250px] shadow-lg relative overflow-hidden">
+        <div className="bg-surface border border-border p-6 rounded-[32px] flex flex-col items-center justify-center min-h-[250px] shadow-lg relative overflow-hidden">
           <span className="text-[10px] font-bold text-secondary-foreground absolute top-4 left-4 uppercase tracking-widest z-10">Advertisement</span>
           {/* AdSense Unit */}
           <ins className="adsbygoogle"

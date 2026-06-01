@@ -51,7 +51,7 @@ export default function OpeningTheoryPage({ params }: { params: Promise<{ slug: 
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_450px] gap-8 items-start relative z-10">
         {/* Chessboard Area */}
-        <div className="bg-white/[0.01] backdrop-blur-3xl border border-white/10 p-5 rounded-3xl flex items-center justify-center shadow-2xl relative overflow-hidden">
+        <div className="bg-white/[0.01]  border border-white/10 p-5 rounded-3xl flex items-center justify-center shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
           <div className="w-full max-w-[600px] aspect-square rounded-xl overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.4)] relative z-10">
             <Chessboard 
@@ -66,7 +66,7 @@ export default function OpeningTheoryPage({ params }: { params: Promise<{ slug: 
 
         {/* Theory Explorer */}
         <div className="flex flex-col gap-6">
-          <div className="bg-white/[0.01] backdrop-blur-3xl border border-white/10 p-6 sm:p-8 rounded-3xl shadow-xl">
+          <div className="bg-white/[0.01]  border border-white/10 p-6 sm:p-8 rounded-3xl shadow-xl">
             <h2 className="text-[14px] font-black tracking-widest text-secondary-foreground/70 uppercase mb-6 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-primary" />
               Theory Explorer

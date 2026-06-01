@@ -323,7 +323,7 @@ export default function PlayVsAI() {
           </div>
         </div>
 
-        <div className="w-full bg-background/50">
+        <div className="w-full bg-background">
             {/* @ts-ignore */}
             <Chessboard 
               id="PlayVsAIBoard"

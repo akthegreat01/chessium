@@ -32,7 +32,7 @@ export default function OpeningsPage() {
           <input 
             type="text" 
             placeholder="Search openings..." 
-            className="w-full h-10 bg-white/[0.02] border border-white/5 backdrop-blur-md rounded-xl pl-10 pr-4 text-[13px] focus:outline-none focus:border-primary/50 focus:bg-white/[0.04] transition-all"
+            className="w-full h-10 bg-white/[0.02] border border-white/5  rounded-xl pl-10 pr-4 text-[13px] focus:outline-none focus:border-primary/50 focus:bg-white/[0.04] transition-all"
           />
         </div>
       </div>
@@ -40,7 +40,7 @@ export default function OpeningsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {OPENINGS.map((op, i) => {
           return (
-            <Link href={`/openings/${op.slug}`} key={i} className="group bg-white/[0.01] backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 hover:bg-white/[0.03] transition-all flex flex-col shadow-lg hover:shadow-2xl hover:-translate-y-1">
+            <Link href={`/openings/${op.slug}`} key={i} className="group bg-white/[0.01]  border border-white/5 rounded-2xl overflow-hidden hover:border-white/20 hover:bg-white/[0.03] transition-all flex flex-col shadow-lg hover:shadow-2xl hover:-translate-y-1">
               <div className="aspect-square bg-black/20 border-b border-white/5 p-5 relative pointer-events-none flex items-center justify-center">
                 <div className="w-full h-full rounded shadow-[0_0_20px_rgba(0,0,0,0.5)] overflow-hidden">
                   <StaticBoard position={op.fen} />

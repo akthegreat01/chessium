@@ -78,7 +78,7 @@ export default async function HomePage() {
             { label: "Accuracy", value: `${avgAcc.toFixed(1)}%`, icon: "🎯", color: "from-emerald-500/20 to-emerald-600/5", border: "group-hover:border-emerald-500/50" },
             { label: "Analyzed Games", value: totalAnalyzed, icon: "📈", color: "from-orange-500/20 to-orange-600/5", border: "group-hover:border-orange-500/50" },
           ].map((stat, i) => (
-            <div key={i} className={`group relative bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 ${stat.border}`}>
+            <div key={i} className={`group relative bg-white/[0.02]  border border-white/10 rounded-2xl p-5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 ${stat.border}`}>
               <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
               <div className="flex items-center justify-between mb-3">
                 <div className="text-[12px] uppercase tracking-wider text-secondary-foreground/70 font-semibold">{stat.label}</div>
@@ -91,7 +91,7 @@ export default async function HomePage() {
           ))}
         </div>
       ) : (
-        <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-10 mb-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+        <div className="bg-white/[0.02]  border border-white/10 rounded-2xl p-10 mb-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
           <h2 className="text-xl font-bold mb-3 text-white">Unlock Your Dashboard</h2>
           <p className="text-[14px] text-secondary-foreground/80 mb-6 max-w-sm">Create a free account to automatically track your ratings, accuracy, and full play history.</p>
@@ -109,7 +109,7 @@ export default async function HomePage() {
           <DashboardImportButton />
         </div>
         <Link href="/analyze" className="flex-1">
-          <Button variant="outline" className="w-full h-12 rounded-full border-white/10 bg-white/[0.03] backdrop-blur-md hover:bg-white/[0.08] text-white font-bold tracking-wide text-[14px] gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg">
+          <Button variant="outline" className="w-full h-12 rounded-full border-white/10 bg-white/[0.03]  hover:bg-white/[0.08] text-white font-bold tracking-wide text-[14px] gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg">
             <Search className="w-4 h-4" />
             Analyze Game
           </Button>
@@ -129,7 +129,7 @@ export default async function HomePage() {
         <div className="flex flex-col gap-8">
 
           {/* Accuracy Trend Chart */}
-          <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-7 relative overflow-hidden group hover:border-white/20 transition-colors">
+          <div className="bg-white/[0.02]  border border-white/10 rounded-2xl p-7 relative overflow-hidden group hover:border-white/20 transition-colors">
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
             <div className="flex justify-between items-center mb-8 relative z-10">
               <h2 className="text-[16px] font-bold tracking-wide text-white">Accuracy Trend</h2>
@@ -141,7 +141,7 @@ export default async function HomePage() {
           </div>
 
           {/* Recent Analyses */}
-          <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-7 hover:border-white/20 transition-colors">
+          <div className="bg-white/[0.02]  border border-white/10 rounded-2xl p-7 hover:border-white/20 transition-colors">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-[16px] font-bold tracking-wide text-white">Recent Analyses</h2>
               <Link href="/saved-analyses" className="text-[13px] font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1 group/link">
@@ -178,7 +178,7 @@ export default async function HomePage() {
         <div className="flex flex-col gap-8">
 
           {/* Daily Puzzle */}
-          <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-7 relative overflow-hidden group hover:border-white/20 transition-colors">
+          <div className="bg-white/[0.02]  border border-white/10 rounded-2xl p-7 relative overflow-hidden group hover:border-white/20 transition-colors">
             <div className="absolute top-0 right-0 w-40 h-40 bg-orange-500/10 rounded-full blur-[60px] pointer-events-none" />
             <div className="flex justify-between items-center mb-6 relative z-10">
               <div className="flex items-center gap-2">
@@ -208,14 +208,14 @@ export default async function HomePage() {
 
           {/* Streak & Puzzle Rating */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center hover:bg-white/[0.04] transition-colors group">
+            <div className="bg-white/[0.02]  border border-white/10 rounded-2xl p-6 text-center hover:bg-white/[0.04] transition-colors group">
               <div className="w-10 h-10 mx-auto bg-orange-500/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <Flame className="w-5 h-5 text-orange-400" />
               </div>
               <div className="text-[12px] uppercase tracking-wider text-secondary-foreground/70 font-semibold mb-1">Streak</div>
               <div className="text-3xl font-extrabold text-white">{profile?.puzzle_streak || 0}</div>
             </div>
-            <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center hover:bg-white/[0.04] transition-colors group">
+            <div className="bg-white/[0.02]  border border-white/10 rounded-2xl p-6 text-center hover:bg-white/[0.04] transition-colors group">
               <div className="w-10 h-10 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 <Puzzle className="w-5 h-5 text-primary" />
               </div>

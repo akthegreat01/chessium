@@ -10,7 +10,7 @@ export default function AboutPage() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/10 blur-[150px] rounded-full pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
-        <Link href="/" className="inline-flex items-center text-sm font-semibold text-secondary-foreground hover:text-foreground transition-colors mb-12 bg-surface/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 shadow-sm">
+        <Link href="/" className="inline-flex items-center text-sm font-semibold text-secondary-foreground hover:text-foreground transition-colors mb-12 bg-surface  px-4 py-2 rounded-full border border-white/5 shadow-sm">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Home
         </Link>
         
@@ -25,7 +25,7 @@ export default function AboutPage() {
         </div>
 
         {/* Story Section */}
-        <div className="bg-surface/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 md:p-14 mb-12 shadow-[0_0_60px_rgba(0,0,0,0.5)]">
+        <div className="bg-surface  border border-white/10 rounded-[32px] p-8 md:p-14 mb-12 shadow-[0_0_60px_rgba(0,0,0,0.5)]">
           <div className="flex items-center gap-4 mb-8">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
               <Heart className="w-7 h-7 text-primary drop-shadow-[0_0_15px_rgba(212,175,55,0.8)]" />
@@ -46,7 +46,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           
           {/* Akshath Kataria */}
-          <div className="bg-surface/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-10 hover:bg-surface/60 hover:border-white/20 transition-all duration-300 shadow-[0_0_40px_rgba(0,0,0,0.3)]">
+          <div className="bg-surface  border border-white/10 rounded-[32px] p-10 hover:bg-surface hover:border-white/20 transition-all duration-300 shadow-[0_0_40px_rgba(0,0,0,0.3)]">
             <div className="flex items-center gap-5 mb-8">
               <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-[0_0_20px_rgba(212,175,55,0.2)]">
                 <Code2 className="w-7 h-7" />
@@ -61,7 +61,7 @@ export default function AboutPage() {
           </div>
 
           {/* Nikunj Bhardwaj */}
-          <div className="bg-surface/40 backdrop-blur-xl border border-white/10 rounded-[32px] p-10 hover:bg-surface/60 hover:border-white/20 transition-all duration-300 shadow-[0_0_40px_rgba(0,0,0,0.3)]">
+          <div className="bg-surface  border border-white/10 rounded-[32px] p-10 hover:bg-surface hover:border-white/20 transition-all duration-300 shadow-[0_0_40px_rgba(0,0,0,0.3)]">
             <div className="flex items-center gap-5 mb-8">
               <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white shadow-inner">
                 <User className="w-7 h-7" />

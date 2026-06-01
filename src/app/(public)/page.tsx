@@ -22,7 +22,7 @@ export default async function LandingPage() {
   return (
     <main className="flex-1 flex flex-col min-h-screen bg-background font-sans antialiased">
       {/* Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/60 backdrop-blur-xl">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background ">
         <div className="max-w-7xl mx-auto px-6 md:px-8 h-16 flex items-center justify-between">
           {/* Left: Brand */}
           <Link href="/" className="flex items-center gap-2.5 group">

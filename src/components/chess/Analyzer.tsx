@@ -499,7 +499,7 @@ export default function Analyzer() {
       />
 
       {/* ═══ COLUMN 1: Navigation Sidebar ═══ */}
-      <div className="hidden xl:flex w-[240px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-r border-white/5 shadow-2xl relative z-10">
+      <div className="hidden xl:flex w-[240px] shrink-0 flex-col bg-white/[0.01]  border-r border-white/5 shadow-2xl relative z-10">
         {/* Sidebar Header */}
         <div className="px-6 py-5 border-b border-white/5 relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -595,7 +595,7 @@ export default function Analyzer() {
         </div>
 
         {/* Player Info */}
-        <div className="px-5 py-4 border-t border-white/5 bg-white/[0.02] backdrop-blur-md">
+        <div className="px-5 py-4 border-t border-white/5 bg-white/[0.02] ">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-inner">
               <Image src="/chessium_logo.png" alt="You" width={28} height={28} className="w-full h-full object-cover p-1 opacity-90" />
@@ -618,7 +618,7 @@ export default function Analyzer() {
           <div className="absolute inset-0 bg-primary/5 blur-[50px] rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
           {/* Eval Bar */}
-          <div className="w-8 shrink-0 relative bg-black/40 backdrop-blur-md rounded-l-2xl overflow-hidden border border-r-0 border-white/10 z-10">
+          <div className="w-8 shrink-0 relative bg-black/40  rounded-l-2xl overflow-hidden border border-r-0 border-white/10 z-10">
             <div 
               className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white/90 to-white/70 transition-all duration-700 ease-out shadow-[0_0_15px_rgba(255,255,255,0.2)]"
               style={{ height: `${clampPercent}%` }}
@@ -637,10 +637,10 @@ export default function Analyzer() {
           </div>
 
           {/* Board Container */}
-          <div className="flex-1 flex flex-col bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-r-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-10">
+          <div className="flex-1 flex flex-col bg-white/[0.02]  border border-white/10 rounded-r-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-10">
             
             {/* Top player bar */}
-            <div className="flex items-center justify-between px-4 py-3 bg-black/20 border-b border-white/5 backdrop-blur-md">
+            <div className="flex items-center justify-between px-4 py-3 bg-black/20 border-b border-white/5 ">
               <div className="flex items-center gap-3">
                 <div className="w-7 h-7 rounded-md bg-white/10 border border-white/10 flex items-center justify-center shadow-inner">
                   <span className="text-white/80 font-bold text-[12px]">♚</span>
@@ -698,7 +698,7 @@ export default function Analyzer() {
 
               {/* Circular Analyzing Overlay */}
               {isAutoAnalyzing && (
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm z-20 flex items-center justify-center transition-opacity duration-500">
+                <div className="absolute inset-0 bg-black/40  z-20 flex items-center justify-center transition-opacity duration-500">
                   <div className="relative flex items-center justify-center">
                     <svg className="w-24 h-24 transform -rotate-90">
                       {/* Background circle */}
@@ -727,7 +727,7 @@ export default function Analyzer() {
             </div>
 
             {/* Bottom player bar */}
-            <div className="flex items-center justify-between px-4 py-3 bg-black/20 border-t border-white/5 backdrop-blur-md">
+            <div className="flex items-center justify-between px-4 py-3 bg-black/20 border-t border-white/5 ">
               <div className="flex items-center gap-3">
                 <div className="w-7 h-7 rounded-md bg-white/10 border border-white/10 flex items-center justify-center overflow-hidden shadow-inner">
                   <Image src="/chessium_logo.png" alt="You" width={28} height={28} className="w-full h-full object-cover p-0.5 opacity-90" />
@@ -746,7 +746,7 @@ export default function Analyzer() {
         </div>
 
         {/* Board Controls */}
-        <div className="flex items-center gap-1.5 mt-5 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-full px-3 py-2 shadow-xl relative z-10">
+        <div className="flex items-center gap-1.5 mt-5 bg-white/[0.03]  border border-white/10 rounded-full px-3 py-2 shadow-xl relative z-10">
           <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full text-secondary-foreground hover:text-white hover:bg-white/10 transition-colors" onClick={() => { setCurrentIndex(-1); setIsAutoPlaying(false); }}>
             <ChevronFirst className="w-5 h-5" />
           </Button>
@@ -784,10 +784,10 @@ export default function Analyzer() {
       </div>
 
       {/* ═══ COLUMN 3: Analysis Panel ═══ */}
-      <div className="flex w-full lg:w-[360px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-t lg:border-t-0 lg:border-l border-white/5 lg:overflow-hidden shadow-2xl relative z-10 lg:h-full min-h-[500px]">
+      <div className="flex w-full lg:w-[360px] shrink-0 flex-col bg-white/[0.01]  border-t lg:border-t-0 lg:border-l border-white/5 lg:overflow-hidden shadow-2xl relative z-10 lg:h-full min-h-[500px]">
         
         {/* Tabs */}
-        <div className="flex bg-black/20 text-[12px] font-bold tracking-wider uppercase backdrop-blur-md">
+        <div className="flex bg-black/20 text-[12px] font-bold tracking-wider uppercase ">
           <button 
             onClick={() => setActiveTab('moves')}
             className={`flex-1 py-3 text-center transition-all border-b-2 ${activeTab === 'moves' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-secondary-foreground/60 hover:text-white hover:bg-white/5'}`}
@@ -929,7 +929,7 @@ export default function Analyzer() {
       </div>
 
       {/* ═══ COLUMN 4: Ad Rail ═══ */}
-      <div className="hidden 2xl:flex w-[280px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-l border-white/5 p-5 gap-5 overflow-y-auto scrollbar-none z-10 relative">
+      <div className="hidden 2xl:flex w-[280px] shrink-0 flex-col bg-white/[0.01]  border-l border-white/5 p-5 gap-5 overflow-y-auto scrollbar-none z-10 relative">
         
         {/* Ad Unit Replacing Premium Card */}
         <div className="w-full bg-white/[0.01] border border-white/5 p-4 rounded-[24px]">

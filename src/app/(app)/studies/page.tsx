@@ -24,7 +24,7 @@ export default function StudiesPage() {
       <div className="max-w-[1200px] mx-auto h-full flex flex-col gap-8">
         
         {/* Header */}
-        <div className="flex items-center gap-5 bg-surface/50 p-8 rounded-[32px] border border-border relative overflow-hidden">
+        <div className="flex items-center gap-5 bg-surface p-8 rounded-[32px] border border-border relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0 relative z-10 shadow-inner border border-primary/20">
             <BookOpen className="w-8 h-8" />
@@ -96,7 +96,7 @@ export default function StudiesPage() {
             </div>
 
             {/* Coming Soon */}
-            <div className="bg-surface/30 border border-dashed border-border rounded-[24px] p-8 flex flex-col items-center justify-center text-center mt-4">
+            <div className="bg-surface border border-dashed border-border rounded-[24px] p-8 flex flex-col items-center justify-center text-center mt-4">
               <h2 className="text-lg font-bold text-white/50 mb-2">More Courses Coming Soon</h2>
               <p className="text-sm text-secondary-foreground max-w-md">
                 We are constantly working with Grandmasters to bring you new openings, middle-game plans, and psychological warfare tactics.

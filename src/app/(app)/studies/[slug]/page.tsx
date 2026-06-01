@@ -130,10 +130,10 @@ export default function StudyViewerPage() {
     <div className="flex flex-col lg:flex-row w-full min-h-[calc(100vh-80px)] lg:h-[calc(100vh-80px)] lg:overflow-hidden bg-background">
       
       {/* ═══ COLUMN 1: Reader (Left) ═══ */}
-      <div className="w-full lg:w-[450px] shrink-0 flex flex-col bg-surface/30 border-r border-white/5 overflow-y-auto">
+      <div className="w-full lg:w-[450px] shrink-0 flex flex-col bg-surface border-r border-white/5 overflow-y-auto">
         
         {/* Header */}
-        <div className="p-6 border-b border-white/5 sticky top-0 bg-background/80 backdrop-blur-xl z-20">
+        <div className="p-6 border-b border-white/5 sticky top-0 bg-background  z-20">
           <button 
             onClick={() => router.push("/studies")}
             className="flex items-center text-sm text-secondary-foreground hover:text-white transition-colors mb-4"
@@ -229,7 +229,7 @@ export default function StudyViewerPage() {
                 variant="outline" 
                 size="sm"
                 onClick={() => setErrorMsg(`Hint: Play ${currentStep.expectedMove}`)}
-                className="bg-black/50 backdrop-blur-md border-white/10 hover:bg-black/70 text-white font-bold"
+                className="bg-black/50  border-white/10 hover:bg-black/70 text-white font-bold"
               >
                 Show Solution
               </Button>
