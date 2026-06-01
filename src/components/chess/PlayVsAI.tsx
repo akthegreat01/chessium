@@ -24,6 +24,7 @@ export default function PlayVsAI() {
   
   const [personality, setPersonality] = useState<AIPersonality>(aiPersonalities[1]); // Default Aggressor
   const [playerColor, setPlayerColor] = useState<"w" | "b">("w");
+  const [boardKey, setBoardKey] = useState(0);
   const [engineReady, setEngineReady] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [hasMatchStarted, setHasMatchStarted] = useState(false);
@@ -60,8 +61,9 @@ export default function PlayVsAI() {
       to: lan.substring(2, 4),
       promotion: lan.length > 4 ? lan.charAt(4) : undefined
     });
-    
     if (move) {
+      setBoardKey(k => k + 1); // Force board to visually update safely on external move
+      
       // Random chance for dialogue on move
       if (Math.random() < 0.3) {
         let pool = personality.dialogue.winning;
@@ -190,12 +192,14 @@ export default function PlayVsAI() {
       // It's the AI's turn, meaning we just played. Undo just our move.
       undoMove();
     }
+    setBoardKey(k => k + 1);
     if (workerRef.current) workerRef.current.postMessage("stop");
     setIsThinking(false);
   };
 
   const handleReset = () => {
     resetGame();
+    setBoardKey(k => k + 1);
     setHasMatchStarted(false);
     if (workerRef.current) workerRef.current.postMessage("stop");
     setIsThinking(false);
@@ -323,7 +327,7 @@ export default function PlayVsAI() {
             {/* @ts-ignore */}
             <Chessboard 
               id="PlayVsAIBoard"
-              key={fen}
+              key={`board-${boardKey}`}
               position={fen}
               onPieceDrop={onDrop}
               onSquareClick={onSquareClick}

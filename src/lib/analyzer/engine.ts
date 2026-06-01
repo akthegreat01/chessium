@@ -20,6 +20,10 @@ export class ChessEngine {
       this.worker = new Worker('/stockfish/stockfish.js');
       this.worker.onmessage = this.onMessage.bind(this);
       this.worker.postMessage('uci');
+      // Set optimized options for performance
+      const threads = typeof navigator !== 'undefined' && navigator.hardwareConcurrency ? Math.max(1, Math.min(navigator.hardwareConcurrency - 1, 4)) : 2;
+      this.worker.postMessage(`setoption name Threads value ${threads}`);
+      this.worker.postMessage('setoption name Hash value 128');
     }
   }
 

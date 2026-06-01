@@ -15,7 +15,8 @@ import { Chess } from "chess.js";
 export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuzzle: Puzzle, allPuzzles: Puzzle[] }) {
   const { boardTheme } = useBoardTheme();
   
-  const [puzzle, setPuzzle] = useState(initialPuzzle);
+  const [boardKey, setBoardKey] = useState(0);
+  const [puzzle, setPuzzle] = useState<any>(allPuzzles[0]);
 
   // Initialize unified hook with puzzle FEN
   const { game, fen, makeMove, loadFen } = useChess({ initialFen: puzzle.fen });
@@ -164,7 +165,6 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
             {/* @ts-ignore */}
             <Chessboard 
               id="PuzzleBoard"
-              key={fen}
               position={fen}
               onPieceDrop={onDrop}
               onSquareClick={onSquareClick}

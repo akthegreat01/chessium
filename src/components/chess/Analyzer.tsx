@@ -45,6 +45,7 @@ import { useBoardTheme } from "./ThemeContext";
 import { createClient } from "@/utils/supabase/client";
 import { AdSenseBanner } from "@/components/ui/AdSenseBanner";
 import { robustLoadPgn } from "@/lib/chess/pgnParser";
+import confetti from "canvas-confetti";
 
 export default function Analyzer() {
   const { boardTheme } = useBoardTheme();
@@ -179,7 +180,9 @@ export default function Analyzer() {
         return history[currentIndex]?.after || startingFen;
       }
     }
-    return tempGame.fen();
+    const finalFen = tempGame.fen();
+    console.log("Analyzer.tsx currentFen calculation:", { currentIndex, startingFen, finalFen });
+    return finalFen;
   }, [history, currentIndex, game]);
 
   useEffect(() => {
@@ -244,6 +247,23 @@ export default function Analyzer() {
       if (autoPlayTimer.current) clearTimeout(autoPlayTimer.current);
     };
   }, [isAutoPlaying, currentIndex, history.length]);
+
+  // Confetti effect for brilliant/great moves
+  useEffect(() => {
+    if (currentIndex >= 0 && classifications[currentIndex]) {
+      const cls = classifications[currentIndex];
+      const clsName = typeof cls === 'string' ? cls : cls.classification;
+      if (clsName === 'Brilliant' || clsName === 'Great Move') {
+        confetti({
+          particleCount: 100,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: clsName === 'Brilliant' ? ['#1cb0f6', '#ffffff'] : ['#5f8baf', '#ffffff'],
+          zIndex: 100
+        });
+      }
+    }
+  }, [currentIndex, classifications]);
 
   const [moveFrom, setMoveFrom] = useState<string | null>(null);
 
@@ -396,8 +416,8 @@ export default function Analyzer() {
   const reviewStats = useMemo(() => {
     let wAcc = 0, bAcc = 0;
     let wCount = 0, bCount = 0;
-    const wClass = { brilliant: 0, excellent: 0, best: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0, book: 0 };
-    const bClass = { brilliant: 0, excellent: 0, best: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0, book: 0 };
+    const wClass = { brilliant: 0, great: 0, best: 0, excellent: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0, book: 0 };
+    const bClass = { brilliant: 0, great: 0, best: 0, excellent: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0, book: 0 };
 
     const whiteWPDrops: number[] = [];
     const blackWPDrops: number[] = [];
@@ -410,8 +430,9 @@ export default function Analyzer() {
       const clsName = typeof cls === 'string' ? cls : cls?.classification || cls;
       
       if (clsName === "Brilliant") target.brilliant++;
-      else if (clsName === "Excellent" || clsName === "Great Move") target.excellent++;
+      else if (clsName === "Great Move") target.great++;
       else if (clsName === "Best Move") target.best++;
+      else if (clsName === "Excellent") target.excellent++;
       else if (clsName === "Good") target.good++;
       else if (clsName === "Inaccuracy") target.inaccuracy++;
       else if (clsName === "Mistake") target.mistake++;
@@ -452,8 +473,9 @@ export default function Analyzer() {
 
   const classificationRows = [
     { label: 'Brilliant', key: 'brilliant', icon: '!!', color: '#1cb0f6' },
-    { label: 'Great Find', key: 'excellent', icon: '!', color: '#5f8baf' },
+    { label: 'Great Find', key: 'great', icon: '!', color: '#5f8baf' },
     { label: 'Best Move', key: 'best', icon: '★', color: '#81b64c' },
+    { label: 'Excellent', key: 'excellent', icon: '👍', color: '#96bc4b' },
     { label: 'Good', key: 'good', icon: '✓', color: '#96af8b' },
     { label: 'Book', key: 'book', icon: '📖', color: '#a88865' },
     { label: 'Inaccuracy', key: 'inaccuracy', icon: '?!', color: '#f0c15c' },
@@ -461,11 +483,20 @@ export default function Analyzer() {
     { label: 'Blunder', key: 'blunder', icon: '??', color: '#ca3431' },
   ];
 
+
   return (
     <div className="flex flex-col lg:flex-row w-full min-h-full lg:h-full lg:overflow-hidden bg-background relative pb-8 lg:pb-0">
       
       {/* Abstract Background Glow for Analyzer */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-primary/5 blur-[150px] rounded-full pointer-events-none -z-10" />
+      <div 
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] blur-[150px] rounded-full pointer-events-none -z-10 transition-colors duration-1000" 
+        style={{
+          backgroundColor: currentEvalData?.mate ? (currentEvalData.mate > 0 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(239, 68, 68, 0.2)') :
+                           currentEvalData?.score > 150 ? 'rgba(34, 197, 94, 0.15)' : 
+                           currentEvalData?.score < -150 ? 'rgba(239, 68, 68, 0.15)' : 
+                           'rgba(255, 255, 255, 0.03)'
+        }}
+      />
 
       {/* ═══ COLUMN 1: Navigation Sidebar ═══ */}
       <div className="hidden xl:flex w-[240px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-r border-white/5 shadow-2xl relative z-10">
@@ -630,7 +661,6 @@ export default function Analyzer() {
               {/* @ts-ignore */}
               <Chessboard 
                 id="AnalyzerBoard"
-                key={`board-${boardKey}-${currentFen}`}
                 position={currentFen}
                 onPieceDrop={onDrop}
                 onSquareClick={onSquareClick}

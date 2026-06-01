@@ -4,39 +4,10 @@ import React from "react";
 import { BookOpen, Swords, Shield, Crown, Play, ChevronRight, Lock } from "lucide-react";
 import { AdUnit } from "@/components/ui/AdUnit";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { studiesData } from "@/lib/data/studies";
 
-const chapters = [
-  {
-    id: 1,
-    title: "Basic Principles",
-    description: "Master the center, develop your pieces, and ensure king safety. The foundation of every grandmaster.",
-    icon: Shield,
-    color: "text-blue-500",
-    bg: "bg-blue-500/10",
-    modules: 5,
-    isLocked: false,
-  },
-  {
-    id: 2,
-    title: "Tactical Motifs",
-    description: "Forks, pins, skewers, and discovered attacks. Learn how to win material by force.",
-    icon: Swords,
-    color: "text-orange-500",
-    bg: "bg-orange-500/10",
-    modules: 12,
-    isLocked: false,
-  },
-  {
-    id: 3,
-    title: "Endgame Essentials",
-    description: "The opposition, Lucena position, and Philidor position. Convert winning advantages flawlessly.",
-    icon: Crown,
-    color: "text-purple-500",
-    bg: "bg-purple-500/10",
-    modules: 8,
-    isLocked: true,
-  },
-];
+
 
 export default function StudiesPage() {
   return (
@@ -64,13 +35,15 @@ export default function StudiesPage() {
             <h2 className="text-xl font-bold px-2">Available Courses</h2>
             
             <div className="flex flex-col gap-4">
-              {chapters.map((chapter) => (
-                <div key={chapter.id} className="bg-surface border border-border rounded-[24px] p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center hover:border-white/10 hover:bg-white/[0.02] transition-all group">
+              {studiesData.map((chapter) => (
+                <div key={chapter.id} className="bg-surface border border-border rounded-[24px] p-6 flex flex-col sm:flex-row gap-6 items-start sm:items-center hover:border-white/10 hover:bg-white/[0.02] transition-all group relative overflow-hidden">
                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 ${chapter.bg} ${chapter.color}`}>
-                    <chapter.icon className="w-8 h-8" />
+                    {chapter.icon === "Shield" && <Shield className="w-8 h-8" />}
+                    {chapter.icon === "Swords" && <Swords className="w-8 h-8" />}
+                    {chapter.icon === "Crown" && <Crown className="w-8 h-8" />}
                   </div>
                   
-                  <div className="flex-1">
+                  <div className="flex-1 z-10">
                     <div className="flex items-center gap-3 mb-1">
                       <h3 className="text-lg font-bold text-foreground">{chapter.title}</h3>
                       {chapter.isLocked && (
@@ -81,16 +54,26 @@ export default function StudiesPage() {
                     </div>
                     <p className="text-sm text-secondary-foreground mb-3">{chapter.description}</p>
                     <div className="text-xs font-semibold text-white/40">
-                      {chapter.modules} Interactive Modules
+                      {chapter.steps.length} Interactive Modules
                     </div>
                   </div>
 
-                  <Button 
-                    variant={chapter.isLocked ? "outline" : "default"} 
-                    className={`shrink-0 rounded-xl font-bold h-12 px-6 ${chapter.isLocked ? "bg-transparent border-white/10 text-white/50" : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_15px_rgba(var(--primary),0.3)]"}`}
-                  >
-                    {chapter.isLocked ? "Unlock Premium" : "Start Course"} <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  {chapter.isLocked ? (
+                    <Button 
+                      variant="outline"
+                      className="shrink-0 rounded-xl font-bold h-12 px-6 bg-transparent border-white/10 text-white/50 z-10"
+                    >
+                      Unlock Premium <Lock className="w-4 h-4 ml-2" />
+                    </Button>
+                  ) : (
+                    <Link href={`/studies/${chapter.slug}`} className="z-10 shrink-0">
+                      <Button 
+                        className="w-full rounded-xl font-bold h-12 px-6 bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+                      >
+                        Start Course <ChevronRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>
