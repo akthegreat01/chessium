@@ -11,6 +11,12 @@ export type MoveClassification =
   | "Blunder"
   | "Forced";
 
+export function calculateWinProbability(cp: number): number {
+  // Win probability formula mapping CP to a 0-100 win probability for White
+  // Based on standard chess engine modeling
+  return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
+}
+
 // Engine scores are in centipawns. Positive is good for white.
 // We must convert score relative to the player to move.
 export function classifyMove(
@@ -24,37 +30,33 @@ export function classifyMove(
   
   if (isBook) return "Book";
 
-  // Convert evals so that Positive always means "Advantage for the player who just moved"
-  const multiplier = turn === 'w' ? 1 : -1;
-  const scoreBefore = evalBefore * multiplier;
-  const scoreAfter = evalAfter * multiplier;
+  const wpBefore = calculateWinProbability(evalBefore);
+  const wpAfter = calculateWinProbability(evalAfter);
   
-  // The drop in evaluation caused by the move
-  const evalDrop = scoreBefore - scoreAfter;
+  // Calculate the drop in Win Probability for the player who moved
+  const wpDrop = turn === 'w' ? wpBefore - wpAfter : wpAfter - wpBefore;
 
+  // Best/Brilliant Logic
   if (isBestMove) {
-    if (isCapture && evalDrop < -100 && scoreAfter > 200) {
-      return "Brilliant"; // Crude proxy for brilliant: Sacrifice/Capture that dramatically improves an already winning/equal position
+    // If it's a capture that drops less than 2% WP but leaves the player highly winning, call it brilliant
+    if (isCapture && wpDrop <= 2 && (turn === 'w' ? wpAfter > 80 : wpAfter < 20)) {
+      return "Brilliant";
     }
-    if (evalDrop < -50) return "Great Move";
-    return "Best Move";
+    if (wpDrop <= 0) return "Best Move";
+    return "Great Move";
   }
 
-  // Blunders are severe drops in evaluation (e.g. losing 2 pawns of value)
-  if (evalDrop >= 200) {
-    // If the position was already massively winning, losing 2 pawns might just be a mistake, not a blunder
-    if (scoreBefore > 500 && scoreAfter > 300) return "Mistake"; 
-    return "Blunder";
-  }
+  // Blunders are severe drops in win probability
+  if (wpDrop >= 20) return "Blunder";
 
   // Mistakes are moderate drops
-  if (evalDrop >= 100) return "Mistake";
+  if (wpDrop >= 10) return "Mistake";
 
   // Inaccuracies are minor drops
-  if (evalDrop >= 50) return "Inaccuracy";
+  if (wpDrop >= 5) return "Inaccuracy";
 
-  // If the engine eval only dropped slightly, it's still a good move
-  if (evalDrop >= 20) return "Good";
+  // Small drops are still good/excellent
+  if (wpDrop >= 2) return "Good";
   
   return "Excellent";
 }

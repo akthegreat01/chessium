@@ -20,10 +20,9 @@ export default function EvalGraph({ evaluations, currentIndex, onPointClick }: E
     
     return evaluations.map((cp, idx) => {
       const x = (idx / maxMoves) * 100;
-      // Clamp between -1000 and 1000
-      const clampedCp = Math.max(-1000, Math.min(1000, cp));
-      // Map to 0-100 (50 is 0 CP)
-      const y = 50 - (clampedCp / 1000) * 50; 
+      // Non-linear scaling: Math.atan maps CP heavily near 0 and compresses large values
+      const normalizedCp = (2 / Math.PI) * Math.atan(cp / 300);
+      const y = 50 - normalizedCp * 50; 
       return `${x},${y}`;
     }).join(" ");
   }, [evaluations]);
@@ -43,23 +42,31 @@ export default function EvalGraph({ evaluations, currentIndex, onPointClick }: E
   return (
     <div className="w-full h-16 bg-[#111827] border border-white/5 rounded-xl relative overflow-hidden group">
       <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full">
-        {/* Zero Line */}
-        <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-        
-        {/* Fill Area (White advantage) */}
+        <defs>
+          <clipPath id="topHalf">
+            <rect x="0" y="0" width="100" height="50" />
+          </clipPath>
+          <clipPath id="bottomHalf">
+            <rect x="0" y="50" width="100" height="50" />
+          </clipPath>
+        </defs>
+
+        {/* Top Fill Area (White advantage) */}
         <polygon 
           points={`0,50 ${points} ${evaluations.length > 0 ? (evaluations.length-1)/maxMoves*100 : 0},50`}
-          fill="rgba(226, 232, 240, 0.2)" 
+          fill="#ffffff" 
+          clipPath="url(#topHalf)"
         />
         
-        {/* Line */}
-        <polyline
-          fill="none"
-          stroke="rgba(226, 232, 240, 0.8)"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-          points={points}
+        {/* Bottom Fill Area (Black advantage) */}
+        <polygon 
+          points={`0,50 ${points} ${evaluations.length > 0 ? (evaluations.length-1)/maxMoves*100 : 0},50`}
+          fill="#333333" 
+          clipPath="url(#bottomHalf)"
         />
+        
+        {/* Zero Line */}
+        <line x1="0" y1="50" x2="100" y2="50" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
       </svg>
       
       {/* Current Position Indicator */}

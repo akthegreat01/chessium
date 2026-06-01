@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { ChessEngine, EngineEvaluation } from "@/lib/analyzer/engine";
 import Image from "next/image";
-import { classifyMove, getClassificationColor, getClassificationExplanation, MoveClassification } from "@/lib/analyzer/classification";
+import { classifyMove, getClassificationColor, getClassificationExplanation, MoveClassification, calculateWinProbability } from "@/lib/analyzer/classification";
 import { detectOpening } from "@/lib/analyzer/openings";
 import EvalGraph from "./EvalGraph";
 import { calculateAccuracyFromLosses } from "@/lib/analyzer/accuracy";
@@ -127,6 +127,7 @@ export default function Analyzer() {
       sessionStorage.removeItem('chessium_import_data');
     }
 
+    if (pgnQuery) {
       try {
         const newGame = robustLoadPgn(pgnQuery);
         const moves = newGame.history({ verbose: true });
@@ -366,8 +367,8 @@ export default function Analyzer() {
     const wClass = { brilliant: 0, excellent: 0, best: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0, book: 0 };
     const bClass = { brilliant: 0, excellent: 0, best: 0, good: 0, inaccuracy: 0, mistake: 0, blunder: 0, book: 0 };
 
-    const whiteCPLosses: number[] = [];
-    const blackCPLosses: number[] = [];
+    const whiteWPDrops: number[] = [];
+    const blackWPDrops: number[] = [];
 
     Object.entries(classifications).forEach(([idxStr, cls]) => {
       const idx = parseInt(idxStr);
@@ -385,23 +386,25 @@ export default function Analyzer() {
       else if (clsName === "Blunder" || clsName === "Miss") target.blunder++;
       else if (clsName === "Book") target.book++;
 
-      // Compute centipawn loss for true accuracy formula
+      // Compute Win Probability (WP) loss for true accuracy formula
       const evalBefore = evaluations[idx - 1]?.score || 0;
       const evalAfter = evaluations[idx]?.score || 0;
-      // Both evaluations are now strictly from White's perspective.
-      // If White moved, cp loss = evalBefore - evalAfter
-      // If Black moved, cp loss = evalAfter - evalBefore (because positive is bad for black)
-      const cpLoss = isWhite ? (evalBefore - evalAfter) : (evalAfter - evalBefore);
       
-      if (isWhite) whiteCPLosses.push(Math.max(0, cpLoss));
-      else blackCPLosses.push(Math.max(0, cpLoss));
+      const wpBefore = calculateWinProbability(evalBefore);
+      const wpAfter = calculateWinProbability(evalAfter);
+      
+      // Calculate the drop in Win Probability for the player who moved
+      const wpDrop = isWhite ? (wpBefore - wpAfter) : (wpAfter - wpBefore);
+      
+      if (isWhite) whiteWPDrops.push(Math.max(0, wpDrop));
+      else blackWPDrops.push(Math.max(0, wpDrop));
     });
 
-    const accuracies = calculateAccuracyFromLosses(whiteCPLosses, blackCPLosses);
+    const accuracies = calculateAccuracyFromLosses(whiteWPDrops, blackWPDrops);
 
     return {
-      whiteAccuracy: whiteCPLosses.length > 0 ? accuracies.w.toFixed(1) : '--',
-      blackAccuracy: blackCPLosses.length > 0 ? accuracies.b.toFixed(1) : '--',
+      whiteAccuracy: whiteWPDrops.length > 0 ? accuracies.w.toFixed(1) : '--',
+      blackAccuracy: blackWPDrops.length > 0 ? accuracies.b.toFixed(1) : '--',
       white: wClass,
       black: bClass
     };
@@ -543,16 +546,6 @@ export default function Analyzer() {
       {/* ═══ COLUMN 2: Board Area (dominant center) ═══ */}
       <div className="w-full lg:flex-1 flex flex-col items-center justify-center lg:min-w-0 bg-transparent relative p-4 lg:p-6 z-10 lg:h-full">
         
-        {/* Analysis progress bar */}
-        {isAutoAnalyzing && (
-          <div className="absolute top-0 left-0 right-0 z-20">
-            <div className="h-1 bg-background/50 backdrop-blur-sm">
-              <div className="h-full bg-gradient-to-r from-primary via-indigo-500 to-purple-500 transition-all duration-300 ease-out shadow-[0_0_10px_rgba(var(--primary),0.8)]" style={{ width: `${analyzedPercent}%` }} />
-            </div>
-            <div className="flex justify-between items-center px-6 py-2 text-[11px] font-bold text-white uppercase tracking-wider bg-black/20 backdrop-blur-md">
-              <span className="flex items-center gap-2"><Loader2 className="w-3 h-3 animate-spin text-primary" /> Analyzing game...</span>
-              <span className="text-primary">{analyzedPercent}%</span>
-            </div>
           </div>
         )}
 
@@ -602,7 +595,7 @@ export default function Analyzer() {
             </div>
             
             {/* Chessboard */}
-            <div className="w-full aspect-square bg-black/40">
+            <div className="w-full aspect-square bg-black/40 relative">
               {/* @ts-ignore */}
               <Chessboard 
                 key={`board-${boardKey}`}
@@ -616,6 +609,35 @@ export default function Analyzer() {
                 boardOrientation={boardOrientation}
                 customSquareStyles={moveFrom ? { [moveFrom]: { background: 'rgba(255, 255, 255, 0.2)' } } : {}}
               />
+
+              {/* Circular Analyzing Overlay */}
+              {isAutoAnalyzing && (
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm z-20 flex items-center justify-center transition-opacity duration-500">
+                  <div className="relative flex items-center justify-center">
+                    <svg className="w-24 h-24 transform -rotate-90">
+                      {/* Background circle */}
+                      <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.1)" strokeWidth="6" fill="none" />
+                      {/* Animated progress circle */}
+                      <circle 
+                        cx="48" 
+                        cy="48" 
+                        r="40" 
+                        stroke="currentColor" 
+                        strokeWidth="6" 
+                        fill="none" 
+                        className="text-primary transition-all duration-300 ease-out"
+                        strokeDasharray="251.2"
+                        strokeDashoffset={251.2 - (251.2 * analyzedPercent) / 100}
+                        strokeLinecap="round"
+                        style={{ filter: "drop-shadow(0 0 8px rgba(212,175,55,0.8))" }}
+                      />
+                    </svg>
+                    <span className="absolute text-xl font-black text-white drop-shadow-md tabular-nums tracking-tighter">
+                      {analyzedPercent}%
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bottom player bar */}

@@ -39,21 +39,32 @@ export const createEmptyStats = () => ({
   miss: 0,
 });
 
-export function calculateAccuracyFromLosses(whiteCPLosses: number[], blackCPLosses: number[]): { w: number, b: number } {
-  // Accuracy = 103.1668 * exp(-0.04354 * avgCPLoss) - 3.1669
-  // (Approximation of standard chess accuracy curves)
-  
-  const calc = (losses: number[]) => {
-    if (losses.length === 0) return 100;
-    const avgLoss = losses.reduce((a, b) => a + b, 0) / losses.length;
-    // Cap loss at 1000 for extreme blunders so it doesn't skew average too hard
-    const cappedAvg = Math.min(avgLoss, 1000); 
-    const accuracy = 103.1668 * Math.exp(-0.004354 * cappedAvg) - 3.1669;
-    return Math.max(0, Math.min(100, accuracy));
+export function calculateAccuracyFromLosses(whiteWPLosses: number[], blackWPLosses: number[]): { w: number, b: number } {
+  // Move accuracy = 100 - (WP_loss) * weight (Chess.com maps WP loss heavily)
+  // Overall accuracy is average of move accuracies.
+  const calc = (wpDrops: number[]) => {
+    if (wpDrops.length === 0) return 100;
+    
+    const moveAccuracies = wpDrops.map(drop => {
+      // Small WP drops (<2%) don't hurt much, massive drops (>20%) hurt heavily.
+      // Accuracy per move ranges from 0 to 100.
+      let moveAcc = 100;
+      if (drop <= 0) moveAcc = 100;
+      else if (drop <= 2) moveAcc = 99; // Best/Great
+      else if (drop <= 5) moveAcc = 95 - (drop - 2) * 2; // Good
+      else if (drop <= 10) moveAcc = 85 - (drop - 5) * 3; // Inaccuracy
+      else if (drop <= 20) moveAcc = 70 - (drop - 10) * 4; // Mistake
+      else moveAcc = Math.max(0, 30 - (drop - 20) * 1.5); // Blunder
+
+      return Math.max(0, Math.min(100, moveAcc));
+    });
+
+    const sum = moveAccuracies.reduce((a, b) => a + b, 0);
+    return sum / moveAccuracies.length;
   };
 
   return {
-    w: calc(whiteCPLosses),
-    b: calc(blackCPLosses)
+    w: calc(whiteWPLosses),
+    b: calc(blackWPLosses)
   };
 }
