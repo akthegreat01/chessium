@@ -360,13 +360,32 @@ export default function Analyzer() {
   };
 
   const currentEvalData = evaluations[currentIndex] || { score: 0, mate: null, depth: 0, bestMove: "", pv: "" };
-  const evalScore = currentEvalData.mate ? (currentEvalData.mate > 0 ? 100 : -100) : currentEvalData.score / 100;
+  const displayScore = currentEvalData.score;
+  const clampPercent = calculateWinProbability(displayScore) * 100;
   const isBlackTurn = new Chess(currentFen).turn() === 'b';
-  // Note: the engine already normalizes score to White's perspective, so no flip is needed!
-  const displayScore = evalScore;
-  const winPercent = 50 + (displayScore / 10) * 50;
-  const clampPercent = Math.max(2, Math.min(98, winPercent));
-  
+  const scoreLabelColor = isBlackTurn ? 'text-black' : 'text-white';
+  const scoreBgColor = isBlackTurn ? 'bg-white' : 'bg-[#2b2b2b]';
+
+  // Calculate overlay position for move icon
+  const getSquareOverlayStyle = (square: string, orientation: 'white' | 'black') => {
+    if (!square || square.length !== 2) return null;
+    const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    const fileIndex = files.indexOf(square[0]);
+    const rankIndex = parseInt(square[1]) - 1;
+    
+    if (fileIndex === -1 || isNaN(rankIndex)) return null;
+
+    const x = orientation === 'white' ? fileIndex : 7 - fileIndex;
+    const y = orientation === 'white' ? 7 - rankIndex : rankIndex;
+
+    return {
+      left: `${(x * 100) / 8}%`,
+      top: `${(y * 100) / 8}%`,
+      width: '12.5%',
+      height: '12.5%',
+    };
+  };
+
   const pgnMoves = history.map(m => m.san);
   const opening = detectOpening(pgnMoves);
   const evalArray = history.map((_, i) => evaluations[i] ? evaluations[i].score : 0);
@@ -448,7 +467,7 @@ export default function Analyzer() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-primary/5 blur-[150px] rounded-full pointer-events-none -z-10" />
 
       {/* ═══ COLUMN 1: Navigation Sidebar ═══ */}
-      <div className="hidden xl:flex w-[280px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-r border-white/5 shadow-2xl relative z-10">
+      <div className="hidden xl:flex w-[240px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-r border-white/5 shadow-2xl relative z-10">
         {/* Sidebar Header */}
         <div className="px-6 py-5 border-b border-white/5 relative overflow-hidden group">
           <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -559,7 +578,7 @@ export default function Analyzer() {
       <div className="w-full lg:flex-1 flex flex-col items-center justify-center lg:min-w-0 bg-transparent relative p-4 lg:p-6 z-10 lg:h-full">
 
         {/* Board + Eval Column */}
-        <div className="flex items-stretch gap-0 w-full max-w-[min(calc(100vh-180px),700px)] mx-auto relative group">
+        <div className="flex items-stretch gap-0 w-full max-w-[min(calc(100vh-180px),800px)] mx-auto relative group">
           
           {/* Subtle board glow */}
           <div className="absolute inset-0 bg-primary/5 blur-[50px] rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -616,8 +635,32 @@ export default function Analyzer() {
                 customDarkSquareStyle={boardTheme.darkSquareStyle}
                 customLightSquareStyle={boardTheme.lightSquareStyle}
                 boardOrientation={boardOrientation}
-                customSquareStyles={moveFrom ? { [moveFrom]: { background: 'rgba(255, 255, 255, 0.2)' } } : {}}
+                customSquareStyles={{
+                  ...(moveFrom ? { [moveFrom]: { background: 'rgba(255, 255, 255, 0.2)' } } : {}),
+                  ...(currentIndex >= 0 && history[currentIndex] ? {
+                    [history[currentIndex].from]: { background: 'rgba(255, 255, 0, 0.3)' },
+                    [history[currentIndex].to]: { background: 'rgba(255, 255, 0, 0.3)' }
+                  } : {})
+                }}
               />
+              
+              {/* Classification Icon Overlay */}
+              {currentIndex >= 0 && history[currentIndex] && classifications[currentIndex] && (
+                (() => {
+                  const style = getSquareOverlayStyle(history[currentIndex].to, boardOrientation);
+                  if (!style) return null;
+                  return (
+                    <div 
+                      className="absolute pointer-events-none flex items-start justify-end z-10"
+                      style={style}
+                    >
+                      <div className="w-[30%] h-[30%] min-w-[20px] min-h-[20px] translate-x-1/4 -translate-y-1/4 rounded-full flex items-center justify-center bg-background shadow-[0_2px_10px_rgba(0,0,0,0.5)] border-2 border-background">
+                         <ClassificationIcon classification={classifications[currentIndex].type} className="w-full h-full" />
+                      </div>
+                    </div>
+                  );
+                })()
+              )}
 
               {/* Circular Analyzing Overlay */}
               {isAutoAnalyzing && (

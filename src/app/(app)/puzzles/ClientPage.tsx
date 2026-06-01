@@ -48,17 +48,22 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
 
   useEffect(() => {
     if (status === "playing" && moveIndex < puzzle.moves.length) {
-      if (moveIndex % 2 === 0) {
+      // The USER plays on even indices (0, 2, 4), the BOT plays on odd indices (1, 3, 5)
+      if (moveIndex % 2 !== 0) {
         const timeout = setTimeout(() => {
           const moveString = puzzle.moves[moveIndex];
-          // We can just use the exposed game instance to parse SAN -> from/to
           const tempGame = new Chess(fen);
           const m = tempGame.move(moveString);
           if (m) {
             makeMove({ from: m.from, to: m.to, promotion: m.promotion || 'q' });
-            setMoveIndex(prev => prev + 1);
+            if (moveIndex + 1 === puzzle.moves.length) {
+              setStatus("solved");
+              triggerConfetti();
+            } else {
+              setMoveIndex(prev => prev + 1);
+            }
           }
-        }, 500);
+        }, 600);
         return () => clearTimeout(timeout);
       }
     }
@@ -66,7 +71,8 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
 
   const validateUserMove = (sourceSquare: string, targetSquare: string) => {
     if (status === "solved") return false;
-    if (moveIndex % 2 === 0) return false;
+    // The USER plays on even indices
+    if (moveIndex % 2 !== 0) return false;
 
     if (status === "incorrect") setStatus("playing");
 
@@ -97,7 +103,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
   };
 
   const onSquareClick = (square: string) => {
-    if (status === "solved" || moveIndex % 2 === 0) return;
+    if (status === "solved" || moveIndex % 2 !== 0) return;
 
     if (moveFrom === null) {
       const piece = game.get(square as any);

@@ -318,7 +318,7 @@ export default function PlayVsAI() {
               position={fen}
               onPieceDrop={onDrop}
               onSquareClick={onSquareClick}
-              arePiecesDraggable={hasMatchStarted && !isGameOver && turn === (playerColor === "White" ? "w" : "b")}
+              arePiecesDraggable={hasMatchStarted && !isGameOver && turn === playerColor}
               boardOrientation={isFlipped ? "black" : "white"}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}

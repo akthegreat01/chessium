@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-export type BoardThemeName = "obsidian" | "marble" | "walnut" | "tournament";
+export type BoardThemeName = "obsidian" | "marble" | "walnut" | "tournament" | "chess-com-green" | "classic-wood" | "ocean";
 
 export interface BoardTheme {
   name: BoardThemeName;
@@ -35,6 +35,24 @@ export const themes: Record<BoardThemeName, BoardTheme> = {
     label: "Tournament",
     lightSquareStyle: { backgroundColor: "#e2e8f0" },
     darkSquareStyle: { backgroundColor: "#64748b" },
+  },
+  "chess-com-green": {
+    name: "chess-com-green",
+    label: "Classic Green",
+    lightSquareStyle: { backgroundColor: "#ebecd0" },
+    darkSquareStyle: { backgroundColor: "#739552" },
+  },
+  "classic-wood": {
+    name: "classic-wood",
+    label: "Classic Wood",
+    lightSquareStyle: { backgroundColor: "#f0d9b5" },
+    darkSquareStyle: { backgroundColor: "#b58863" },
+  },
+  ocean: {
+    name: "ocean",
+    label: "Ocean",
+    lightSquareStyle: { backgroundColor: "#eae9d2" },
+    darkSquareStyle: { backgroundColor: "#4b7399" },
   }
 };
 
