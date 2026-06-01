@@ -165,7 +165,6 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
               boardOrientation={playerColor === "White" ? "white" : "black"}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}
-              animationDuration={300}
             />
         </div>
       </div>

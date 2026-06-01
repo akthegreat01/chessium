@@ -618,7 +618,6 @@ export default function Analyzer() {
                 arePiecesDraggable={true}
                 customDarkSquareStyle={boardTheme.darkSquareStyle}
                 customLightSquareStyle={boardTheme.lightSquareStyle}
-                animationDuration={250}
                 boardOrientation={boardOrientation}
                 customSquareStyles={moveFrom ? { [moveFrom]: { background: 'rgba(255, 255, 255, 0.2)' } } : {}}
               />
@@ -651,6 +650,11 @@ export default function Analyzer() {
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* DEBUGGER: Show current fen string to see if React state is actually changing */}
+            <div className="w-full text-[10px] text-white/30 text-center mt-2 font-mono truncate px-4">
+              DEBUG FEN: {currentFen}
             </div>
 
             {/* Bottom player bar */}
