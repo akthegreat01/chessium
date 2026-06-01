@@ -21,8 +21,7 @@ export class ChessEngine {
       this.worker.onmessage = this.onMessage.bind(this);
       this.worker.postMessage('uci');
       // Set optimized options for performance
-      const threads = typeof navigator !== 'undefined' && navigator.hardwareConcurrency ? Math.max(1, Math.min(navigator.hardwareConcurrency - 1, 4)) : 2;
-      this.worker.postMessage(`setoption name Threads value ${threads}`);
+      // Remove threads option to prevent crash with single-threaded WASM builds
       this.worker.postMessage('setoption name Hash value 128');
     }
   }
@@ -39,7 +38,7 @@ export class ChessEngine {
       if (msg.includes('score cp')) {
         const cpMatch = msg.match(/score cp (-?\d+)/);
         if (cpMatch) {
-          const rawScore = parseInt(cpMatch[1], 10);
+          const rawScore = parseInt(cpMatch[1], 10) / 100; // Convert centipawns to pawns
           this.currentEval.score = this.isBlackTurn ? -rawScore : rawScore;
           this.currentEval.mate = null;
         }

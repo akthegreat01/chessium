@@ -161,7 +161,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
           </div>
         </div>
 
-        <div className="w-full bg-background/50">
+        <div className="w-full bg-background/50" key={puzzle.id}>
             {/* @ts-ignore */}
             <Chessboard 
               id="PuzzleBoard"

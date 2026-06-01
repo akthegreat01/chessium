@@ -28,7 +28,7 @@ export default async function LandingPage() {
           {/* Center: Navigation */}
           <nav className="hidden md:flex items-center gap-8">
             <Link href="#features" className="text-[13px] font-medium text-secondary-foreground hover:text-foreground transition-colors duration-200">Features</Link>
-            <Link href="/learn" className="text-[13px] font-medium text-secondary-foreground hover:text-foreground transition-colors duration-200">Learn</Link>
+
             <Link href="#pricing" className="text-[13px] font-medium text-secondary-foreground hover:text-foreground transition-colors duration-200">Pricing</Link>
             <Link href="/blog" className="text-[13px] font-medium text-secondary-foreground hover:text-foreground transition-colors duration-200">About</Link>
           </nav>

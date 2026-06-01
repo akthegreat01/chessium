@@ -11,10 +11,10 @@ export type MoveClassification =
   | "Blunder"
   | "Forced";
 
-export function calculateWinProbability(cp: number): number {
-  // Win probability formula mapping CP to a 0-100 win probability for White
+export function calculateWinProbability(pawns: number): number {
+  // Win probability formula mapping pawns to a 0-100 win probability for White
   // Based on standard chess engine modeling
-  return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
+  return 50 + 50 * (2 / (1 + Math.exp(-0.368208 * pawns)) - 1);
 }
 
 // Engine scores are in centipawns. Positive is good for white.

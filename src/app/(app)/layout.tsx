@@ -48,7 +48,7 @@ export default async function AppLayout({
           <NavItem href="/openings" active={activePath.includes("/openings")} icon={<BookOpen className="w-[18px] h-[18px]" />} label="Openings" />
           <NavItem href="/studies" active={activePath.includes("/studies")} icon={<BookOpen className="w-[18px] h-[18px]" />} label="Studies" />
           <NavItem href="/endgames" active={activePath.includes("/endgames")} icon={<Puzzle className="w-[18px] h-[18px]" />} label="Endgames" />
-          <NavItem href="/learn" active={activePath.includes("/learn")} icon={<GraduationCap className="w-[18px] h-[18px]" />} label="Learn" />
+
 
           <div className="h-px bg-border my-3" />
 
