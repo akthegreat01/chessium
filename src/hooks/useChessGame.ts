@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Chess, Move } from 'chess.js';
 
 export function useChessGame(initialFen: string = 'start') {
