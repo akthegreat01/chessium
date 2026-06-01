@@ -288,7 +288,7 @@ export default function LandingContent({ user }: { user: any }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: "easeOut" as any, delay: 0.3 }}
               >
-                Master Every Move.
+                Master Every Chess Move.
               </motion.h1>
 
               <motion.p

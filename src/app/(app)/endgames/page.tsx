@@ -1,6 +1,17 @@
 import React from "react";
 import { Puzzle } from "lucide-react";
 import { AdUnit } from "@/components/ui/AdUnit";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Chess Endgames Practice | Master Lucena & Philidor Positions",
+  description: "Convert your advantages into wins by mastering essential chess endgame techniques. Practice King and pawn endgames, Rook endgames, and more.",
+  openGraph: {
+    title: "Chess Endgames Practice | Master Endgame Theory",
+    description: "Convert your advantages into wins by mastering essential chess endgame techniques.",
+    url: "https://chessium.in/endgames",
+  }
+};
 
 export default function EndgamesPage() {
   return (

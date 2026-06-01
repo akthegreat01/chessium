@@ -3,6 +3,18 @@ import Link from "next/link";
 import { Bot, LineChart, Puzzle, Play, UserCircle } from "lucide-react";
 import { StaticBoard } from "@/components/chess/StaticBoard";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Play Chess Online | Challenge AI Bots & Improve",
+  description: "Play chess against personalized AI bots ranging from beginner to Grandmaster. Improve your game without the pressure of human opponents.",
+  openGraph: {
+    title: "Play Chess Online | Challenge AI Bots",
+    description: "Play chess against personalized AI bots ranging from beginner to Grandmaster.",
+    url: "https://chessium.in/play",
+  }
+};
+
 export default function PlayMenuPage() {
   return (
     <div className="p-6 lg:p-10 max-w-[1400px] mx-auto min-h-screen flex items-center justify-center">

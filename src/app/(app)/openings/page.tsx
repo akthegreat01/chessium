@@ -4,6 +4,18 @@ import Link from "next/link";
 import { StaticBoard } from "@/components/chess/StaticBoard";
 import { OPENINGS } from "@/lib/data/openings";
 
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Chess Openings Explorer | Learn Grandmaster Openings",
+  description: "Explore the best chess openings. Learn the ideas, lines, and theory behind the Ruy Lopez, Sicilian Defense, Queen's Gambit, and more.",
+  openGraph: {
+    title: "Chess Openings Explorer | Learn Grandmaster Openings",
+    description: "Explore the best chess openings and learn the theory behind them.",
+    url: "https://chessium.in/openings",
+  }
+};
+
 export default function OpeningsPage() {
   return (
     <div className="p-4 md:p-8 max-w-[1200px] mx-auto min-h-screen">

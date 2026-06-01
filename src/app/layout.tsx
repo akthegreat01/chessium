@@ -13,12 +13,49 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Chessium - Premium Chess Analysis",
-  description: "Modern chess platform focused on premium game analysis, speed, and usability.",
+  metadataBase: new URL("https://chessium.in"),
+  title: {
+    default: "Chessium | Free Premium Chess Analysis & Stockfish 18",
+    template: "%s | Chessium"
+  },
+  description: "Chessium is the ultimate modern chess platform. Get free premium game analysis powered by Stockfish 18, play against AI bots, solve tactics puzzles, and learn chess openings.",
+  keywords: [
+    "chess", "chess analysis", "free chess analysis", "stockfish 18", 
+    "play chess online", "chess engine", "chess tactics", "chess puzzles",
+    "chess openings", "chess courses", "analyze chess game", "pgn viewer"
+  ],
+  authors: [{ name: "Chessium" }],
+  creator: "Chessium",
+  publisher: "Chessium",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
   openGraph: {
-    title: "Chessium - Premium Chess Analysis",
-    description: "Modern chess platform focused on premium game analysis, speed, and usability.",
+    title: "Chessium | Free Premium Chess Analysis",
+    description: "Analyze your chess games for free with Stockfish 18, solve puzzles, and learn openings on Chessium's ultra-fast modern platform.",
+    url: "https://chessium.in",
+    siteName: "Chessium",
+    locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Chessium | Free Premium Chess Analysis",
+    description: "Analyze your chess games for free with Stockfish 18, solve puzzles, and learn openings on Chessium.",
+    creator: "@chessium",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   }
 };
 

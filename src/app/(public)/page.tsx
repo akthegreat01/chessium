@@ -3,9 +3,16 @@ import Image from "next/image";
 import { createClient } from "@/utils/supabase/server";
 import LandingContent from "@/components/home/LandingContent";
 
-export const metadata = {
-  title: "Chessium — Master Every Move",
-  description: "AI-powered chess analysis, personalized training, and beautiful gameplay designed for ambitious players.",
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Chessium | Best Free Chess Platform & Stockfish 18 Analysis",
+  description: "Join Chessium to get absolutely free, unlimited Stockfish 18 game analysis. Play against AI, solve tactics, and learn master-level openings.",
+  openGraph: {
+    title: "Chessium | Best Free Chess Platform",
+    description: "Join Chessium to get absolutely free, unlimited Stockfish 18 game analysis.",
+    url: "https://chessium.in",
+  },
 };
 
 export default async function LandingPage() {

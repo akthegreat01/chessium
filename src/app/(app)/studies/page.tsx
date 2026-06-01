@@ -1,6 +1,15 @@
-"use client";
-
 import React from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Interactive Chess Courses | Master Chess Openings & Tactics",
+  description: "Learn chess from scratch or master advanced tactics with our interactive chess courses. Practice opening traps, endgames, and middle game plans for free.",
+  openGraph: {
+    title: "Interactive Chess Courses | Master Chess Openings & Tactics",
+    description: "Learn chess from scratch or master advanced tactics with our interactive chess courses.",
+    url: "https://chessium.in/studies",
+  }
+};
 import { BookOpen, Swords, Shield, Crown, Play, ChevronRight, Lock } from "lucide-react";
 import { AdUnit } from "@/components/ui/AdUnit";
 import { Button } from "@/components/ui/button";
