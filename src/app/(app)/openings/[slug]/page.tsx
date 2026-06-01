@@ -6,6 +6,7 @@ import { ArrowLeft, ChevronRight, ChevronLeft } from "lucide-react";
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false, loading: () => <div className="w-full aspect-square bg-white/5 animate-pulse rounded" /> });
 import { Button } from "@/components/ui/button";
+import { AdUnit } from "@/components/ui/AdUnit";
 
 const OPENING_DATA = {
   title: "The Sicilian Defense",
@@ -78,11 +79,25 @@ export default function OpeningTheoryPage({ params }: { params: { slug: string }
               </Button>
             </div>
 
-            <div className="p-4 bg-background border border-border rounded-lg">
+            <div className="p-4 bg-background border border-border rounded-lg mb-6">
               <p className="text-[14px] text-secondary-foreground leading-relaxed">
                 {currentStep.note}
               </p>
             </div>
+            
+            {/* Rich Content for Ad Placements */}
+            <div className="prose prose-invert max-w-none text-sm text-secondary-foreground leading-relaxed mb-6">
+              <h3 className="text-foreground text-base font-bold mb-2">Historical Context</h3>
+              <p className="mb-4">
+                The Sicilian Defense is one of the oldest and most thoroughly analyzed chess openings in history. It was first recorded in the late 16th century by the Italian chess players Giulio Cesare Polerio and Gioachino Greco. However, it wasn't until the mid-20th century, championed by aggressive world champions like Garry Kasparov and Bobby Fischer, that it cemented its reputation as the ultimate weapon to play for a win with the black pieces.
+              </p>
+              <h3 className="text-foreground text-base font-bold mb-2">Strategic Goals</h3>
+              <p>
+                By playing 1...c5, Black immediately unbalances the pawn structure. Unlike 1...e5, which creates a symmetrical center, the Sicilian introduces dynamic tension. Black voluntarily trades a flank pawn (the c-pawn) for White's central d-pawn, granting Black a structural advantage in the center while giving White a lead in development and attacking chances on the Kingside.
+              </p>
+            </div>
+
+            <AdUnit className="w-full min-h-[250px] rounded-xl" />
           </div>
         </div>
       </div>

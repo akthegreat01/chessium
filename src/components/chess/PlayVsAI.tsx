@@ -318,7 +318,7 @@ export default function PlayVsAI() {
               onPieceDrop={onDrop}
               onSquareClick={onSquareClick}
               arePiecesDraggable={true}
-              boardOrientation={isFlipped ? "black" : "white"}
+              boardOrientation={(playerColor === "w" ? !isFlipped : isFlipped) ? "white" : "black"}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}
               animationDuration={250}

@@ -1,97 +1,95 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Chess, Move } from 'chess.js';
 
-function createGame(initialFen: string): Chess {
-  const g = new Chess();
-  if (initialFen !== 'start') {
-    try {
-      g.load(initialFen);
-    } catch (e) {
-      console.error('Invalid FEN loaded into useChessGame', e);
-    }
-  }
-  return g;
-}
-
 export function useChessGame(initialFen: string = 'start') {
-  // Single Chess instance as source of truth, stored in a ref.
-  // A version counter triggers React re-renders.
-  const gameRef = useRef<Chess | null>(null);
-  if (gameRef.current === null) {
-    gameRef.current = createGame(initialFen);
-  }
+  // We keep a mutable ref for chess.js to calculate moves quickly,
+  // but we EXPLICITLY mirror the needed state into React's state.
+  const gameRef = useRef<Chess>(new Chess());
 
-  const [version, setVersion] = useState(0);
-  const bump = useCallback(() => setVersion(v => v + 1), []);
+  // Explicit React State guaranteed to trigger re-renders
+  const [fen, setFen] = useState<string>('start');
+  const [isGameOver, setIsGameOver] = useState<boolean>(false);
+  const [turn, setTurn] = useState<string>('w');
+  const [history, setHistory] = useState<Move[]>([]);
 
-  // Derived values — recalculate when version changes
-  const game = gameRef.current;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const fen = useMemo(() => game.fen(), [version]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const isGameOver = useMemo(() => game.isGameOver(), [version]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const turn = useMemo(() => game.turn(), [version]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const history = useMemo(() => game.history({ verbose: true }) as Move[], [version]);
+  // Initialize once on mount or when initialFen strictly changes
+  useEffect(() => {
+    try {
+      const g = new Chess();
+      if (initialFen !== 'start') g.load(initialFen);
+      gameRef.current = g;
+      syncState();
+    } catch (e) {
+      console.error("useChessGame: Invalid initial FEN", e);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialFen]);
+
+  const syncState = useCallback(() => {
+    const g = gameRef.current;
+    setFen(g.fen());
+    setIsGameOver(g.isGameOver());
+    setTurn(g.turn());
+    setHistory(g.history({ verbose: true }) as Move[]);
+  }, []);
 
   const makeMove = useCallback((moveDetails: { from: string; to: string; promotion?: string }): Move | null => {
     try {
-      const move = gameRef.current!.move({
+      const move = gameRef.current.move({
         from: moveDetails.from,
         to: moveDetails.to,
         promotion: moveDetails.promotion || 'q',
       });
       if (move) {
-        bump();
+        syncState();
         return move;
       }
     } catch (e) {
       // Invalid move
     }
     return null;
-  }, [bump]);
+  }, [syncState]);
 
   const loadFen = useCallback((newFen: string) => {
     try {
       const g = new Chess();
-      g.load(newFen);
+      if (newFen !== 'start') g.load(newFen);
       gameRef.current = g;
-      bump();
+      syncState();
       return true;
     } catch (e) {
       return false;
     }
-  }, [bump]);
+  }, [syncState]);
 
   const loadPgn = useCallback((pgn: string) => {
     try {
       const g = new Chess();
       g.loadPgn(pgn);
       gameRef.current = g;
-      bump();
+      syncState();
       return true;
     } catch (e) {
       return false;
     }
-  }, [bump]);
+  }, [syncState]);
 
   const resetGame = useCallback(() => {
     gameRef.current = new Chess();
-    bump();
-  }, [bump]);
+    syncState();
+  }, [syncState]);
 
   const undoMove = useCallback((): Move | null => {
-    const move = gameRef.current!.undo();
+    const move = gameRef.current.undo();
     if (move) {
-      bump();
+      syncState();
       return move;
     }
     return null;
-  }, [bump]);
+  }, [syncState]);
 
   return {
-    game,
+    game: gameRef.current,
     fen,
     isGameOver,
     turn,

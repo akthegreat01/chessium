@@ -6,6 +6,7 @@ import { ArrowLeft, ChevronRight, ChevronLeft } from "lucide-react";
 import dynamic from "next/dynamic";
 const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false, loading: () => <div className="w-full aspect-square bg-white/5 animate-pulse rounded" /> });
 import { Button } from "@/components/ui/button";
+import { AdUnit } from "@/components/ui/AdUnit";
 
 const COURSE_DATA = {
   title: "Tactics Fundamentals",
@@ -82,6 +83,14 @@ export default function TheoryCoursePage({ params }: { params: { slug: string } 
               >
                 Next <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
+            </div>
+            
+            <div className="mt-8 pt-8 border-t border-border">
+              <h3 className="text-foreground text-sm font-bold mb-3">Why this matters</h3>
+              <p className="text-[13px] text-secondary-foreground leading-relaxed mb-4">
+                Recognizing these patterns instantly is the primary difference between a beginner and a master. Grandmasters don't calculate every variation; they instinctively feel the geometric relationships between pieces across the board. Drilling these patterns will build your board vision.
+              </p>
+              <AdUnit className="w-full min-h-[250px] rounded-xl" />
             </div>
           </div>
         </div>

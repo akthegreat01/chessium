@@ -42,7 +42,6 @@ export default async function AppLayout({
           <NavItem href="/puzzles" active={activePath.includes("/puzzles")} icon={<Puzzle className="w-[18px] h-[18px]" />} label="Puzzles" />
           
           {/* New Expanded Features */}
-          <NavItem href="/tournaments" active={activePath.includes("/tournaments")} icon={<User className="w-[18px] h-[18px]" />} label="Tournaments" />
           <NavItem href="/vision" active={activePath.includes("/vision")} icon={<Search className="w-[18px] h-[18px]" />} label="Vision" />
           
           <div className="h-px bg-border my-3" />
