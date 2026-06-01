@@ -630,7 +630,7 @@ export default function Analyzer() {
               {/* @ts-ignore */}
               <Chessboard 
                 id="AnalyzerBoard"
-                key={`board-${boardKey}`}
+                key={`board-${boardKey}-${currentFen}`}
                 position={currentFen}
                 onPieceDrop={onDrop}
                 onSquareClick={onSquareClick}

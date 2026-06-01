@@ -164,6 +164,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
             {/* @ts-ignore */}
             <Chessboard 
               id="PuzzleBoard"
+              key={fen}
               position={fen}
               onPieceDrop={onDrop}
               onSquareClick={onSquareClick}
