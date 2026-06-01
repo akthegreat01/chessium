@@ -156,7 +156,11 @@ export default function Analyzer() {
     const tempGame = new Chess();
     if (history.length > 0 && currentIndex >= 0) {
       for (let i = 0; i <= currentIndex; i++) {
-        tempGame.move(history[i]);
+        try {
+          tempGame.move(history[i].san || history[i]);
+        } catch (e) {
+          console.warn("Failed to apply move to tempGame:", history[i]);
+        }
       }
     }
     return tempGame.fen();
@@ -341,7 +345,8 @@ export default function Analyzer() {
   const currentEvalData = evaluations[currentIndex] || { score: 0, mate: null, depth: 0, bestMove: "", pv: "" };
   const evalScore = currentEvalData.mate ? (currentEvalData.mate > 0 ? 100 : -100) : currentEvalData.score / 100;
   const isBlackTurn = new Chess(currentFen).turn() === 'b';
-  const displayScore = isBlackTurn ? -evalScore : evalScore;
+  // Note: the engine already normalizes score to White's perspective, so no flip is needed!
+  const displayScore = evalScore;
   const winPercent = 50 + (displayScore / 10) * 50;
   const clampPercent = Math.max(2, Math.min(98, winPercent));
   
