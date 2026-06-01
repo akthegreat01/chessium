@@ -376,7 +376,7 @@ export default function LandingContent({ user }: { user: any }) {
             {features.map((feature, i) => (
               <motion.div
                 key={feature.title}
-                className="bg-surface/40 backdrop-blur-xl border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.3)] rounded-[24px] p-10 transition-all duration-300 hover:border-white/20 hover:bg-surface/60 hover:shadow-[0_0_60px_rgba(212,175,55,0.08)]"
+                className="bg-surface  border  shadow-[0_0_40px_rgba(0,0,0,0.3)] rounded-[24px] p-10 transition-all duration-300 hover: hover:bg-surface hover:shadow-[0_0_60px_rgba(212,175,55,0.08)]"
                 initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
@@ -540,7 +540,7 @@ export default function LandingContent({ user }: { user: any }) {
       {/* ─── Ad Space ─── */}
       <section className="relative py-10 bg-background border-t border-border">
         <div className="max-w-7xl mx-auto px-6 md:px-8 text-center">
-          <div className="w-full bg-surface/50 border border-border p-6 rounded-[32px] flex flex-col items-center justify-center min-h-[250px] shadow-lg relative overflow-hidden">
+          <div className="w-full bg-surface border border-border p-6 rounded-[32px] flex flex-col items-center justify-center min-h-[250px] shadow-lg relative overflow-hidden">
             <span className="text-[10px] font-bold text-secondary-foreground absolute top-4 left-4 uppercase tracking-widest z-10">Advertisement</span>
             {/* AdSense Unit */}
             <ins className="adsbygoogle"
