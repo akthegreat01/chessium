@@ -140,7 +140,15 @@ export const studiesData: Study[] = [
     icon: "Swords",
     color: "text-red-500",
     bg: "bg-red-500/10",
-    isLocked: true,
-    steps: []
+    isLocked: false,
+    steps: [
+      {
+        fen: "r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4",
+        title: "The Scholar's Mate Threat",
+        content: "A notorious beginner's trap where White threatens checkmate on f7 using the Queen and Bishop. If Black isn't careful, the game is over instantly.",
+        instruction: "White threatens mate in 1 on f7. Find the winning move for White.",
+        expectedMove: "Qxf7#"
+      }
+    ]
   }
 ];

@@ -931,18 +931,12 @@ export default function Analyzer() {
       {/* ═══ COLUMN 4: Ad Rail ═══ */}
       <div className="hidden 2xl:flex w-[280px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-l border-white/5 p-5 gap-5 overflow-y-auto scrollbar-none z-10 relative">
         
-        {/* Chessium Premium Card */}
-        <div className="bg-gradient-to-br from-primary/20 via-indigo-500/10 to-transparent border border-primary/30 rounded-3xl p-6 relative overflow-hidden group hover:shadow-[0_0_20px_rgba(var(--primary),0.1)] transition-all">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-primary/30 transition-colors" />
-          <div className="flex items-center gap-2 mb-4 relative z-10">
-            <Zap className="w-5 h-5 text-primary" />
-            <span className="text-[12px] font-black uppercase tracking-widest text-primary">Premium</span>
+        {/* Ad Unit Replacing Premium Card */}
+        <div className="w-full bg-white/[0.01] border border-white/5 p-4 rounded-[24px]">
+          <div className="flex items-center justify-between mb-2 px-2">
+            <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Sponsored Content</span>
           </div>
-          <h3 className="text-[18px] font-extrabold text-white mb-2 relative z-10 tracking-wide">Chessium Pro</h3>
-          <p className="text-[13px] text-white/70 leading-relaxed mb-5 relative z-10 font-medium">Unlimited analysis, cloud saves, advanced engine settings, and more.</p>
-          <Button size="sm" className="w-full h-10 rounded-full bg-primary text-white hover:bg-primary/90 text-[14px] font-bold shadow-lg hover:shadow-primary/30 transition-all hover:-translate-y-0.5 relative z-10">
-            Upgrade Now
-          </Button>
+          <AdUnit className="w-full min-h-[250px] rounded-2xl" />
         </div>
 
         {/* Sponsored Course Card */}
