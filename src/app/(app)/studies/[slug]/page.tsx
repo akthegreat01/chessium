@@ -24,6 +24,7 @@ export default function StudyViewerPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!slug) return; // Wait for params to be ready
     const found = studiesData.find(s => s.slug === slug);
     if (found) {
       if (found.isLocked) {
