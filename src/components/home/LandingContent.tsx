@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import HeroBoard from "@/components/home/HeroBoard";
 import ChessComConnect from "@/components/home/ChessComConnect";
+import Image from "next/image";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import React, { useRef, useEffect } from "react";
 import {
@@ -267,9 +268,12 @@ export default function LandingContent({ user }: { user: any }) {
                   transformStyle: "preserve-3d" 
                 }}
               >
-                <img 
+                <Image 
                   src="/chessium_logo.png" 
-                  alt="Chessium Logo" 
+                  alt="Chessium Logo"
+                  width={480}
+                  height={480}
+                  priority
                   className="w-full h-full object-contain drop-shadow-2xl" 
                 />
               </motion.div>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { Chess, Move } from "chess.js";
 import dynamic from "next/dynamic";
-const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false });
+const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false, loading: () => <div className="w-full aspect-square bg-white/5 animate-pulse rounded" /> });
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
@@ -30,6 +30,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { ChessEngine, EngineEvaluation } from "@/lib/analyzer/engine";
+import Image from "next/image";
 import { classifyMove, getClassificationColor, getClassificationExplanation, MoveClassification } from "@/lib/analyzer/classification";
 import { detectOpening } from "@/lib/analyzer/openings";
 import EvalGraph from "./EvalGraph";
@@ -508,7 +509,7 @@ export default function Analyzer() {
         <div className="px-4 py-3 border-t border-border">
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-lg bg-background border border-border flex items-center justify-center overflow-hidden">
-              <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover p-0.5 opacity-80" />
+              <Image src="/chessium_logo.png" alt="You" width={28} height={28} className="w-full h-full object-cover p-0.5 opacity-80" />
             </div>
             <div>
               <div className="text-[13px] font-bold text-foreground">{playerName}</div>
@@ -597,7 +598,7 @@ export default function Analyzer() {
             <div className="flex items-center justify-between px-3 py-2 bg-surface border-t border-border">
               <div className="flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded bg-background flex items-center justify-center overflow-hidden">
-                  <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover p-0.5 opacity-80" />
+                  <Image src="/chessium_logo.png" alt="You" width={24} height={24} className="w-full h-full object-cover p-0.5 opacity-80" />
                 </div>
                 <span className="text-[13px] font-bold text-foreground">
                   {(game.header().White && game.header().White !== '?') ? game.header().White : playerName}

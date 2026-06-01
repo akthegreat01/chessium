@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function UpdatePasswordPage() {
   const [loading, setLoading] = useState(false);
@@ -43,7 +44,7 @@ export default function UpdatePasswordPage() {
       <header className="relative z-10 w-full px-8 pt-8">
         <Link href="/home" className="inline-flex items-center gap-2.5 group">
           <div className="w-5 h-5 flex items-center justify-center shrink-0 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
-            <img src="/chessium_logo.png" alt="Chessium" className="w-full h-full object-contain" />
+            <Image src="/chessium_logo.png" alt="Chessium" width={20} height={20} className="w-full h-full object-contain" />
           </div>
           <span className="text-[14px] font-medium text-secondary-foreground group-hover:text-foreground transition-colors duration-300">Chessium</span>
         </Link>
@@ -54,7 +55,7 @@ export default function UpdatePasswordPage() {
         <div className="w-full max-w-[400px] flex flex-col items-center">
           {/* Logo mark */}
           <div className="w-10 h-10 flex items-center justify-center mb-8 opacity-80">
-            <img src="/chessium_logo.png" alt="Chessium" className="w-full h-full object-contain" />
+            <Image src="/chessium_logo.png" alt="Chessium" width={40} height={40} className="w-full h-full object-contain" />
           </div>
 
           {/* Header */}

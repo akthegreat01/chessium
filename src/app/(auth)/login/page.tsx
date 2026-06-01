@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { login } from "@/app/auth/actions";
 import { Loader2 } from "lucide-react";
@@ -25,7 +26,7 @@ export default function LoginPage() {
     <div className="flex flex-col items-center">
       {/* Logo mark */}
       <div className="w-10 h-10 flex items-center justify-center mb-8 opacity-80">
-        <img src="/chessium_logo.png" alt="Chessium" className="w-full h-full object-contain" />
+        <Image src="/chessium_logo.png" alt="Chessium" width={40} height={40} className="w-full h-full object-contain" />
       </div>
 
       {/* Header */}

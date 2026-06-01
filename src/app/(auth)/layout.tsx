@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,7 +14,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <header className="relative z-10 w-full px-8 pt-8">
         <Link href="/" className="inline-flex items-center gap-2.5 group">
           <div className="w-5 h-5 flex items-center justify-center shrink-0 opacity-60 group-hover:opacity-100 transition-opacity duration-300">
-            <img src="/chessium_logo.png" alt="Chessium" className="w-full h-full object-contain" />
+            <Image src="/chessium_logo.png" alt="Chessium" width={20} height={20} className="w-full h-full object-contain" />
           </div>
           <span className="text-[14px] font-medium text-secondary-foreground group-hover:text-foreground transition-colors duration-300">Chessium</span>
         </Link>

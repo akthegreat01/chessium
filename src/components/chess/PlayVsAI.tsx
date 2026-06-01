@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
-const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false });
+const Chessboard = dynamic(() => import("react-chessboard").then(mod => mod.Chessboard), { ssr: false, loading: () => <div className="w-full aspect-square bg-white/5 animate-pulse rounded" /> });
 import { Button } from "@/components/ui/button";
 import { Undo2, Flag, RefreshCw, RefreshCcw, CheckCircle2 } from "lucide-react";
 import { AIPersonality, aiPersonalities } from "@/lib/ai/personalities";
@@ -10,6 +10,7 @@ import { useBoardTheme } from "./ThemeContext";
 import { createClient } from "@/utils/supabase/client";
 import { useChessGame } from "@/hooks/useChessGame";
 import { useChessComStats } from "@/hooks/useChessComStats";
+import Image from "next/image";
 
 export default function PlayVsAI() {
   const { boardTheme } = useBoardTheme();
@@ -328,7 +329,7 @@ export default function PlayVsAI() {
         <div className="w-full bg-surface px-5 py-4 flex items-center justify-between border-t border-border">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 rounded bg-background flex items-center justify-center overflow-hidden shadow-inner">
-              <img src="/chessium_logo.png" alt="You" className="w-full h-full object-cover p-1 opacity-80" />
+              <Image src="/chessium_logo.png" alt="You" width={40} height={40} className="w-full h-full object-cover p-1 opacity-80" />
             </div>
             <div className="flex flex-col">
               <h2 className="text-base font-bold text-foreground">

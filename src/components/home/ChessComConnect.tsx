@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useChessComStats } from "@/hooks/useChessComStats";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { Loader2, Zap, Flame, Target } from "lucide-react";
 
@@ -31,7 +32,7 @@ export default function ChessComConnect() {
       >
         <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 flex items-center justify-center gap-3">
-            <img src="/chesscom_logo.png" alt="Chess.com" className="w-8 h-8 rounded bg-[#829969] p-1" onError={(e) => e.currentTarget.style.display = 'none'} />
+            <Image src="/chesscom_logo.png" alt="Chess.com" width={32} height={32} className="w-8 h-8 rounded bg-[#829969] p-1" />
             Connect Chess.com
           </h2>
           <p className="text-secondary-foreground">
