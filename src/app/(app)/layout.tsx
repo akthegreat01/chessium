@@ -20,28 +20,27 @@ export default async function AppLayout({
   const activePath = headersList.get("x-invoke-path") || "/home";
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
-      {/* Sidebar */}
-      <aside className="w-16 md:w-[220px] border-r border-border flex flex-col bg-surface shrink-0">
+    <div className="flex h-[100dvh] bg-background text-foreground overflow-hidden">
+      {/* Sidebar - Hidden on mobile, visible on tablet/desktop */}
+      <aside className="hidden md:flex w-16 lg:w-[220px] border-r border-border flex-col bg-surface shrink-0 z-20">
         
         {/* Brand */}
-        <div className="h-14 flex items-center justify-center md:justify-start px-5 border-b border-border shrink-0">
+        <div className="h-14 flex items-center justify-center lg:justify-start px-5 border-b border-border shrink-0">
           <Link href="/home" className="flex items-center gap-2.5 opacity-80 hover:opacity-100 transition-opacity">
             <div className="w-5 h-5 flex items-center justify-center shrink-0">
               <Image src="/chessium_logo.png" alt="Chessium" width={20} height={20} className="w-full h-full object-contain" />
             </div>
-            <span className="font-bold tracking-[0.2em] uppercase hidden md:block text-[11px]">Chessium</span>
+            <span className="font-bold tracking-[0.2em] uppercase hidden lg:block text-[11px]">Chessium</span>
           </Link>
         </div>
         
         {/* Main Nav */}
-        <nav className="flex-1 flex flex-col gap-0.5 p-3 overflow-y-auto">
+        <nav className="flex-1 flex flex-col gap-0.5 p-3 overflow-y-auto scrollbar-none">
           <NavItem href="/home" active={activePath === "/home"} icon={<LayoutDashboard className="w-[18px] h-[18px]" />} label="Home" />
           <NavItem href="/analyze" active={activePath.includes("/analyze")} icon={<Search className="w-[18px] h-[18px]" />} label="Analyze" />
           <NavItem href="/play/ai" active={activePath.includes("/play")} icon={<Bot className="w-[18px] h-[18px]" />} label="Play vs AI" />
           <NavItem href="/puzzles" active={activePath.includes("/puzzles")} icon={<Puzzle className="w-[18px] h-[18px]" />} label="Puzzles" />
           
-          {/* New Expanded Features */}
           <NavItem href="/vision" active={activePath.includes("/vision")} icon={<Search className="w-[18px] h-[18px]" />} label="Vision" />
           
           <div className="h-px bg-border my-3" />
@@ -58,7 +57,7 @@ export default async function AppLayout({
           <ThemeSelector />
           <NavItem href="/settings" active={activePath === "/settings"} icon={<Settings className="w-[18px] h-[18px]" />} label="Settings" />
           
-          <div className="mt-auto pt-6 px-2 hidden md:block">
+          <div className="mt-auto pt-6 px-2 hidden lg:block">
             <AdUnit className="w-full h-[120px] rounded-xl bg-white/[0.02] border border-border" />
           </div>
         </nav>
@@ -67,26 +66,35 @@ export default async function AppLayout({
         <div className="p-3 border-t border-border shrink-0">
           {user ? (
             <form action={signout} className="w-full">
-              <Button variant="ghost" type="submit" className="w-full justify-center md:justify-start gap-2.5 hover:bg-white/5 text-secondary-foreground hover:text-foreground h-9 rounded-lg text-[13px] font-medium transition-all px-3">
+              <Button variant="ghost" type="submit" className="w-full justify-center lg:justify-start gap-2.5 hover:bg-white/5 text-secondary-foreground hover:text-foreground h-9 rounded-lg text-[13px] font-medium transition-all px-3">
                 <LogOut className="w-[18px] h-[18px]" />
-                <span className="hidden md:inline-block">Sign Out</span>
+                <span className="hidden lg:inline-block">Sign Out</span>
               </Button>
             </form>
           ) : (
             <Link href="/login">
-              <Button className="w-full justify-center md:justify-start gap-2.5 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-lg text-[13px] font-semibold transition-all px-3">
+              <Button className="w-full justify-center lg:justify-start gap-2.5 bg-primary text-primary-foreground hover:bg-primary/90 h-9 rounded-lg text-[13px] font-semibold transition-all px-3">
                 <LogIn className="w-[18px] h-[18px]" />
-                <span className="hidden md:inline-block">Sign In</span>
+                <span className="hidden lg:inline-block">Sign In</span>
               </Button>
             </Link>
           )}
         </div>
       </aside>
 
-      {/* Main */}
-      <main className="flex-1 overflow-y-auto bg-background">
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto bg-background pb-16 md:pb-0 relative z-10">
         {children}
       </main>
+
+      {/* Bottom Navigation Bar - Visible only on mobile */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface/90 backdrop-blur-xl border-t border-border flex items-center justify-around z-50 px-2 shadow-[0_-10px_40px_rgba(0,0,0,0.3)]">
+        <BottomNavItem href="/home" active={activePath === "/home"} icon={<LayoutDashboard className="w-5 h-5" />} label="Home" />
+        <BottomNavItem href="/play/ai" active={activePath.includes("/play")} icon={<Bot className="w-5 h-5" />} label="Play" />
+        <BottomNavItem href="/analyze" active={activePath.includes("/analyze")} icon={<Search className="w-5 h-5" />} label="Analyze" />
+        <BottomNavItem href="/puzzles" active={activePath.includes("/puzzles")} icon={<Puzzle className="w-5 h-5" />} label="Puzzles" />
+        <BottomNavItem href="/profile" active={activePath === "/profile"} icon={<User className="w-5 h-5" />} label="Profile" />
+      </nav>
     </div>
   );
 }
@@ -96,7 +104,7 @@ function NavItem({ href, icon, label, active = false }: { href: string; icon: Re
     <Link href={href}>
       <Button 
         variant="ghost" 
-        className={`w-full justify-center md:justify-start gap-2.5 h-9 rounded-lg px-3 text-[13px] transition-all
+        className={`w-full justify-center lg:justify-start gap-2.5 h-9 rounded-lg px-3 text-[13px] transition-all
           ${active 
             ? "bg-white/10 text-foreground font-semibold" 
             : "hover:bg-white/5 text-secondary-foreground hover:text-foreground font-medium"
@@ -104,8 +112,21 @@ function NavItem({ href, icon, label, active = false }: { href: string; icon: Re
         `}
       >
         {icon}
-        <span className="hidden md:inline-block">{label}</span>
+        <span className="hidden lg:inline-block">{label}</span>
       </Button>
+    </Link>
+  );
+}
+
+function BottomNavItem({ href, icon, label, active = false }: { href: string; icon: React.ReactNode; label: string; active?: boolean }) {
+  return (
+    <Link href={href} className="flex-1 flex flex-col items-center justify-center gap-1 h-full py-1 tap-highlight-transparent">
+      <div className={`p-1.5 rounded-xl transition-all duration-300 ${active ? 'bg-primary/20 text-primary scale-110' : 'text-secondary-foreground/70 hover:text-foreground'}`}>
+        {icon}
+      </div>
+      <span className={`text-[10px] font-bold tracking-wide transition-colors ${active ? 'text-primary' : 'text-secondary-foreground/70'}`}>
+        {label}
+      </span>
     </Link>
   );
 }

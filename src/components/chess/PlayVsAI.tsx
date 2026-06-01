@@ -213,7 +213,7 @@ export default function PlayVsAI() {
 
   if (!hasMatchStarted) {
     return (
-      <div className="flex flex-col h-full w-full max-w-[1000px] mx-auto gap-8 px-6 py-12 bg-background items-center justify-center min-h-[calc(100vh-80px)]">
+      <div className="flex flex-col h-full w-full max-w-[1000px] mx-auto gap-6 md:gap-8 px-4 md:px-6 py-8 md:py-12 bg-background items-center justify-center min-h-[calc(100vh-80px)]">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground text-center">Choose Your Opponent</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">

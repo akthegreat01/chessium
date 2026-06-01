@@ -56,56 +56,47 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="p-6 md:p-8 max-w-[1200px] mx-auto text-foreground min-h-screen">
+    <div className="p-4 md:p-8 max-w-[1200px] mx-auto text-foreground min-h-screen relative">
       
+      {/* Abstract Background Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-primary/10 blur-[120px] rounded-full pointer-events-none -z-10" />
+
       {/* Welcome Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight mb-1">Welcome back,</h1>
-        <p className="text-secondary-foreground text-[15px]">{name}</p>
+      <div className="mb-10 relative">
+        <h1 className="text-3xl font-extrabold tracking-tight mb-2 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">Welcome back,</h1>
+        <p className="text-secondary-foreground/80 font-medium tracking-wide">{name}</p>
       </div>
 
       {!chesscomUsername && user && <ChessComConnect />}
 
       {/* Rating Cards Row */}
       {user ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-surface border border-border rounded-xl p-5">
-            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Rating</div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">{rapidRating}</span>
-              <span className="text-[12px] font-semibold text-secondary-foreground flex items-center gap-0.5">
-                Rapid
-              </span>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5 mb-10">
+          {[
+            { label: "Rapid Rating", value: rapidRating, icon: "🔥", color: "from-blue-500/20 to-blue-600/5", border: "group-hover:border-blue-500/50" },
+            { label: "Blitz Rating", value: blitzRating, icon: "⚡", color: "from-purple-500/20 to-purple-600/5", border: "group-hover:border-purple-500/50" },
+            { label: "Accuracy", value: `${avgAcc.toFixed(1)}%`, icon: "🎯", color: "from-emerald-500/20 to-emerald-600/5", border: "group-hover:border-emerald-500/50" },
+            { label: "Analyzed Games", value: totalAnalyzed, icon: "📈", color: "from-orange-500/20 to-orange-600/5", border: "group-hover:border-orange-500/50" },
+          ].map((stat, i) => (
+            <div key={i} className={`group relative bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-5 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/50 ${stat.border}`}>
+              <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r ${stat.color} opacity-0 group-hover:opacity-100 transition-opacity`} />
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[12px] uppercase tracking-wider text-secondary-foreground/70 font-semibold">{stat.label}</div>
+                <div className="text-lg opacity-80">{stat.icon}</div>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-bold tracking-tight text-white group-hover:text-primary transition-colors duration-300">{stat.value}</span>
+              </div>
             </div>
-          </div>
-          <div className="bg-surface border border-border rounded-xl p-5">
-            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Rating</div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">{blitzRating}</span>
-              <span className="text-[12px] font-semibold text-secondary-foreground flex items-center gap-0.5">
-                Blitz
-              </span>
-            </div>
-          </div>
-          <div className="bg-surface border border-border rounded-xl p-5">
-            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Accuracy</div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">{avgAcc.toFixed(1)}%</span>
-            </div>
-          </div>
-          <div className="bg-surface border border-border rounded-xl p-5">
-            <div className="text-[12px] text-secondary-foreground font-medium mb-2">Games</div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl font-bold tracking-tight">{totalAnalyzed}</span>
-            </div>
-          </div>
+          ))}
         </div>
       ) : (
-        <div className="bg-surface border border-border rounded-xl p-8 mb-8 flex flex-col items-center justify-center text-center">
-          <h2 className="text-[16px] font-semibold mb-2">Unlock Your Dashboard</h2>
-          <p className="text-[13px] text-secondary-foreground mb-4">Create a free account to track your ratings, accuracy, and play history.</p>
+        <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-10 mb-10 flex flex-col items-center justify-center text-center relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+          <h2 className="text-xl font-bold mb-3 text-white">Unlock Your Dashboard</h2>
+          <p className="text-[14px] text-secondary-foreground/80 mb-6 max-w-sm">Create a free account to automatically track your ratings, accuracy, and full play history.</p>
           <Link href="/signup">
-            <Button className="bg-foreground text-background hover:bg-foreground/90 h-9 px-6 text-[13px] font-medium rounded-lg">
+            <Button className="bg-white text-black hover:bg-white/90 h-10 px-8 text-[14px] font-bold rounded-full shadow-lg shadow-white/10 hover:shadow-white/20 hover:scale-105 transition-all">
               Sign Up Free
             </Button>
           </Link>
@@ -113,18 +104,18 @@ export default async function HomePage() {
       )}
 
       {/* Action Buttons */}
-      <div className="flex gap-3 mb-8">
-        <div className="flex-1">
+      <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-10">
+        <div className="flex-1 w-full">
           <DashboardImportButton />
         </div>
         <Link href="/analyze" className="flex-1">
-          <Button variant="outline" className="w-full h-11 rounded-xl border-border bg-surface hover:bg-white/[0.06] text-foreground font-semibold text-[13px] gap-2 transition-all">
+          <Button variant="outline" className="w-full h-12 rounded-full border-white/10 bg-white/[0.03] backdrop-blur-md hover:bg-white/[0.08] text-white font-bold tracking-wide text-[14px] gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg">
             <Search className="w-4 h-4" />
             Analyze Game
           </Button>
         </Link>
         <Link href="/play/ai" className="flex-1">
-          <Button className="w-full h-11 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-[13px] gap-2 transition-all">
+          <Button className="w-full h-12 rounded-full bg-gradient-to-r from-primary to-indigo-600 text-white hover:opacity-90 font-bold tracking-wide text-[14px] gap-2 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20 border border-primary/50">
             <Bot className="w-4 h-4" />
             Play vs AI
           </Button>
@@ -132,49 +123,50 @@ export default async function HomePage() {
       </div>
 
       {/* Main Content: Two Columns */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-8">
         
         {/* Left Column */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
 
           {/* Accuracy Trend Chart */}
-          <div className="bg-surface border border-border rounded-xl p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-[14px] font-semibold">Accuracy Trend</h2>
-              <span className="text-[11px] text-secondary-foreground">Last 30 games</span>
+          <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-7 relative overflow-hidden group hover:border-white/20 transition-colors">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] pointer-events-none" />
+            <div className="flex justify-between items-center mb-8 relative z-10">
+              <h2 className="text-[16px] font-bold tracking-wide text-white">Accuracy Trend</h2>
+              <span className="text-[12px] uppercase tracking-wider font-semibold text-secondary-foreground/60">Last 30 games</span>
             </div>
-            <div className="h-[220px]">
+            <div className="h-[240px] relative z-10">
               <PerformanceChart data={perfData} />
             </div>
           </div>
 
           {/* Recent Analyses */}
-          <div className="bg-surface border border-border rounded-xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-[14px] font-semibold">Recent Analyses</h2>
-              <Link href="/saved-analyses" className="text-[12px] text-secondary-foreground hover:text-foreground transition-colors">
-                View all
+          <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-7 hover:border-white/20 transition-colors">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-[16px] font-bold tracking-wide text-white">Recent Analyses</h2>
+              <Link href="/saved-analyses" className="text-[13px] font-semibold text-primary hover:text-primary/80 transition-colors flex items-center gap-1 group/link">
+                View all <ChevronRight className="w-3 h-3 group-hover/link:translate-x-0.5 transition-transform" />
               </Link>
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col gap-2">
               {analyses.slice(0, 5).map((a: any) => (
-                <div key={a.id} className="flex items-center justify-between py-3 border-b border-border last:border-0 hover:bg-white/[0.02] -mx-3 px-3 rounded-lg transition-colors cursor-pointer group">
+                <div key={a.id} className="flex items-center justify-between p-4 bg-white/[0.02] hover:bg-white/[0.06] border border-transparent hover:border-white/10 rounded-xl transition-all cursor-pointer group">
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-medium truncate">{a.opening_name || "Unknown Opening"}</div>
-                    <div className="text-[11px] text-secondary-foreground mt-0.5">
+                    <div className="text-[14px] font-semibold text-white/90 truncate group-hover:text-white transition-colors">{a.opening_name || "Unknown Opening"}</div>
+                    <div className="text-[12px] text-secondary-foreground/70 mt-1 font-medium">
                       {new Date(a.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-[12px] font-mono text-secondary-foreground">
+                  <div className="flex items-center gap-5">
+                    <div className="flex items-center justify-center w-12 h-8 rounded-md bg-white/5 border border-white/10 text-[13px] font-mono font-bold text-white group-hover:border-primary/30 group-hover:text-primary transition-all">
                       {parseFloat(a.accuracy_w).toFixed(0)}%
-                    </span>
-                    <ChevronRight className="w-4 h-4 text-secondary-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-secondary-foreground/40 group-hover:text-white group-hover:translate-x-1 transition-all" />
                   </div>
                 </div>
               ))}
               {analyses.length === 0 && (
-                <div className="text-[13px] text-secondary-foreground py-6 text-center">
+                <div className="text-[14px] text-secondary-foreground/60 py-10 text-center bg-white/[0.02] rounded-xl border border-dashed border-white/10">
                   No games analyzed yet. Import a game to get started.
                 </div>
               )}
@@ -183,29 +175,32 @@ export default async function HomePage() {
         </div>
 
         {/* Right Column */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
 
           {/* Daily Puzzle */}
-          <div className="bg-surface border border-border rounded-xl p-6">
-            <div className="flex justify-between items-center mb-4">
+          <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-7 relative overflow-hidden group hover:border-white/20 transition-colors">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-orange-500/10 rounded-full blur-[60px] pointer-events-none" />
+            <div className="flex justify-between items-center mb-6 relative z-10">
               <div className="flex items-center gap-2">
-                <Puzzle className="w-4 h-4 text-primary" />
-                <h2 className="text-[14px] font-semibold">Today&apos;s Puzzle</h2>
+                <div className="p-1.5 rounded-md bg-orange-500/20 text-orange-400">
+                  <Puzzle className="w-4 h-4" />
+                </div>
+                <h2 className="text-[16px] font-bold tracking-wide text-white">Daily Puzzle</h2>
               </div>
-              <span className="text-[11px] text-secondary-foreground">{todayDate}</span>
+              <span className="text-[12px] uppercase tracking-wider font-semibold text-secondary-foreground/60">{todayDate}</span>
             </div>
-            <div className="w-full aspect-square rounded-lg overflow-hidden border border-border mb-4">
+            <div className="w-full aspect-square rounded-xl overflow-hidden border border-white/10 mb-5 relative z-10 shadow-2xl shadow-black/40">
               <StaticBoard position="3r3k/2q3pp/8/8/3Q4/2P5/5PPP/3R2K1 w - - 0 1" />
             </div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-6 relative z-10 bg-white/5 p-3 rounded-lg border border-white/5">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-white rounded-sm border border-border" />
-                <span className="text-[13px] font-medium">White to move</span>
+                <div className="w-3 h-3 bg-white rounded-sm shadow-sm" />
+                <span className="text-[13px] font-bold text-white/90">White to move</span>
               </div>
-              <span className="text-[12px] text-secondary-foreground">Mate in 2</span>
+              <span className="text-[13px] font-bold text-orange-400">Mate in 2</span>
             </div>
-            <Link href="/puzzles">
-              <Button className="w-full h-10 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-[13px]">
+            <Link href="/puzzles" className="relative z-10 block">
+              <Button className="w-full h-11 rounded-full bg-white text-black hover:bg-white/90 font-bold text-[14px] shadow-lg hover:shadow-white/20 transition-all hover:-translate-y-0.5">
                 Solve Puzzle
               </Button>
             </Link>
@@ -213,15 +208,19 @@ export default async function HomePage() {
 
           {/* Streak & Puzzle Rating */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-surface border border-border rounded-xl p-5 text-center">
-              <Flame className="w-5 h-5 text-orange-400 mx-auto mb-2" />
-              <div className="text-[11px] text-secondary-foreground font-medium mb-1">Current Streak</div>
-              <div className="text-2xl font-bold">{profile?.puzzle_streak || 0}</div>
+            <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center hover:bg-white/[0.04] transition-colors group">
+              <div className="w-10 h-10 mx-auto bg-orange-500/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <Flame className="w-5 h-5 text-orange-400" />
+              </div>
+              <div className="text-[12px] uppercase tracking-wider text-secondary-foreground/70 font-semibold mb-1">Streak</div>
+              <div className="text-3xl font-extrabold text-white">{profile?.puzzle_streak || 0}</div>
             </div>
-            <div className="bg-surface border border-border rounded-xl p-5 text-center">
-              <Puzzle className="w-5 h-5 text-primary mx-auto mb-2" />
-              <div className="text-[11px] text-secondary-foreground font-medium mb-1">Puzzle Rating</div>
-              <div className="text-2xl font-bold">{puzzleRating}</div>
+            <div className="bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-2xl p-6 text-center hover:bg-white/[0.04] transition-colors group">
+              <div className="w-10 h-10 mx-auto bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                <Puzzle className="w-5 h-5 text-primary" />
+              </div>
+              <div className="text-[12px] uppercase tracking-wider text-secondary-foreground/70 font-semibold mb-1">Rating</div>
+              <div className="text-3xl font-extrabold text-white">{puzzleRating}</div>
             </div>
           </div>
 

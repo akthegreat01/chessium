@@ -411,21 +411,25 @@ export default function Analyzer() {
   ];
 
   return (
-    <div className="flex w-full h-[calc(100vh-64px)] overflow-hidden bg-background">
+    <div className="flex flex-col lg:flex-row w-full min-h-full lg:h-full lg:overflow-hidden bg-background relative pb-8 lg:pb-0">
       
+      {/* Abstract Background Glow for Analyzer */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-primary/5 blur-[150px] rounded-full pointer-events-none -z-10" />
+
       {/* ═══ COLUMN 1: Navigation Sidebar ═══ */}
-      <div className="hidden xl:flex w-[260px] shrink-0 flex-col bg-surface border-r border-border">
+      <div className="hidden xl:flex w-[280px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-r border-white/5 shadow-2xl relative z-10">
         {/* Sidebar Header */}
-        <div className="px-5 py-4 border-b border-border">
-          <h2 className="text-[15px] font-bold text-foreground tracking-tight">Analysis Board</h2>
-          <p className="text-[11px] text-secondary-foreground mt-0.5">Engine-powered game review</p>
+        <div className="px-6 py-5 border-b border-white/5 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <h2 className="text-[16px] font-extrabold text-white tracking-wide relative z-10">Analysis Board</h2>
+          <p className="text-[12px] text-secondary-foreground/70 mt-1 font-medium relative z-10">Engine-powered game review</p>
         </div>
 
         {/* Actions */}
-        <div className="px-4 py-3 flex flex-col gap-2 border-b border-border">
+        <div className="px-5 py-4 flex flex-col gap-3 border-b border-white/5">
           <ImportModal onImport={handleImport}>
-            <Button variant="outline" size="sm" className="w-full justify-start h-9 rounded-lg bg-background border-border hover:bg-white/5 text-foreground font-medium gap-2.5 text-[13px]">
-              <Upload className="w-3.5 h-3.5 text-primary" /> Import Game
+            <Button variant="outline" size="sm" className="w-full justify-start h-10 rounded-xl bg-white/[0.03] border-white/10 hover:bg-white/[0.08] text-white font-semibold gap-3 text-[13px] hover:-translate-y-0.5 transition-all shadow-sm">
+              <Upload className="w-4 h-4 text-primary" /> Import Game
             </Button>
           </ImportModal>
           <Button 
@@ -433,36 +437,38 @@ export default function Analyzer() {
             size="sm" 
             onClick={handleSave}
             disabled={isSaving || history.length === 0}
-            className="w-full justify-start h-9 rounded-lg bg-background border-border hover:bg-white/5 text-foreground font-medium gap-2.5 text-[13px]"
+            className="w-full justify-start h-10 rounded-xl bg-white/[0.03] border-white/10 hover:bg-white/[0.08] text-white font-semibold gap-3 text-[13px] hover:-translate-y-0.5 transition-all shadow-sm disabled:opacity-50 disabled:hover:translate-y-0"
           >
-            {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5 text-primary" />}
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-primary" /> : <Save className="w-4 h-4 text-primary" />}
             Save Analysis
           </Button>
         </div>
 
         {/* Engine Info Card */}
-        <div className="px-4 py-3 border-b border-border">
-          <div className="bg-background rounded-xl p-3.5 border border-border">
-            <div className="flex items-center justify-between mb-3">
+        <div className="px-5 py-4 border-b border-white/5">
+          <div className="bg-white/[0.02] rounded-2xl p-4 border border-white/10 shadow-inner group hover:border-white/20 transition-colors">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Cpu className="w-3.5 h-3.5 text-primary" />
-                <span className="text-[11px] font-bold uppercase tracking-wider text-secondary-foreground">Stockfish</span>
+                <div className="p-1.5 bg-primary/10 rounded-md">
+                  <Cpu className="w-4 h-4 text-primary" />
+                </div>
+                <span className="text-[12px] font-bold uppercase tracking-wider text-white/90">Stockfish</span>
               </div>
               <button 
                 onClick={() => setEngineEnabled(!engineEnabled)}
-                className={`w-8 h-[18px] rounded-full relative transition-colors ${engineEnabled ? 'bg-primary' : 'bg-border'}`}
+                className={`w-8 h-[18px] rounded-full relative transition-colors ${engineEnabled ? 'bg-primary' : 'bg-white/10'}`}
               >
                 <div className={`w-3.5 h-3.5 rounded-full bg-white absolute top-[2px] transition-all ${engineEnabled ? 'left-[17px]' : 'left-[2px]'}`} />
               </button>
             </div>
-            <div className="text-[28px] font-bold text-foreground tracking-tighter leading-none mb-1">
+            <div className="text-[32px] font-extrabold text-white tracking-tighter leading-none mb-2">
               {formatEval(currentEvalData)}
             </div>
-            <div className="flex items-center gap-3 text-[10px] text-secondary-foreground mt-2">
+            <div className="flex items-center gap-3 text-[11px] text-secondary-foreground/60 font-semibold uppercase tracking-wider mt-3">
               <span>Depth {currentEvalData.depth}</span>
               {currentEvalData.bestMove && (
                 <>
-                  <span className="w-px h-3 bg-border" />
+                  <span className="w-1 h-1 rounded-full bg-white/20" />
                   <span>Best: <span className="text-primary font-bold">{currentEvalData.bestMove}</span></span>
                 </>
               )}
@@ -471,31 +477,33 @@ export default function Analyzer() {
         </div>
 
         {/* Opening Info */}
-        <div className="px-4 py-3 border-b border-border">
-          <div className="flex items-center gap-2 mb-1.5">
-            <BookOpen className="w-3 h-3 text-primary/60" />
-            <span className="text-[10px] font-bold uppercase tracking-wider text-secondary-foreground">Opening</span>
+        <div className="px-5 py-4 border-b border-white/5">
+          <div className="flex items-center gap-2 mb-2">
+            <BookOpen className="w-4 h-4 text-primary/60" />
+            <span className="text-[11px] font-bold uppercase tracking-wider text-secondary-foreground/70">Opening</span>
           </div>
-          <p className="text-[13px] font-semibold text-foreground leading-snug">{opening.name}</p>
-          <p className="text-[11px] font-mono text-secondary-foreground mt-0.5">{opening.eco}</p>
+          <p className="text-[14px] font-bold text-white leading-snug">{opening.name}</p>
+          <p className="text-[12px] font-mono font-medium text-secondary-foreground/50 mt-1">{opening.eco}</p>
         </div>
 
         {/* Move Classification at current position */}
         {currentClassification && (
-          <div className="px-4 py-3 border-b border-border">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="w-3 h-3 text-primary/60" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-secondary-foreground">Current Move</span>
+          <div className="px-5 py-4 border-b border-white/5 bg-white/[0.01]">
+            <div className="flex items-center gap-2 mb-3">
+              <Target className="w-4 h-4 text-primary/60" />
+              <span className="text-[11px] font-bold uppercase tracking-wider text-secondary-foreground/70">Current Move</span>
             </div>
-            <div className="flex items-center gap-2">
-              <ClassificationIcon cls={typeof currentClassification === 'string' ? currentClassification : currentClassification?.classification} className="w-5 h-5 text-[9px]" />
-              <span className="text-[13px] font-bold text-foreground">
-                {typeof currentClassification === 'string' ? currentClassification : currentClassification?.classification}
-              </span>
+            <div className="flex items-center gap-3 bg-white/[0.02] p-3 rounded-xl border border-white/5 shadow-sm">
+              <ClassificationIcon cls={typeof currentClassification === 'string' ? currentClassification : currentClassification?.classification} className="w-6 h-6 text-[10px]" />
+              <div className="flex flex-col">
+                <span className="text-[14px] font-extrabold text-white">
+                  {typeof currentClassification === 'string' ? currentClassification : currentClassification?.classification}
+                </span>
+                <span className="text-[11px] text-secondary-foreground/70 font-medium">
+                  {getClassificationExplanation(typeof currentClassification === 'string' ? currentClassification : currentClassification?.classification)}
+                </span>
+              </div>
             </div>
-            <p className="text-[11px] text-secondary-foreground mt-1.5 leading-relaxed">
-              {getClassificationExplanation(typeof currentClassification === 'string' ? currentClassification : currentClassification?.classification)}
-            </p>
           </div>
         )}
 
@@ -503,51 +511,54 @@ export default function Analyzer() {
         <div className="flex-1" />
 
         {/* Player Info */}
-        <div className="px-4 py-3 border-t border-border">
-          <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-background border border-border flex items-center justify-center overflow-hidden">
-              <Image src="/chessium_logo.png" alt="You" width={28} height={28} className="w-full h-full object-cover p-0.5 opacity-80" />
+        <div className="px-5 py-4 border-t border-white/5 bg-white/[0.02] backdrop-blur-md">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden shadow-inner">
+              <Image src="/chessium_logo.png" alt="You" width={28} height={28} className="w-full h-full object-cover p-1 opacity-90" />
             </div>
             <div>
-              <div className="text-[13px] font-bold text-foreground">{playerName}</div>
-              <div className="text-[10px] text-secondary-foreground">Analyzer</div>
+              <div className="text-[14px] font-bold text-white">{playerName}</div>
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-secondary-foreground/50">Analyzer Pro</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* ═══ COLUMN 2: Board Area (dominant center) ═══ */}
-      <div className="flex-1 flex flex-col items-center justify-center min-w-0 bg-background relative p-3 lg:p-5">
+      <div className="w-full lg:flex-1 flex flex-col items-center justify-center lg:min-w-0 bg-transparent relative p-4 lg:p-6 z-10 lg:h-full">
         
         {/* Analysis progress bar */}
         {isAutoAnalyzing && (
           <div className="absolute top-0 left-0 right-0 z-20">
-            <div className="h-0.5 bg-background">
-              <div className="h-full bg-gradient-to-r from-primary via-primary to-primary/60 transition-all duration-300 ease-out" style={{ width: `${analyzedPercent}%` }} />
+            <div className="h-1 bg-background/50 backdrop-blur-sm">
+              <div className="h-full bg-gradient-to-r from-primary via-indigo-500 to-purple-500 transition-all duration-300 ease-out shadow-[0_0_10px_rgba(var(--primary),0.8)]" style={{ width: `${analyzedPercent}%` }} />
             </div>
-            <div className="flex justify-between items-center px-5 py-1.5 text-[10px] font-bold text-primary uppercase tracking-wider">
-              <span>Analyzing game...</span>
-              <span>{analyzedPercent}%</span>
+            <div className="flex justify-between items-center px-6 py-2 text-[11px] font-bold text-white uppercase tracking-wider bg-black/20 backdrop-blur-md">
+              <span className="flex items-center gap-2"><Loader2 className="w-3 h-3 animate-spin text-primary" /> Analyzing game...</span>
+              <span className="text-primary">{analyzedPercent}%</span>
             </div>
           </div>
         )}
 
         {/* Board + Eval Column */}
-        <div className="flex items-center gap-0 w-full max-w-[min(calc(100vh-180px),700px)] mx-auto">
+        <div className="flex items-stretch gap-0 w-full max-w-[min(calc(100vh-180px),700px)] mx-auto relative group">
           
+          {/* Subtle board glow */}
+          <div className="absolute inset-0 bg-primary/5 blur-[50px] rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
           {/* Eval Bar */}
-          <div className="w-7 shrink-0 self-stretch relative bg-[#1a1a1f] rounded-l-xl overflow-hidden border border-r-0 border-border">
+          <div className="w-8 shrink-0 relative bg-black/40 backdrop-blur-md rounded-l-2xl overflow-hidden border border-r-0 border-white/10 z-10">
             <div 
-              className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#e8e8e8] to-[#f5f5f5] transition-all duration-700 ease-out"
+              className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white/90 to-white/70 transition-all duration-700 ease-out shadow-[0_0_15px_rgba(255,255,255,0.2)]"
               style={{ height: `${clampPercent}%` }}
             />
             <div className="absolute inset-0 flex flex-col items-center z-10 pointer-events-none">
               {displayScore >= 0 ? (
-                <span className="text-[9px] font-black text-foreground pt-1 tracking-tighter">
+                <span className="text-[10px] font-black text-black pt-2 tracking-tighter drop-shadow-md">
                   {currentEvalData.mate ? `M${Math.abs(currentEvalData.mate)}` : `+${displayScore.toFixed(1)}`}
                 </span>
               ) : (
-                <span className="text-[9px] font-black text-[#1a1a1f] mt-auto pb-1 tracking-tighter">
+                <span className="text-[10px] font-black text-white mt-auto pb-2 tracking-tighter drop-shadow-md">
                   {currentEvalData.mate ? `-M${Math.abs(currentEvalData.mate)}` : displayScore.toFixed(1)}
                 </span>
               )}
@@ -555,27 +566,27 @@ export default function Analyzer() {
           </div>
 
           {/* Board Container */}
-          <div className="flex-1 flex flex-col bg-surface border border-border rounded-r-xl overflow-visible shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
+          <div className="flex-1 flex flex-col bg-white/[0.02] backdrop-blur-xl border border-white/10 rounded-r-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] z-10">
             
             {/* Top player bar */}
-            <div className="flex items-center justify-between px-3 py-2 bg-surface border-b border-border">
-              <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded bg-background flex items-center justify-center">
-                  <span className="text-secondary-foreground font-bold text-[10px]">♚</span>
+            <div className="flex items-center justify-between px-4 py-3 bg-black/20 border-b border-white/5 backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-md bg-white/10 border border-white/10 flex items-center justify-center shadow-inner">
+                  <span className="text-white/80 font-bold text-[12px]">♚</span>
                 </div>
-                <span className="text-[13px] font-bold text-foreground">
+                <span className="text-[14px] font-bold text-white tracking-wide">
                   {(game.header().Black && game.header().Black !== '?') ? game.header().Black : 'Opponent'}
                 </span>
               </div>
               {reviewStats.blackAccuracy !== '--' && (
-                <span className="text-[10px] font-bold text-secondary-foreground bg-background px-2 py-0.5 rounded">
+                <span className="text-[12px] font-bold text-white bg-white/10 px-3 py-1 rounded-full shadow-inner border border-white/5">
                   {reviewStats.blackAccuracy}%
                 </span>
               )}
             </div>
             
             {/* Chessboard */}
-            <div className="w-full aspect-square bg-background/50">
+            <div className="w-full aspect-square bg-black/40">
               {/* @ts-ignore */}
               <Chessboard 
                 id="AnalyzerBoard"
@@ -587,22 +598,22 @@ export default function Analyzer() {
                 customLightSquareStyle={boardTheme.lightSquareStyle}
                 animationDuration={250}
                 boardOrientation={boardOrientation}
-                customSquareStyles={moveFrom ? { [moveFrom]: { background: 'rgba(212, 175, 55, 0.35)' } } : {}}
+                customSquareStyles={moveFrom ? { [moveFrom]: { background: 'rgba(255, 255, 255, 0.2)' } } : {}}
               />
             </div>
 
             {/* Bottom player bar */}
-            <div className="flex items-center justify-between px-3 py-2 bg-surface border-t border-border">
-              <div className="flex items-center gap-2.5">
-                <div className="w-6 h-6 rounded bg-background flex items-center justify-center overflow-hidden">
-                  <Image src="/chessium_logo.png" alt="You" width={24} height={24} className="w-full h-full object-cover p-0.5 opacity-80" />
+            <div className="flex items-center justify-between px-4 py-3 bg-black/20 border-t border-white/5 backdrop-blur-md">
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 rounded-md bg-white/10 border border-white/10 flex items-center justify-center overflow-hidden shadow-inner">
+                  <Image src="/chessium_logo.png" alt="You" width={28} height={28} className="w-full h-full object-cover p-0.5 opacity-90" />
                 </div>
-                <span className="text-[13px] font-bold text-foreground">
+                <span className="text-[14px] font-bold text-white tracking-wide">
                   {(game.header().White && game.header().White !== '?') ? game.header().White : playerName}
                 </span>
               </div>
               {reviewStats.whiteAccuracy !== '--' && (
-                <span className="text-[10px] font-bold text-secondary-foreground bg-background px-2 py-0.5 rounded">
+                <span className="text-[12px] font-bold text-white bg-white/10 px-3 py-1 rounded-full shadow-inner border border-white/5">
                   {reviewStats.whiteAccuracy}%
                 </span>
               )}
@@ -611,35 +622,35 @@ export default function Analyzer() {
         </div>
 
         {/* Board Controls */}
-        <div className="flex items-center gap-1 mt-3 bg-surface border border-border rounded-xl px-2 py-1.5">
-          <Button variant="ghost" size="icon" className="w-9 h-8 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-white/5" onClick={() => { setCurrentIndex(-1); setIsAutoPlaying(false); }}>
-            <ChevronFirst className="w-4 h-4" />
+        <div className="flex items-center gap-1.5 mt-5 bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-full px-3 py-2 shadow-xl relative z-10">
+          <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full text-secondary-foreground hover:text-white hover:bg-white/10 transition-colors" onClick={() => { setCurrentIndex(-1); setIsAutoPlaying(false); }}>
+            <ChevronFirst className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="w-9 h-8 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-white/5" onClick={() => { setCurrentIndex(prev => Math.max(-1, prev - 1)); setIsAutoPlaying(false); }}>
-            <ChevronLeft className="w-4 h-4" />
+          <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full text-secondary-foreground hover:text-white hover:bg-white/10 transition-colors" onClick={() => { setCurrentIndex(prev => Math.max(-1, prev - 1)); setIsAutoPlaying(false); }}>
+            <ChevronLeft className="w-5 h-5" />
           </Button>
           <Button 
             variant="ghost" size="icon" 
-            className={`w-9 h-8 rounded-lg ${isAutoPlaying ? 'text-primary bg-primary/10' : 'text-secondary-foreground hover:text-foreground hover:bg-white/5'}`}
+            className={`w-12 h-10 rounded-full transition-all ${isAutoPlaying ? 'text-white bg-primary/80 shadow-[0_0_15px_rgba(var(--primary),0.5)]' : 'text-white bg-white/10 hover:bg-white/20'}`}
             onClick={() => setIsAutoPlaying(!isAutoPlaying)}
           >
-            {isAutoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+            {isAutoPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 translate-x-0.5" />}
           </Button>
-          <Button variant="ghost" size="icon" className="w-9 h-8 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-white/5" onClick={() => { setCurrentIndex(prev => Math.min(history.length - 1, prev + 1)); setIsAutoPlaying(false); }}>
-            <ChevronRight className="w-4 h-4" />
+          <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full text-secondary-foreground hover:text-white hover:bg-white/10 transition-colors" onClick={() => { setCurrentIndex(prev => Math.min(history.length - 1, prev + 1)); setIsAutoPlaying(false); }}>
+            <ChevronRight className="w-5 h-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="w-9 h-8 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-white/5" onClick={() => { setCurrentIndex(history.length - 1); setIsAutoPlaying(false); }}>
-            <ChevronLast className="w-4 h-4" />
+          <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full text-secondary-foreground hover:text-white hover:bg-white/10 transition-colors" onClick={() => { setCurrentIndex(history.length - 1); setIsAutoPlaying(false); }}>
+            <ChevronLast className="w-5 h-5" />
           </Button>
           
-          <div className="w-px h-5 bg-border mx-1" />
+          <div className="w-px h-6 bg-white/10 mx-2" />
           
-          <Button variant="ghost" size="icon" className="w-9 h-8 rounded-lg text-secondary-foreground hover:text-foreground hover:bg-white/5" onClick={() => setBoardOrientation(prev => prev === 'white' ? 'black' : 'white')} title="Flip Board">
+          <Button variant="ghost" size="icon" className="w-10 h-10 rounded-full text-secondary-foreground hover:text-white hover:bg-white/10 transition-colors" onClick={() => setBoardOrientation(prev => prev === 'white' ? 'black' : 'white')} title="Flip Board">
             <ArrowUpDown className="w-4 h-4" />
           </Button>
           <Button 
             variant="ghost" size="icon" 
-            className={`w-9 h-8 rounded-lg ${engineEnabled ? 'text-primary bg-primary/10' : 'text-secondary-foreground hover:text-foreground hover:bg-white/5'}`}
+            className={`w-10 h-10 rounded-full transition-colors ${engineEnabled ? 'text-primary bg-primary/10' : 'text-secondary-foreground hover:text-white hover:bg-white/10'}`}
             onClick={() => setEngineEnabled(!engineEnabled)}
             title="Toggle Engine"
           >
@@ -649,38 +660,40 @@ export default function Analyzer() {
       </div>
 
       {/* ═══ COLUMN 3: Analysis Panel ═══ */}
-      <div className="hidden lg:flex w-[360px] shrink-0 flex-col bg-surface border-l border-border overflow-hidden">
+      <div className="flex w-full lg:w-[360px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-t lg:border-t-0 lg:border-l border-white/5 lg:overflow-hidden shadow-2xl relative z-10 lg:h-full min-h-[500px]">
         
         {/* Tabs */}
-        <div className="flex bg-background text-[12px] font-bold tracking-wider uppercase">
+        <div className="flex bg-black/20 text-[12px] font-bold tracking-wider uppercase backdrop-blur-md">
           <button 
             onClick={() => setActiveTab('moves')}
-            className={`flex-1 py-2.5 text-center transition-all border-b-2 ${activeTab === 'moves' ? 'border-primary text-primary' : 'border-transparent text-secondary-foreground hover:text-foreground'}`}
+            className={`flex-1 py-3 text-center transition-all border-b-2 ${activeTab === 'moves' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-secondary-foreground/60 hover:text-white hover:bg-white/5'}`}
           >
             Moves
           </button>
           <button 
             onClick={() => setActiveTab('review')}
-            className={`flex-1 py-2.5 text-center transition-all border-b-2 ${activeTab === 'review' ? 'border-primary text-primary' : 'border-transparent text-secondary-foreground hover:text-foreground'}`}
+            className={`flex-1 py-3 text-center transition-all border-b-2 ${activeTab === 'review' ? 'border-primary text-primary bg-primary/5' : 'border-transparent text-secondary-foreground/60 hover:text-white hover:bg-white/5'}`}
           >
             Review
           </button>
         </div>
 
         {/* Eval Graph */}
-        <div className="px-3 pt-3">
-          <EvalGraph evaluations={evalArray} currentIndex={currentIndex} onPointClick={setCurrentIndex} />
+        <div className="px-4 pt-4">
+          <div className="bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden p-1">
+            <EvalGraph evaluations={evalArray} currentIndex={currentIndex} onPointClick={setCurrentIndex} />
+          </div>
         </div>
 
         {activeTab === 'moves' ? (
-          <div ref={moveListRef} className="flex-1 overflow-y-auto px-3 py-2 font-mono text-[13px]">
+          <div ref={moveListRef} className="flex-1 overflow-y-auto px-4 py-4 font-mono text-[13px] scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
             {history.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center px-6">
-                <div className="w-12 h-12 rounded-2xl bg-background border border-border flex items-center justify-center mb-4">
-                  <Upload className="w-5 h-5 text-primary/60" />
+                <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-5 shadow-inner">
+                  <Upload className="w-6 h-6 text-primary/60" />
                 </div>
-                <p className="text-[14px] font-semibold text-foreground mb-1.5">No game loaded</p>
-                <p className="text-[12px] text-secondary-foreground leading-relaxed">Import a PGN or play moves on the board to start analyzing.</p>
+                <p className="text-[15px] font-bold text-white mb-2 tracking-wide">No game loaded</p>
+                <p className="text-[13px] text-secondary-foreground/70 leading-relaxed">Import a PGN or play moves on the board to start analyzing.</p>
               </div>
             ) : (
               history.map((_, i) => {
@@ -690,22 +703,22 @@ export default function Analyzer() {
                 const turnNum = Math.floor(i / 2) + 1;
                 
                 return (
-                  <div key={turnNum} className={`grid grid-cols-[28px_1fr_1fr] px-1.5 py-1 rounded-lg transition-colors ${currentIndex >= i && currentIndex <= i + 1 ? 'bg-primary/5 border border-primary/10' : 'hover:bg-white/[0.03]'}`}>
-                    <div className="text-secondary-foreground/50 text-[12px] pt-0.5">{turnNum}.</div>
+                  <div key={turnNum} className={`grid grid-cols-[36px_1fr_1fr] px-2 py-1.5 rounded-xl transition-all ${currentIndex >= i && currentIndex <= i + 1 ? 'bg-primary/10 border border-primary/20 shadow-sm' : 'hover:bg-white/[0.03]'}`}>
+                    <div className="text-secondary-foreground/40 text-[12px] pt-1 font-semibold">{turnNum}.</div>
                     <div 
-                      className={`cursor-pointer flex items-center gap-1.5 rounded px-1 py-0.5 transition-colors ${currentIndex === i ? 'text-foreground font-black bg-primary/10' : 'text-secondary-foreground hover:text-foreground'}`} 
+                      className={`cursor-pointer flex items-center gap-2 rounded-lg px-2 py-1 transition-all ${currentIndex === i ? 'text-white font-black bg-primary border border-primary/50 shadow-[0_0_10px_rgba(var(--primary),0.3)]' : 'text-secondary-foreground/80 hover:text-white hover:bg-white/5'}`} 
                       onClick={() => setCurrentIndex(i)}
                     >
                       {wMove.san}
-                      {classifications[i] && <ClassificationIcon cls={typeof classifications[i] === 'string' ? classifications[i] : classifications[i]?.classification} className="w-3.5 h-3.5 text-[7px]" />}
+                      {classifications[i] && <ClassificationIcon cls={typeof classifications[i] === 'string' ? classifications[i] : classifications[i]?.classification} className="w-4 h-4 text-[8px]" />}
                     </div>
                     {bMove && (
                       <div 
-                        className={`cursor-pointer flex items-center gap-1.5 rounded px-1 py-0.5 transition-colors ${currentIndex === i + 1 ? 'text-foreground font-black bg-primary/10' : 'text-secondary-foreground hover:text-foreground'}`} 
+                        className={`cursor-pointer flex items-center gap-2 rounded-lg px-2 py-1 transition-all ${currentIndex === i + 1 ? 'text-white font-black bg-primary border border-primary/50 shadow-[0_0_10px_rgba(var(--primary),0.3)]' : 'text-secondary-foreground/80 hover:text-white hover:bg-white/5'}`} 
                         onClick={() => setCurrentIndex(i + 1)}
                       >
                         {bMove.san}
-                        {classifications[i + 1] && <ClassificationIcon cls={typeof classifications[i + 1] === 'string' ? classifications[i + 1] : classifications[i + 1]?.classification} className="w-3.5 h-3.5 text-[7px]" />}
+                        {classifications[i + 1] && <ClassificationIcon cls={typeof classifications[i + 1] === 'string' ? classifications[i + 1] : classifications[i + 1]?.classification} className="w-4 h-4 text-[8px]" />}
                       </div>
                     )}
                   </div>
@@ -714,38 +727,40 @@ export default function Analyzer() {
             )}
           </div>
         ) : (
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
             {/* Accuracy Cards */}
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-background border border-border rounded-xl p-3.5 text-center relative overflow-hidden">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-secondary-foreground mb-2">White</div>
-                <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-center relative overflow-hidden group hover:bg-white/[0.04] transition-colors">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-[30px]" />
+                <div className="text-[11px] font-bold uppercase tracking-widest text-secondary-foreground/70 mb-3 relative z-10">White</div>
+                <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="6" className="text-surface" />
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.whiteAccuracy as string) || 0)) / 100} className="text-foreground transition-all duration-1000 ease-out" strokeLinecap="round" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="6" className="text-white/5" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.whiteAccuracy as string) || 0)) / 100} className="text-white transition-all duration-1000 ease-out" strokeLinecap="round" />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-lg font-black tracking-tighter text-foreground">{reviewStats.whiteAccuracy}</span>
+                    <span className="text-xl font-black tracking-tighter text-white">{reviewStats.whiteAccuracy}</span>
                   </div>
                 </div>
               </div>
-              <div className="bg-background border border-border rounded-xl p-3.5 text-center relative overflow-hidden">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-secondary-foreground mb-2">Black</div>
-                <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+              <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-4 text-center relative overflow-hidden group hover:bg-white/[0.04] transition-colors">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full blur-[30px]" />
+                <div className="text-[11px] font-bold uppercase tracking-widest text-secondary-foreground/70 mb-3 relative z-10">Black</div>
+                <div className="relative w-20 h-20 mx-auto flex items-center justify-center">
                   <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="6" className="text-surface" />
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.blackAccuracy as string) || 0)) / 100} className="text-foreground transition-all duration-1000 ease-out" strokeLinecap="round" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="6" className="text-white/5" />
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" strokeWidth="6" strokeDasharray="264" strokeDashoffset={264 - (264 * (parseFloat(reviewStats.blackAccuracy as string) || 0)) / 100} className="text-white transition-all duration-1000 ease-out" strokeLinecap="round" />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-lg font-black tracking-tighter text-foreground">{reviewStats.blackAccuracy}</span>
+                    <span className="text-xl font-black tracking-tighter text-white">{reviewStats.blackAccuracy}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Classification Table */}
-            <div className="bg-background border border-border rounded-xl overflow-hidden">
-              <div className="grid grid-cols-[1fr_2fr_1fr] p-2 text-[9px] font-bold uppercase tracking-wider text-secondary-foreground text-center border-b border-border bg-surface">
+            <div className="bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden">
+              <div className="grid grid-cols-[1fr_2fr_1fr] p-3 text-[10px] font-bold uppercase tracking-widest text-secondary-foreground/70 text-center border-b border-white/5 bg-black/20">
                 <div>White</div>
                 <div>Classification</div>
                 <div>Black</div>
@@ -755,13 +770,13 @@ export default function Analyzer() {
                 const bVal = reviewStats.black[stat.key as keyof typeof reviewStats.black] || 0;
                 
                 return (
-                  <div key={stat.key} className="grid grid-cols-[1fr_2fr_1fr] border-t border-border/50 py-1.5 px-2 text-[12px] text-center items-center hover:bg-white/[0.02] transition-colors">
-                    <div className="font-bold text-foreground">{wVal}</div>
-                    <div className="flex items-center justify-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: stat.color }} />
-                      <span className="text-[11px] text-secondary-foreground">{stat.label}</span>
+                  <div key={stat.key} className="grid grid-cols-[1fr_2fr_1fr] border-t border-white/5 py-2 px-3 text-[13px] text-center items-center hover:bg-white/[0.04] transition-colors">
+                    <div className="font-bold text-white">{wVal}</div>
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="w-3 h-3 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: stat.color }} />
+                      <span className="text-[12px] font-medium text-white/80">{stat.label}</span>
                     </div>
-                    <div className="font-bold text-foreground">{bVal}</div>
+                    <div className="font-bold text-white">{bVal}</div>
                   </div>
                 );
               })}
@@ -769,11 +784,11 @@ export default function Analyzer() {
           </div>
         )}
 
-        {/* XL: Import actions for mobile/tablet when sidebar hidden */}
-        <div className="xl:hidden p-3 border-t border-border flex gap-2">
+        {/* Import actions for mobile/tablet when sidebar hidden */}
+        <div className="xl:hidden p-4 border-t border-white/5 flex gap-3 bg-white/[0.01]">
           <ImportModal onImport={handleImport}>
-            <Button variant="outline" size="sm" className="flex-1 h-9 rounded-lg bg-background border-border hover:bg-white/5 text-foreground font-medium gap-2 text-[12px]">
-              <Upload className="w-3.5 h-3.5 text-primary" /> Import
+            <Button variant="outline" size="sm" className="flex-1 h-10 rounded-xl bg-white/[0.03] border-white/10 hover:bg-white/[0.08] text-white font-bold gap-2 text-[13px]">
+              <Upload className="w-4 h-4 text-primary" /> Import
             </Button>
           </ImportModal>
           <Button 
@@ -781,65 +796,57 @@ export default function Analyzer() {
             size="sm" 
             onClick={handleSave}
             disabled={isSaving || history.length === 0}
-            className="flex-1 h-9 rounded-lg bg-background border-border hover:bg-white/5 text-foreground font-medium gap-2 text-[12px]"
+            className="flex-1 h-10 rounded-xl bg-white/[0.03] border-white/10 hover:bg-white/[0.08] text-white font-bold gap-2 text-[13px] disabled:opacity-50"
           >
-            {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5 text-primary" />}
+            {isSaving ? <Loader2 className="w-4 h-4 animate-spin text-primary" /> : <Save className="w-4 h-4 text-primary" />}
             Save
           </Button>
         </div>
       </div>
 
       {/* ═══ COLUMN 4: Ad Rail ═══ */}
-      <div className="hidden 2xl:flex w-[260px] shrink-0 flex-col bg-surface border-l border-border p-4 gap-4 overflow-y-auto">
+      <div className="hidden 2xl:flex w-[280px] shrink-0 flex-col bg-white/[0.01] backdrop-blur-3xl border-l border-white/5 p-5 gap-5 overflow-y-auto scrollbar-none z-10 relative">
         
         {/* Chessium Premium Card */}
-        <div className="bg-gradient-to-br from-primary/15 via-primary/5 to-transparent border border-primary/20 rounded-2xl p-5 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-xl" />
-          <div className="flex items-center gap-2 mb-3">
-            <Zap className="w-4 h-4 text-primary" />
-            <span className="text-[12px] font-bold uppercase tracking-wider text-primary">Premium</span>
+        <div className="bg-gradient-to-br from-primary/20 via-indigo-500/10 to-transparent border border-primary/30 rounded-3xl p-6 relative overflow-hidden group hover:shadow-[0_0_20px_rgba(var(--primary),0.1)] transition-all">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl group-hover:bg-primary/30 transition-colors" />
+          <div className="flex items-center gap-2 mb-4 relative z-10">
+            <Zap className="w-5 h-5 text-primary" />
+            <span className="text-[12px] font-black uppercase tracking-widest text-primary">Premium</span>
           </div>
-          <h3 className="text-[15px] font-bold text-foreground mb-1.5">Chessium Pro</h3>
-          <p className="text-[11px] text-secondary-foreground leading-relaxed mb-4">Unlimited analysis, cloud saves, advanced engine settings, and more.</p>
-          <Button size="sm" className="w-full h-8 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 text-[12px] font-bold">
+          <h3 className="text-[18px] font-extrabold text-white mb-2 relative z-10 tracking-wide">Chessium Pro</h3>
+          <p className="text-[13px] text-white/70 leading-relaxed mb-5 relative z-10 font-medium">Unlimited analysis, cloud saves, advanced engine settings, and more.</p>
+          <Button size="sm" className="w-full h-10 rounded-full bg-primary text-white hover:bg-primary/90 text-[14px] font-bold shadow-lg hover:shadow-primary/30 transition-all hover:-translate-y-0.5 relative z-10">
             Upgrade Now
           </Button>
         </div>
 
         {/* Sponsored Course Card */}
-        <div className="bg-background border border-border rounded-2xl p-4 relative overflow-hidden group hover:border-border/80 transition-colors">
-          <span className="text-[8px] font-bold text-secondary-foreground uppercase tracking-widest">Sponsored</span>
-          <h4 className="text-[13px] font-bold text-foreground mt-2 mb-1 group-hover:text-primary transition-colors">Master the Endgame</h4>
-          <p className="text-[11px] text-secondary-foreground leading-relaxed mb-3">Learn rook endgames from GM analysis. 12 chapters, 200+ puzzles.</p>
-          <div className="flex items-center gap-2">
-            <span className="text-[12px] font-bold text-primary">$29.99</span>
-            <span className="text-[10px] text-secondary-foreground line-through">$49.99</span>
+        <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-5 relative overflow-hidden group hover:border-white/20 hover:bg-white/[0.04] transition-all cursor-pointer">
+          <span className="text-[9px] font-bold text-secondary-foreground/60 uppercase tracking-widest">Sponsored</span>
+          <h4 className="text-[15px] font-bold text-white mt-2 mb-1.5 group-hover:text-primary transition-colors">Master the Endgame</h4>
+          <p className="text-[12px] text-white/60 leading-relaxed mb-4">Learn rook endgames from GM analysis. 12 chapters, 200+ puzzles.</p>
+          <div className="flex items-center gap-3">
+            <span className="text-[14px] font-black text-primary">$29.99</span>
+            <span className="text-[11px] font-bold text-white/30 line-through">$49.99</span>
           </div>
         </div>
 
         {/* Tournament Promo */}
-        <div className="bg-background border border-border rounded-2xl p-4 relative overflow-hidden group hover:border-border/80 transition-colors">
-          <span className="text-[8px] font-bold text-secondary-foreground uppercase tracking-widest">Tournament</span>
-          <h4 className="text-[13px] font-bold text-foreground mt-2 mb-1 group-hover:text-primary transition-colors">Chessium Weekly Arena</h4>
-          <p className="text-[11px] text-secondary-foreground leading-relaxed mb-3">Compete against 500+ players. Win prizes and climb the leaderboard.</p>
+        <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-5 relative overflow-hidden group hover:border-white/20 hover:bg-white/[0.04] transition-all cursor-pointer">
+          <span className="text-[9px] font-bold text-secondary-foreground/60 uppercase tracking-widest">Tournament</span>
+          <h4 className="text-[15px] font-bold text-white mt-2 mb-1.5 group-hover:text-primary transition-colors">Chessium Weekly</h4>
+          <p className="text-[12px] text-white/60 leading-relaxed mb-4">Compete against 500+ players. Win prizes and climb the leaderboard.</p>
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold text-success bg-success/10 px-2 py-0.5 rounded">Free Entry</span>
-          </div>
-        </div>
-
-        {/* Chess Book */}
-        <div className="bg-background border border-border rounded-2xl p-4 relative overflow-hidden group hover:border-border/80 transition-colors">
-          <span className="text-[8px] font-bold text-secondary-foreground uppercase tracking-widest">Recommended</span>
-          <h4 className="text-[13px] font-bold text-foreground mt-2 mb-1 group-hover:text-primary transition-colors">My System — Nimzowitsch</h4>
-          <p className="text-[11px] text-secondary-foreground leading-relaxed mb-3">The foundational text on positional chess, strategy, and prophylaxis.</p>
-          <div className="flex items-center gap-2">
-            <span className="text-[12px] font-bold text-primary">$14.99</span>
+            <span className="text-[12px] font-bold text-emerald-400 bg-emerald-400/10 px-3 py-1 rounded-full border border-emerald-400/20">Free Entry</span>
           </div>
         </div>
 
         {/* AdSense */}
-        <div className="mt-auto">
-          <AdSenseBanner className="rounded-2xl min-h-[200px]" />
+        <div className="mt-auto pt-5">
+          <div className="bg-white/[0.01] border border-white/5 rounded-3xl min-h-[250px] flex items-center justify-center">
+            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Advertisement</span>
+          </div>
         </div>
       </div>
     </div>
