@@ -273,7 +273,7 @@ export default function PlayVsAI() {
     <div className="flex flex-col lg:flex-row h-full w-full max-w-[1200px] mx-auto gap-8 px-4 py-6 pb-24 lg:pb-6 bg-background items-center lg:items-start justify-center min-h-[calc(100vh-80px)]">
       
       {/* Board Column (Center) */}
-      <div className="flex flex-col w-full max-w-[75vh] flex-1 bg-surface border border-border rounded-[24px] overflow-hidden relative shrink-0 shadow-2xl">
+      <div className="flex flex-col w-full max-w-[75vh] flex-1 bg-surface border border-border rounded-[24px] overflow-visible relative shrink-0 shadow-2xl">
         
         {/* Opponent Info Header */}
         <div className="w-full bg-surface px-5 py-4 flex items-center justify-between border-b border-border">

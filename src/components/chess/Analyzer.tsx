@@ -203,6 +203,8 @@ export default function Analyzer() {
     };
   }, [isAutoPlaying, currentIndex, history.length]);
 
+  const [moveFrom, setMoveFrom] = useState<string | null>(null);
+
   const onDrop = (sourceSquare: string, targetSquare: string) => {
     const tempGame = new Chess(currentFen);
     try {
@@ -216,12 +218,54 @@ export default function Analyzer() {
         setHistory(newHistory);
         setCurrentIndex(newHistory.length - 1);
         setGame(tempGame);
+        setMoveFrom(null);
         return true;
       }
     } catch (e) {
       return false;
     }
     return false;
+  };
+
+  const onSquareClick = (square: string) => {
+    if (moveFrom === null) {
+      // Select piece
+      const tempGame = new Chess(currentFen);
+      const piece = tempGame.get(square as any);
+      if (piece && piece.color === tempGame.turn()) {
+        setMoveFrom(square);
+      }
+      return;
+    }
+
+    // Try to move
+    const tempGame = new Chess(currentFen);
+    try {
+      const moveResult = tempGame.move({
+        from: moveFrom,
+        to: square,
+        promotion: "q",
+      });
+      if (moveResult) {
+        const newHistory = [...history.slice(0, currentIndex + 1), moveResult];
+        setHistory(newHistory);
+        setCurrentIndex(newHistory.length - 1);
+        setGame(tempGame);
+        setMoveFrom(null);
+        return;
+      }
+    } catch (e) {
+      // Invalid move - check if clicking another own piece
+    }
+    
+    // If invalid move, check if they're selecting a different piece
+    const g = new Chess(currentFen);
+    const piece = g.get(square as any);
+    if (piece && piece.color === g.turn()) {
+      setMoveFrom(square);
+    } else {
+      setMoveFrom(null);
+    }
   };
 
   const handleImport = (type: 'pgn' | 'fen', data: string) => {
@@ -495,7 +539,7 @@ export default function Analyzer() {
           </div>
 
           {/* Board Container */}
-          <div className="flex-1 flex flex-col bg-surface border border-border rounded-r-xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
+          <div className="flex-1 flex flex-col bg-surface border border-border rounded-r-xl overflow-visible shadow-[0_8px_40px_rgba(0,0,0,0.4)]">
             
             {/* Top player bar */}
             <div className="flex items-center justify-between px-3 py-2 bg-surface border-b border-border">
@@ -521,11 +565,13 @@ export default function Analyzer() {
                 id="AnalyzerBoard"
                 position={currentFen}
                 onPieceDrop={onDrop}
+                onSquareClick={onSquareClick}
                 arePiecesDraggable={true}
                 customDarkSquareStyle={boardTheme.darkSquareStyle}
                 customLightSquareStyle={boardTheme.lightSquareStyle}
                 animationDuration={250}
                 boardOrientation={boardOrientation}
+                customSquareStyles={moveFrom ? { [moveFrom]: { background: 'rgba(212, 175, 55, 0.35)' } } : {}}
               />
             </div>
 

@@ -185,7 +185,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
     <div className="w-full max-w-[1200px] mx-auto p-6 md:p-10 flex flex-col md:flex-row gap-12 lg:gap-16 items-center lg:items-start justify-center min-h-[calc(100vh-100px)] pt-12 lg:pt-16">
       
       {/* Board Layout identical to PlayVsAI logic */}
-      <div className="flex flex-col w-full max-w-[75vh] flex-1 bg-surface border border-border rounded-[24px] overflow-hidden relative shrink-0 shadow-2xl">
+      <div className="flex flex-col w-full max-w-[75vh] flex-1 bg-surface border border-border rounded-[24px] overflow-visible relative shrink-0 shadow-2xl">
         <div className="w-full bg-surface px-5 py-4 flex items-center justify-between border-b border-border">
           <div className="flex items-center gap-4">
             <h2 className="text-base font-bold text-foreground">Puzzle Board</h2>
