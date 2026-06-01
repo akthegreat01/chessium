@@ -337,20 +337,18 @@ export default function Analyzer() {
 
           <div className="flex w-full flex-1 overflow-hidden">
             {/* Eval Bar */}
-            <div className="w-5 bg-background border-r border-border flex flex-col relative shrink-0 overflow-hidden">
+            <div className="w-8 shrink-0 relative bg-surface border-r border-border flex flex-col overflow-hidden rounded-l shadow-inner">
               <div 
-                className="absolute bottom-0 left-0 right-0 bg-white transition-all duration-700 ease-out flex items-start justify-center pt-1"
+                className="absolute bottom-0 left-0 right-0 bg-white transition-all duration-700 ease-out"
                 style={{ height: `${clampPercent}%` }}
-              >
-                {displayScore >= 0 && (
-                  <span className="text-[9px] font-bold text-black select-none tracking-tighter">
+              />
+              <div className="absolute inset-0 flex flex-col justify-between py-1.5 z-10 pointer-events-none">
+                {displayScore >= 0 ? (
+                  <span className="text-[10px] font-bold text-foreground text-center tracking-tighter">
                     {currentEvalData.mate ? `M${Math.abs(currentEvalData.mate)}` : `+${displayScore.toFixed(1)}`}
                   </span>
-                )}
-              </div>
-              <div className="absolute top-0 left-0 right-0 h-12 flex items-end justify-center pb-1 z-10">
-                {displayScore < 0 && (
-                  <span className="text-[9px] font-bold text-white select-none tracking-tighter">
+                ) : (
+                  <span className="text-[10px] font-bold text-background text-center mt-auto tracking-tighter">
                     {currentEvalData.mate ? `-M${Math.abs(currentEvalData.mate)}` : displayScore.toFixed(1)}
                   </span>
                 )}

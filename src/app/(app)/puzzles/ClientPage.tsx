@@ -11,9 +11,11 @@ import { useBoardTheme } from "@/components/chess/ThemeContext";
 import { useChessGame } from "@/hooks/useChessGame";
 import { Chess } from "chess.js";
 
-export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
+export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuzzle: Puzzle, allPuzzles: Puzzle[] }) {
   const { boardTheme } = useBoardTheme();
   
+  const [puzzle, setPuzzle] = useState(initialPuzzle);
+
   // Custom hook to handle game logic cleanly
   const { fen, makeMove, loadFen, resetGame } = useChessGame(puzzle.fen);
   
@@ -36,6 +38,15 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
       console.error(e);
     }
   }, [puzzle.fen, loadFen]);
+
+  useEffect(() => {
+    try {
+      // @ts-ignore
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {
+      console.error("AdSense error:", err);
+    }
+  }, []);
 
   useEffect(() => {
     // If it's the opponent's turn (odd index), auto-play their move
@@ -199,7 +210,7 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
 
       <div className="w-full md:w-[420px] flex flex-col gap-6">
         <div className="bg-surface border border-border p-8 rounded-[32px] shadow-2xl">
-          <h1 className="text-3xl font-bold tracking-tight mb-2 text-foreground">Daily Puzzle</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2 text-foreground">Chess Puzzle</h1>
           <div className="flex gap-2 mb-6">
             <span className="text-xs font-bold uppercase tracking-wider bg-white/5 text-secondary-foreground px-2 py-1 rounded">
               Rating: {puzzle.rating}
@@ -240,8 +251,39 @@ export default function PuzzleClient({ puzzle }: { puzzle: Puzzle }) {
             </div>
           )}
         </div>
-      </div>
 
+        {/* Ad Sidebar */}
+        <div className="bg-surface/50 border border-border p-6 rounded-[32px] flex flex-col items-center justify-center min-h-[250px] shadow-lg relative overflow-hidden">
+          <span className="text-[10px] font-bold text-secondary-foreground absolute top-4 left-4 uppercase tracking-widest z-10">Advertisement</span>
+          {/* AdSense Unit */}
+          <ins className="adsbygoogle"
+               style={{ display: "block", width: "100%", minHeight: "200px" }}
+               data-ad-client="ca-pub-9046932302377091"
+               data-ad-slot="1234567890"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+        </div>
+
+        {/* More Puzzles List */}
+        <div className="bg-surface border border-border p-6 rounded-[32px] shadow-2xl flex-1 max-h-[500px] flex flex-col">
+          <h3 className="text-lg font-bold mb-4 text-foreground shrink-0">More Puzzles</h3>
+          <div className="flex flex-col gap-2 overflow-y-auto pr-2">
+            {allPuzzles.map(p => (
+              <button 
+                key={p.id}
+                onClick={() => setPuzzle(p)}
+                className={`p-3 rounded-xl flex items-center justify-between transition-colors text-left shrink-0 ${p.id === puzzle.id ? 'bg-primary/20 border-primary border' : 'bg-background hover:bg-white/5 border border-border'}`}
+              >
+                <div>
+                  <div className="font-bold text-sm text-foreground">{p.theme}</div>
+                  <div className="text-[11px] text-secondary-foreground mt-0.5">Rating: {p.rating}</div>
+                </div>
+                <div className="text-[10px] font-mono font-bold text-secondary-foreground bg-white/5 px-2 py-1 rounded">{p.moves.length} moves</div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
