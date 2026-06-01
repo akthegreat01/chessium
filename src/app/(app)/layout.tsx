@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import { signout } from "@/app/auth/actions";
 import { headers } from "next/headers";
 import ThemeSelector from "@/components/chess/ThemeSelector";
+import { AdUnit } from "@/components/ui/AdUnit";
 
 export default async function AppLayout({
   children,
@@ -39,7 +40,16 @@ export default async function AppLayout({
           <NavItem href="/analyze" active={activePath.includes("/analyze")} icon={<Search className="w-[18px] h-[18px]" />} label="Analyze" />
           <NavItem href="/play/ai" active={activePath.includes("/play")} icon={<Bot className="w-[18px] h-[18px]" />} label="Play vs AI" />
           <NavItem href="/puzzles" active={activePath.includes("/puzzles")} icon={<Puzzle className="w-[18px] h-[18px]" />} label="Puzzles" />
+          
+          {/* New Expanded Features */}
+          <NavItem href="/tournaments" active={activePath.includes("/tournaments")} icon={<User className="w-[18px] h-[18px]" />} label="Tournaments" />
+          <NavItem href="/vision" active={activePath.includes("/vision")} icon={<Search className="w-[18px] h-[18px]" />} label="Vision" />
+          
+          <div className="h-px bg-border my-3" />
+
           <NavItem href="/openings" active={activePath.includes("/openings")} icon={<BookOpen className="w-[18px] h-[18px]" />} label="Openings" />
+          <NavItem href="/studies" active={activePath.includes("/studies")} icon={<BookOpen className="w-[18px] h-[18px]" />} label="Studies" />
+          <NavItem href="/endgames" active={activePath.includes("/endgames")} icon={<Puzzle className="w-[18px] h-[18px]" />} label="Endgames" />
           <NavItem href="/learn" active={activePath.includes("/learn")} icon={<GraduationCap className="w-[18px] h-[18px]" />} label="Learn" />
 
           <div className="h-px bg-border my-3" />
@@ -48,6 +58,10 @@ export default async function AppLayout({
           <NavItem href="/profile" active={activePath === "/profile"} icon={<User className="w-[18px] h-[18px]" />} label="Profile" />
           <ThemeSelector />
           <NavItem href="/settings" active={activePath === "/settings"} icon={<Settings className="w-[18px] h-[18px]" />} label="Settings" />
+          
+          <div className="mt-auto pt-6 px-2 hidden md:block">
+            <AdUnit className="w-full h-[120px] rounded-xl bg-white/[0.02] border border-border" />
+          </div>
         </nav>
 
         {/* Bottom */}

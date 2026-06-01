@@ -10,10 +10,9 @@ export default function DashboardImportButton() {
   const router = useRouter();
 
   const handleImport = (type: 'pgn' | 'fen', data: string) => {
-    // Navigate to analyze page with the imported data in query params
-    const params = new URLSearchParams();
-    params.set(type, data);
-    router.push(`/analyze?${params.toString()}`);
+    sessionStorage.setItem('chessium_import_type', type);
+    sessionStorage.setItem('chessium_import_data', data);
+    router.push(`/analyze`);
   };
 
   return (

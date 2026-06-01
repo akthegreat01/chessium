@@ -29,7 +29,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
   useEffect(() => {
     try {
       const g = new Chess(puzzle.fen);
-      setPlayerColor(g.turn() === 'w' ? "White" : "Black");
+      setPlayerColor(g.turn() === 'w' ? "Black" : "White");
       // Reset game on puzzle change
       loadFen(puzzle.fen);
       setMoveIndex(0);
@@ -49,9 +49,9 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
   }, []);
 
   useEffect(() => {
-    // If it's the opponent's turn (odd index), auto-play their move
+    // If it's the opponent's turn (even index), auto-play their move
     if (status === "playing" && moveIndex < puzzle.moves.length) {
-      if (moveIndex % 2 !== 0) {
+      if (moveIndex % 2 === 0) {
         const timeout = setTimeout(() => {
           const moveString = puzzle.moves[moveIndex];
           // Determine from and to from SAN is tricky without the game instance
@@ -70,7 +70,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
 
   const onDrop = (sourceSquare: string, targetSquare: string) => {
     if (status === "solved") return false;
-    if (moveIndex % 2 !== 0) return false; // Not player's turn
+    if (moveIndex % 2 === 0) return false; // Not player's turn
 
     if (status === "incorrect") {
       setStatus("playing");
@@ -109,7 +109,7 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
 
   const onSquareClick = (square: string) => {
     if (status === "solved") return;
-    if (moveIndex % 2 !== 0) return; // Not player's turn
+    if (moveIndex % 2 === 0) return; // Not player's turn
 
     if (status === "incorrect") {
       setStatus("playing");
@@ -179,6 +179,14 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
       origin: { y: 0.6 },
       colors: ['#D4AF37', '#F8FAFC', '#22C55E']
     });
+    
+    // Auto advance to next puzzle
+    setTimeout(() => {
+      const currentIndex = allPuzzles.findIndex(p => p.id === puzzle.id);
+      if (currentIndex >= 0 && currentIndex + 1 < allPuzzles.length) {
+        setPuzzle(allPuzzles[currentIndex + 1]);
+      }
+    }, 3000);
   };
 
   return (

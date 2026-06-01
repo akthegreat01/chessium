@@ -111,7 +111,19 @@ export default function Analyzer() {
   useEffect(() => {
     engineRef.current = new ChessEngine();
     
-    const pgnQuery = searchParams.get('pgn');
+    const sessionType = typeof window !== 'undefined' ? sessionStorage.getItem('chessium_import_type') : null;
+    const sessionData = typeof window !== 'undefined' ? sessionStorage.getItem('chessium_import_data') : null;
+
+    let pgnQuery = searchParams.get('pgn');
+    let fenQuery = searchParams.get('fen');
+
+    if (sessionType && sessionData) {
+      if (sessionType === 'pgn') pgnQuery = sessionData;
+      if (sessionType === 'fen') fenQuery = sessionData;
+      sessionStorage.removeItem('chessium_import_type');
+      sessionStorage.removeItem('chessium_import_data');
+    }
+
     if (pgnQuery) {
       const newGame = new Chess();
       try {
@@ -122,7 +134,16 @@ export default function Analyzer() {
         setGame(newGame);
         runFullAnalysis(moves as Move[]);
       } catch(e) {
-        console.error("Invalid PGN from query:", e);
+        console.error("Invalid PGN from query/session:", e);
+      }
+    } else if (fenQuery) {
+      const newGame = new Chess();
+      try {
+        newGame.load(fenQuery);
+        setGame(newGame);
+        // FEN starts from index -1 with no history
+      } catch(e) {
+        console.error("Invalid FEN from query/session:", e);
       }
     }
 
