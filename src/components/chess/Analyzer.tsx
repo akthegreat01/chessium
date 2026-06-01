@@ -382,7 +382,7 @@ export default function Analyzer() {
 
   const currentEvalData = evaluations[currentIndex] || { score: 0, mate: null, depth: 0, bestMove: "", pv: "" };
   const displayScore = currentEvalData.score;
-  const clampPercent = calculateWinProbability(displayScore) * 100;
+  const clampPercent = calculateWinProbability(displayScore);
   const isBlackTurn = new Chess(currentFen).turn() === 'b';
   const scoreLabelColor = isBlackTurn ? 'text-black' : 'text-white';
   const scoreBgColor = isBlackTurn ? 'bg-white' : 'bg-[#2b2b2b]';
