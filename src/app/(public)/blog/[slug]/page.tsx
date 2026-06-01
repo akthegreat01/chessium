@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { AdSenseBanner } from "@/components/ui/AdSenseBanner";
 
 export default function BlogPostPage({ params }: { params: { slug: string } }) {
   // Mock content for demonstration
@@ -33,6 +34,11 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             But with platforms like Chessium, the barrier to entry is lower than ever. You can now get AI-driven insights 
             that previously required a team of seconds to discover.
           </p>
+
+          <div className="my-10 not-prose">
+            <AdSenseBanner />
+          </div>
+
           <blockquote>
             "Chess is 99% tactics, but to get to those tactics, you need 100% preparation."
           </blockquote>

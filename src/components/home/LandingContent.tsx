@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import HeroBoard from "@/components/home/HeroBoard";
 import ChessComConnect from "@/components/home/ChessComConnect";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import {
   Brain,
   Target,
@@ -172,6 +172,15 @@ const fakeMoves = [
 
 export default function LandingContent({ user }: { user: any }) {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      // @ts-ignore
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (err) {
+      console.error("AdSense error:", err);
+    }
+  }, []);
   
   // 3D Mouse Tracking
   const mouseX = useMotionValue(0.5);
@@ -520,6 +529,22 @@ export default function LandingContent({ user }: { user: any }) {
               </Button>
             </Link>
           </motion.div>
+        </div>
+      </section>
+
+      {/* ─── Ad Space ─── */}
+      <section className="relative py-10 bg-background border-t border-border">
+        <div className="max-w-7xl mx-auto px-6 md:px-8 text-center">
+          <div className="w-full bg-surface/50 border border-border p-6 rounded-[32px] flex flex-col items-center justify-center min-h-[250px] shadow-lg relative overflow-hidden">
+            <span className="text-[10px] font-bold text-secondary-foreground absolute top-4 left-4 uppercase tracking-widest z-10">Advertisement</span>
+            {/* AdSense Unit */}
+            <ins className="adsbygoogle"
+                 style={{ display: "block", width: "100%", minHeight: "200px" }}
+                 data-ad-client="ca-pub-9046932302377091"
+                 data-ad-slot="1234567890"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+          </div>
         </div>
       </section>
 

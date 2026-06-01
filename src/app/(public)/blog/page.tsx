@@ -37,6 +37,27 @@ const BLOG_POSTS = [
     excerpt: "How to manage your time, avoid flags, and play practical chess when the clock is ticking down.",
     date: "May 3, 2026",
     readTime: "4 min read"
+  },
+  {
+    slug: "queen-sacrifice-art",
+    title: "The Art of the Queen Sacrifice",
+    excerpt: "Explore the most beautiful and daring queen sacrifices in chess history and the psychology behind them.",
+    date: "April 22, 2026",
+    readTime: "7 min read"
+  },
+  {
+    slug: "opening-principles-revisited",
+    title: "Opening Principles Revisited",
+    excerpt: "Why beginners break rules and grandmasters bend them. A fresh look at control, development, and safety.",
+    date: "April 15, 2026",
+    readTime: "5 min read"
+  },
+  {
+    slug: "psychology-of-blunders",
+    title: "The Psychology of Blunders",
+    excerpt: "Why do we hang pieces in winning positions? Understanding chess blindness and how to fix your focus.",
+    date: "April 8, 2026",
+    readTime: "6 min read"
   }
 ];
 
