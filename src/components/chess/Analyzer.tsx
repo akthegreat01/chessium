@@ -557,9 +557,6 @@ export default function Analyzer() {
 
       {/* ═══ COLUMN 2: Board Area (dominant center) ═══ */}
       <div className="w-full lg:flex-1 flex flex-col items-center justify-center lg:min-w-0 bg-transparent relative p-4 lg:p-6 z-10 lg:h-full">
-        
-          </div>
-        )}
 
         {/* Board + Eval Column */}
         <div className="flex items-stretch gap-0 w-full max-w-[min(calc(100vh-180px),700px)] mx-auto relative group">
