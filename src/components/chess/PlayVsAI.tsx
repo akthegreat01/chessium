@@ -62,8 +62,8 @@ export default function PlayVsAI() {
     if (move) {
       // Random chance for dialogue on move
       if (Math.random() < 0.3) {
-        let pool = personality.dialogue.advantage;
-        if (game.inCheck()) pool = personality.dialogue.blunder;
+        let pool = personality.dialogue.winning;
+        if (move.captured) pool = personality.dialogue.blunder;
         else if (game.history().length > 20) pool = personality.dialogue.losing;
         
         const randomMsg = pool[Math.floor(Math.random() * pool.length)];
@@ -356,7 +356,7 @@ export default function PlayVsAI() {
           <Button onClick={flipBoard} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-border text-base font-medium transition-colors hover:bg-white/5">
             <RefreshCcw className="w-5 h-5 text-secondary-foreground" /> Flip Board
           </Button>
-          <Button variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-destructive/20 hover:bg-destructive/10 text-destructive text-base font-medium transition-colors">
+          <Button onClick={() => { handleReset(); displayDialogue(personality.dialogue.winning[0], 5000); }} variant="outline" className="w-full justify-start gap-4 h-14 rounded-xl bg-background border-destructive/20 hover:bg-destructive/10 text-destructive text-base font-medium transition-colors">
             <Flag className="w-5 h-5" /> Resign
           </Button>
         </div>

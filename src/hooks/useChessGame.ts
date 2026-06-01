@@ -1,8 +1,10 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { Chess, Move } from 'chess.js';
 
 export function useChessGame(initialFen: string = 'start') {
-  const [game, setGame] = useState(() => {
+  // Use a single Chess instance stored in a ref for the source of truth.
+  // React state holds a version counter to trigger re-renders.
+  const gameRef = useRef<Chess>(() => {
     const g = new Chess();
     if (initialFen !== 'start') {
       try {
@@ -14,77 +16,71 @@ export function useChessGame(initialFen: string = 'start') {
     return g;
   });
 
-  const fen = useMemo(() => game.fen(), [game]);
-  const isGameOver = useMemo(() => game.isGameOver(), [game]);
-  const turn = useMemo(() => game.turn(), [game]);
-  const history = useMemo(() => game.history({ verbose: true }) as Move[], [game]);
+  // Version counter to force re-renders when the game state changes
+  const [version, setVersion] = useState(0);
+  const bump = useCallback(() => setVersion(v => v + 1), []);
 
-  const gameRef = useRef(game);
-  
-  // Keep ref in sync
-  useEffect(() => {
-    gameRef.current = game;
-  }, [game]);
+  // Derived values — recalculate when version changes
+  const game = gameRef.current;
+  const fen = useMemo(() => game.fen(), [version]);
+  const isGameOver = useMemo(() => game.isGameOver(), [version]);
+  const turn = useMemo(() => game.turn(), [version]);
+  const history = useMemo(() => game.history({ verbose: true }) as Move[], [version]);
 
-  const makeMove = useCallback((moveDetails: { from: string; to: string; promotion?: string }) => {
-    const gameCopy = new Chess(gameRef.current.fen());
+  const makeMove = useCallback((moveDetails: { from: string; to: string; promotion?: string }): Move | null => {
     try {
-      const move = gameCopy.move({
+      const move = gameRef.current.move({
         from: moveDetails.from,
         to: moveDetails.to,
         promotion: moveDetails.promotion || 'q',
       });
       if (move) {
-        gameRef.current = gameCopy; // Update ref synchronously
-        setGame(gameCopy);          // Trigger react render
+        bump();
         return move;
       }
     } catch (e) {
       // Invalid move
     }
     return null;
-  }, []);
+  }, [bump]);
 
   const loadFen = useCallback((newFen: string) => {
-    const gameCopy = new Chess();
     try {
-      gameCopy.load(newFen);
-      gameRef.current = gameCopy;
-      setGame(gameCopy);
+      const g = new Chess();
+      g.load(newFen);
+      gameRef.current = g;
+      bump();
       return true;
     } catch (e) {
       return false;
     }
-  }, []);
+  }, [bump]);
 
   const loadPgn = useCallback((pgn: string) => {
-    const gameCopy = new Chess();
     try {
-      gameCopy.loadPgn(pgn);
-      gameRef.current = gameCopy;
-      setGame(gameCopy);
+      const g = new Chess();
+      g.loadPgn(pgn);
+      gameRef.current = g;
+      bump();
       return true;
     } catch (e) {
       return false;
     }
-  }, []);
+  }, [bump]);
 
   const resetGame = useCallback(() => {
-    const newGame = new Chess();
-    gameRef.current = newGame;
-    setGame(newGame);
-  }, []);
+    gameRef.current = new Chess();
+    bump();
+  }, [bump]);
 
-  const undoMove = useCallback(() => {
-    const gameCopy = new Chess(gameRef.current.fen());
-    const move = gameCopy.undo();
+  const undoMove = useCallback((): Move | null => {
+    const move = gameRef.current.undo();
     if (move) {
-      gameRef.current = gameCopy; // Update ref synchronously
-      setGame(gameCopy);          // Trigger react render
+      bump();
       return move;
     }
     return null;
-  }, []);
+  }, [bump]);
 
   return {
     game,
