@@ -76,10 +76,12 @@ export default function StudyViewerPage() {
         setFen(game.fen());
         setIsSuccess(true);
         setErrorMsg(null);
+        setMoveFrom(null);
         return true;
       } else {
         game.undo();
         setErrorMsg("That's not the right move. Try again!");
+        setMoveFrom(null);
         return false;
       }
     } catch (e) {
@@ -87,9 +89,37 @@ export default function StudyViewerPage() {
     }
   };
 
+  const [moveFrom, setMoveFrom] = useState<string | null>(null);
+
+  const onSquareClick = (square: string) => {
+    if (isSuccess) return;
+
+    if (!moveFrom) {
+      // First click: select piece
+      const piece = game.get(square as any);
+      if (piece && piece.color === (game.turn() === 'w' ? 'w' : 'b')) {
+        setMoveFrom(square);
+      }
+      return;
+    }
+
+    // Second click: attempt move
+    const success = onDrop(moveFrom, square);
+    if (!success) {
+      // If it wasn't a valid move, check if they clicked another of their own pieces
+      const piece = game.get(square as any);
+      if (piece && piece.color === (game.turn() === 'w' ? 'w' : 'b')) {
+        setMoveFrom(square);
+      } else {
+        setMoveFrom(null);
+      }
+    }
+  };
+
   const nextStep = () => {
     if (currentStepIndex < study.steps.length - 1) {
       setCurrentStepIndex(prev => prev + 1);
+      setMoveFrom(null);
     } else {
       router.push("/studies");
     }
@@ -182,11 +212,28 @@ export default function StudyViewerPage() {
               id="StudyBoard"
               position={fen}
               onPieceDrop={onDrop}
+              onSquareClick={onSquareClick}
+              boardOrientation={fen.includes(" w ") ? "white" : "black"}
               arePiecesDraggable={!isSuccess}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}
               animationDuration={200}
             />
+          </div>
+          
+          {/* Action Bar under the board */}
+          <div className="absolute bottom-4 right-4 z-20">
+            {!isSuccess && currentStep.expectedMove && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setErrorMsg(`Hint: Play ${currentStep.expectedMove}`)}
+                className="bg-black/50 backdrop-blur-md border-white/10 hover:bg-black/70 text-white font-bold"
+              >
+                Show Solution
+              </Button>
+            )}
+
           </div>
         </div>
       </div>
