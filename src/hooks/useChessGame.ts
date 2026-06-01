@@ -2,31 +2,24 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { Chess, Move } from 'chess.js';
 
 export function useChessGame(initialFen: string = 'start') {
-  // We keep a mutable ref for chess.js to calculate moves quickly,
-  // but we EXPLICITLY mirror the needed state into React's state.
-  const gameRef = useRef<Chess>(new Chess());
+  // Lazily initialize the chess.js instance with the correct FEN
+  const gameRef = useRef<Chess | null>(null);
+  if (gameRef.current === null) {
+    const g = new Chess();
+    if (initialFen !== 'start') {
+      try { g.load(initialFen); } catch (e) { console.error(e); }
+    }
+    gameRef.current = g;
+  }
 
   // Explicit React State guaranteed to trigger re-renders
-  const [fen, setFen] = useState<string>('start');
-  const [isGameOver, setIsGameOver] = useState<boolean>(false);
-  const [turn, setTurn] = useState<string>('w');
-  const [history, setHistory] = useState<Move[]>([]);
-
-  // Initialize once on mount or when initialFen strictly changes
-  useEffect(() => {
-    try {
-      const g = new Chess();
-      if (initialFen !== 'start') g.load(initialFen);
-      gameRef.current = g;
-      syncState();
-    } catch (e) {
-      console.error("useChessGame: Invalid initial FEN", e);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialFen]);
+  const [fen, setFen] = useState<string>(gameRef.current.fen());
+  const [isGameOver, setIsGameOver] = useState<boolean>(gameRef.current.isGameOver());
+  const [turn, setTurn] = useState<string>(gameRef.current.turn());
+  const [history, setHistory] = useState<Move[]>(gameRef.current.history({ verbose: true }) as Move[]);
 
   const syncState = useCallback(() => {
-    const g = gameRef.current;
+    const g = gameRef.current!;
     setFen(g.fen());
     setIsGameOver(g.isGameOver());
     setTurn(g.turn());

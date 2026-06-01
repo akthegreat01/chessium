@@ -127,7 +127,26 @@ export default function Analyzer() {
     if (pgnQuery) {
       const newGame = new Chess();
       try {
-        newGame.loadPgn(pgnQuery);
+        const cleanPgn = (raw: string) => {
+          return raw
+            .replace(/\{[^}]*\}/g, '')
+            .replace(/;[^\n]*/g, '')
+            .replace(/\d+\.{3}/g, '')
+            .replace(/\s+/g, ' ')
+            .trim();
+        };
+
+        try {
+          newGame.loadPgn(pgnQuery);
+        } catch (e1) {
+          try {
+            newGame.loadPgn(cleanPgn(pgnQuery));
+          } catch (e2) {
+            const rawMoves = cleanPgn(pgnQuery.replace(/\[.*?\]\s*/g, ''));
+            newGame.loadPgn(rawMoves);
+          }
+        }
+
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
         setCurrentIndex(moves.length - 1);
