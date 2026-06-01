@@ -11,8 +11,11 @@ const puppeteer = require('puppeteer');
   });
 
   try {
-    await page.goto('http://localhost:3000/play/ai', { waitUntil: 'networkidle0', timeout: 10000 });
+    const response = await page.goto('http://localhost:3001/play/ai', { waitUntil: 'networkidle0', timeout: 15000 });
+    console.log("HTTP STATUS:", response.status());
     console.log("Page loaded successfully.");
+    const content = await page.content();
+    console.log("CONTENT LENGTH:", content.length);
   } catch (e) {
     console.log("Navigation failed:", e.message);
   }

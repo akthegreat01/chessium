@@ -62,6 +62,30 @@ export default function PlayVsAI() {
     };
   }, []);
 
+  // Handle engine move
+  const makeEngineMove = useCallback((lan: string) => {
+    const move = makeMove({
+      from: lan.substring(0, 2),
+      to: lan.substring(2, 4),
+      promotion: lan.length > 4 ? lan.charAt(4) : undefined
+    });
+    
+    if (move) {
+      // Random chance for dialogue on move
+      if (Math.random() < 0.3) {
+        let pool = personality.dialogue.advantage;
+        if (game.inCheck()) pool = personality.dialogue.blunder;
+        else if (game.history().length > 20) pool = personality.dialogue.losing;
+        
+        const randomMsg = pool[Math.floor(Math.random() * pool.length)];
+        displayDialogue(randomMsg);
+      }
+    } else {
+      console.error("Engine provided invalid move:", lan);
+    }
+    setIsThinking(false);
+  }, [game, makeMove, personality, displayDialogue]);
+
   // Update worker message handler with fresh dependencies
   useEffect(() => {
     if (!workerRef.current) return;
@@ -89,30 +113,6 @@ export default function PlayVsAI() {
       workerRef.current.postMessage(`setoption name Skill Level value ${personality.engine.skillLevel}`);
     }
   }, [personality, engineReady]);
-
-  // Handle engine move
-  const makeEngineMove = useCallback((lan: string) => {
-    const move = makeMove({
-      from: lan.substring(0, 2),
-      to: lan.substring(2, 4),
-      promotion: lan.length > 4 ? lan.charAt(4) : undefined
-    });
-    
-    if (move) {
-      // Random chance for dialogue on move
-      if (Math.random() < 0.3) {
-        let pool = personality.dialogue.advantage;
-        if (game.inCheck()) pool = personality.dialogue.blunder;
-        else if (game.history().length > 20) pool = personality.dialogue.losing;
-        
-        const randomMsg = pool[Math.floor(Math.random() * pool.length)];
-        displayDialogue(randomMsg);
-      }
-    } else {
-      console.error("Engine provided invalid move:", lan);
-    }
-    setIsThinking(false);
-  }, [game, makeMove, personality, displayDialogue]);
 
   // Trigger engine if it's its turn
   useEffect(() => {
