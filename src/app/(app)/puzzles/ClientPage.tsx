@@ -144,10 +144,10 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
   };
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto p-6 md:p-10 flex flex-col md:flex-row gap-12 lg:gap-16 items-center lg:items-start justify-center min-h-[calc(100vh-100px)] pt-12 lg:pt-16">
+    <div className="w-full max-w-[1200px] mx-auto p-0 sm:p-6 md:p-10 flex flex-col md:flex-row gap-8 lg:gap-16 items-center lg:items-start justify-center min-h-[calc(100vh-100px)] pt-0 sm:pt-12 lg:pt-16">
       
-      {/* Board Layout identical to PlayVsAI logic */}
-      <div className="flex flex-col w-full max-w-[75vh] flex-1 bg-surface border border-border rounded-[24px] overflow-visible relative shrink-0 shadow-2xl">
+      {/* Board Layout */}
+      <div className="flex flex-col w-full max-w-[100vw] sm:max-w-[75vh] flex-1 bg-surface border-y sm:border border-border sm:rounded-[24px] overflow-visible relative shrink-0 shadow-2xl">
         <div className="w-full bg-surface px-5 py-4 flex items-center justify-between border-b border-border">
           <div className="flex items-center gap-4">
             <h2 className="text-base font-bold text-foreground">Puzzle Board</h2>
@@ -170,8 +170,8 @@ export default function PuzzleClient({ initialPuzzle, allPuzzles }: { initialPuz
         </div>
       </div>
 
-      <div className="w-full md:w-[420px] flex flex-col gap-6">
-        <div className="bg-surface border border-border p-8 rounded-[32px] shadow-2xl">
+      <div className="w-full md:w-[420px] flex flex-col gap-6 px-4 sm:px-0 pb-12 sm:pb-0">
+        <div className="bg-surface border border-border p-6 sm:p-8 rounded-[24px] sm:rounded-[32px] shadow-2xl">
           <h1 className="text-3xl font-bold tracking-tight mb-2 text-foreground">Chess Puzzle</h1>
           <div className="flex gap-2 mb-6">
             <span className="text-xs font-bold uppercase tracking-wider bg-white/5 text-secondary-foreground px-2 py-1 rounded">
