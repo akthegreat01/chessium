@@ -58,6 +58,7 @@ export default function Analyzer() {
   const [isAutoAnalyzing, setIsAutoAnalyzing] = useState(false);
   const [analyzedPercent, setAnalyzedPercent] = useState(0);
   const [boardOrientation, setBoardOrientation] = useState<'white' | 'black'>('white');
+  const [boardKey, setBoardKey] = useState(0);
   const [playerName, setPlayerName] = useState("Player");
   const [isAutoPlaying, setIsAutoPlaying] = useState(false);
   const [engineEnabled, setEngineEnabled] = useState(true);
@@ -126,7 +127,6 @@ export default function Analyzer() {
       sessionStorage.removeItem('chessium_import_data');
     }
 
-    if (pgnQuery) {
       try {
         const newGame = robustLoadPgn(pgnQuery);
         const moves = newGame.history({ verbose: true });
@@ -134,6 +134,7 @@ export default function Analyzer() {
         setCurrentIndex(moves.length - 1);
         setGame(newGame);
         runFullAnalysis(moves as Move[]);
+        setBoardKey(prev => prev + 1);
       } catch(e) {
         console.error("Invalid PGN from query/session:", e);
       }
@@ -142,6 +143,7 @@ export default function Analyzer() {
       try {
         newGame.load(fenQuery);
         setGame(newGame);
+        setBoardKey(prev => prev + 1);
       } catch (e) {
         console.error("Invalid FEN:", e);
       }
@@ -303,12 +305,14 @@ export default function Analyzer() {
         setCurrentIndex(moves.length - 1);
         setGame(newGame);
         runFullAnalysis(moves as Move[]);
+        setBoardKey(prev => prev + 1);
       } else {
         const newGame = new Chess();
         newGame.load(data);
         setGame(newGame);
         setHistory([]);
         setCurrentIndex(-1);
+        setBoardKey(prev => prev + 1);
       }
       setEvaluations({});
       setClassifications({});
@@ -601,6 +605,7 @@ export default function Analyzer() {
             <div className="w-full aspect-square bg-black/40">
               {/* @ts-ignore */}
               <Chessboard 
+                key={`board-${boardKey}`}
                 position={currentFen}
                 onPieceDrop={onDrop}
                 onSquareClick={onSquareClick}
