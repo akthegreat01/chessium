@@ -161,15 +161,24 @@ export default function Analyzer() {
       return game ? game.fen() : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     }
     
+    // Get the exact starting position of this specific game
+    const startingFen = history[0].before || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
     if (currentIndex === -1) {
-      return history[0].before || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+      return startingFen;
     }
     
-    if (currentIndex >= 0 && currentIndex < history.length) {
-      return history[currentIndex].after || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    // Replay moves from the starting position to guarantee absolute FEN validity
+    const tempGame = new Chess(startingFen);
+    for (let i = 0; i <= currentIndex; i++) {
+      try {
+        tempGame.move(history[i].san || history[i]);
+      } catch (e) {
+        // Fallback to exactly what chess.js computed if move fails
+        return history[currentIndex]?.after || startingFen;
+      }
     }
-
-    return "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    return tempGame.fen();
   }, [history, currentIndex, game]);
 
   useEffect(() => {
@@ -601,6 +610,7 @@ export default function Analyzer() {
             <div className="w-full aspect-square bg-black/40 relative">
               {/* @ts-ignore */}
               <Chessboard 
+                id="AnalyzerBoard"
                 key={`board-${boardKey}`}
                 position={currentFen}
                 onPieceDrop={onDrop}
