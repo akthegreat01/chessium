@@ -156,18 +156,21 @@ export default function Analyzer() {
   }, [searchParams]);
 
   const currentFen = useMemo(() => {
-    const tempGame = new Chess();
-    if (history.length > 0 && currentIndex >= 0) {
-      for (let i = 0; i <= currentIndex; i++) {
-        try {
-          tempGame.move(history[i].san || history[i]);
-        } catch (e) {
-          console.warn("Failed to apply move to tempGame:", history[i]);
-        }
-      }
+    if (history.length === 0) {
+      // If it's just a FEN import with no moves, use the game's current FEN
+      return game ? game.fen() : "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     }
-    return tempGame.fen();
-  }, [history, currentIndex]);
+    
+    if (currentIndex === -1) {
+      return history[0].before || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    }
+    
+    if (currentIndex >= 0 && currentIndex < history.length) {
+      return history[currentIndex].after || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    }
+
+    return "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+  }, [history, currentIndex, game]);
 
   useEffect(() => {
     if (engineRef.current && engineEnabled && !isAutoAnalyzing && !evaluations[currentIndex]) {
