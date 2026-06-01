@@ -10,7 +10,7 @@ export function cleanPgnString(raw: string): string {
     .replace(/;[^\n]*/g, '')          // Remove semicolon comments
     .replace(/\d+\.{3}/g, '')         // Remove move-number ellipsis like "1..."
     .replace(/\$\d+/g, '')            // Remove NAGs (Numeric Annotation Glyphs) like $1
-    .replace(/\s+/g, ' ')             // Collapse whitespace
+    .replace(/[ \t]+/g, ' ')          // Collapse spaces/tabs but keep newlines
     .trim();
 }
 
@@ -33,8 +33,8 @@ export function robustLoadPgn(pgnData: string): Chess {
     } catch (e2) {
       // Tier 3: Absolute last resort - strip headers entirely and just try movetext
       try {
-        const rawMoves = cleanPgnString(pgnData.replace(/\[.*?\]\s*/g, ''));
-        game.loadPgn(rawMoves);
+        const rawMoves = cleanPgnString(pgnData.replace(/\[.*?\]/g, ''));
+        game.loadPgn(rawMoves.trim());
         return game;
       } catch (e3) {
         throw new Error("Failed to parse PGN even after aggressive sanitization.");

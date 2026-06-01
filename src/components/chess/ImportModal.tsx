@@ -140,7 +140,7 @@ export default function ImportModal({ onImport, children }: ImportModalProps) {
           <TabsContent value="paste" className="space-y-4 pt-4">
             <Textarea 
               placeholder="Paste PGN or FEN here..." 
-              className="min-h-[160px] max-h-[300px] overflow-y-auto bg-[#0a0d14] border-[#1e2433] resize-none rounded-xl font-mono text-sm"
+              className="min-h-[160px] max-h-[300px] overflow-y-auto bg-[#0a0d14] border-[#1e2433] resize-none rounded-xl font-mono text-sm whitespace-pre-wrap break-all"
               value={inputData}
               onChange={(e) => setInputData(e.target.value)}
             />

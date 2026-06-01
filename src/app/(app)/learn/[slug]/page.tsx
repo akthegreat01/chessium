@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { AdUnit } from "@/components/ui/AdUnit";
 import { getCourseBySlug } from "@/lib/data/learn";
 
-export default function TheoryCoursePage({ params }: { params: { slug: string } }) {
+export default function TheoryCoursePage({ params }: { params: Promise<{ slug: string }> }) {
   const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
+  const { slug } = React.use(params);
   
-  const data = getCourseBySlug(params.slug);
+  const data = getCourseBySlug(slug);
   
   if (!data) {
     return (

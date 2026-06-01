@@ -10,10 +10,11 @@ import { AdUnit } from "@/components/ui/AdUnit";
 import { getOpeningBySlug } from "@/lib/data/openings";
 import { notFound } from "next/navigation";
 
-export default function OpeningTheoryPage({ params }: { params: { slug: string } }) {
+export default function OpeningTheoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
+  const { slug } = React.use(params);
   
-  const data = getOpeningBySlug(params.slug);
+  const data = getOpeningBySlug(slug);
   
   if (!data) {
     return (
