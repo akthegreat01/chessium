@@ -19,7 +19,7 @@ export default function StudyViewerPage() {
   const [study, setStudy] = useState<Study | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [game, setGame] = useState(new Chess());
-  const [fen, setFen] = useState("");
+  const [fen, setFen] = useState("start");
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -207,7 +207,7 @@ export default function StudyViewerPage() {
         <div className={`absolute inset-0 blur-[100px] rounded-full pointer-events-none transition-colors duration-1000 ${isSuccess ? 'bg-green-500/10' : 'bg-primary/5 opacity-0 lg:opacity-100'}`} />
         
         <div className="w-full max-w-[min(calc(100vh-180px),700px)] mx-auto relative group shadow-[0_20px_60px_rgba(0,0,0,0.6)] rounded-2xl overflow-hidden border border-white/10 z-10">
-          <div className="w-full aspect-square bg-black/40 relative">
+          <div className="w-full aspect-square bg-black/40 relative" key={`${study.id}-${currentStepIndex}`}>
             {/* @ts-ignore */}
             <Chessboard 
               id="StudyBoard"
