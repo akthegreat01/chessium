@@ -272,11 +272,29 @@ export default function Analyzer() {
     const newGame = new Chess();
     try {
       if (type === 'pgn') {
+        // Clean PGN: strip clock annotations, eval comments, and other curly-brace content
+        // that chess.js cannot parse (Chess.com uses {[%clk ...]}, {[%eval ...]}, etc.)
+        const cleanPgn = (raw: string) => {
+          return raw
+            .replace(/\{[^}]*\}/g, '')       // Remove all {comments}
+            .replace(/;[^\n]*/g, '')          // Remove semicolon comments  
+            .replace(/\d+\.{3}/g, '')         // Remove move-number ellipsis like "1..."
+            .replace(/\s+/g, ' ')             // Collapse whitespace
+            .trim();
+        };
+
+        // Try raw first
         try {
           newGame.loadPgn(data);
-        } catch (e) {
-          const rawMoves = data.replace(/\[.*?\]\s*/g, '').trim();
-          newGame.loadPgn(rawMoves);
+        } catch (e1) {
+          // Try with cleaned PGN (strips Chess.com annotations)
+          try {
+            newGame.loadPgn(cleanPgn(data));
+          } catch (e2) {
+            // Last resort: strip headers too and try just the movetext
+            const rawMoves = cleanPgn(data.replace(/\[.*?\]\s*/g, ''));
+            newGame.loadPgn(rawMoves);
+          }
         }
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
