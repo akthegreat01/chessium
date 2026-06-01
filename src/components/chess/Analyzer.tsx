@@ -131,7 +131,7 @@ export default function Analyzer() {
         const newGame = robustLoadPgn(pgnQuery);
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
-        setCurrentIndex(moves.length - 1);
+        setCurrentIndex(-1);
         setGame(newGame);
         runFullAnalysis(moves as Move[]);
         setBoardKey(prev => prev + 1);
@@ -302,7 +302,7 @@ export default function Analyzer() {
         const newGame = robustLoadPgn(data);
         const moves = newGame.history({ verbose: true });
         setHistory(moves as Move[]);
-        setCurrentIndex(moves.length - 1);
+        setCurrentIndex(-1);
         setGame(newGame);
         runFullAnalysis(moves as Move[]);
         setBoardKey(prev => prev + 1);
