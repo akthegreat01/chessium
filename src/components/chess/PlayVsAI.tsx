@@ -51,17 +51,6 @@ export default function PlayVsAI() {
     dialogueTimer.current = setTimeout(() => setShowDialogue(false), duration);
   }, []);
 
-  // Initialize Stockfish worker only once
-  useEffect(() => {
-    workerRef.current = new Worker("/stockfish/stockfish.js");
-    workerRef.current.postMessage("uci");
-    
-    return () => {
-      workerRef.current?.terminate();
-      if (dialogueTimer.current) clearTimeout(dialogueTimer.current);
-    };
-  }, []);
-
   // Handle engine move
   const makeEngineMove = useCallback((lan: string) => {
     const move = makeMove({
@@ -86,11 +75,17 @@ export default function PlayVsAI() {
     setIsThinking(false);
   }, [game, makeMove, personality, displayDialogue]);
 
-  // Update worker message handler with fresh dependencies
+  const makeEngineMoveRef = useRef(makeEngineMove);
   useEffect(() => {
-    if (!workerRef.current) return;
+    makeEngineMoveRef.current = makeEngineMove;
+  }, [makeEngineMove]);
+
+  // Initialize Stockfish worker exactly once
+  useEffect(() => {
+    const worker = new Worker("/stockfish/stockfish.js");
+    workerRef.current = worker;
     
-    workerRef.current.onmessage = (event) => {
+    worker.onmessage = (event) => {
       const msg = event.data;
       if (msg === "uciok") {
         setEngineReady(true);
@@ -101,11 +96,18 @@ export default function PlayVsAI() {
         const match = msg.match(/bestmove ([a-h][1-8][a-h][1-8][qrbn]?)/);
         if (match) {
           const moveLan = match[1];
-          makeEngineMove(moveLan);
+          makeEngineMoveRef.current(moveLan);
         }
       }
     };
-  }, [makeEngineMove]);
+    
+    worker.postMessage("uci");
+    
+    return () => {
+      worker.terminate();
+      if (dialogueTimer.current) clearTimeout(dialogueTimer.current);
+    };
+  }, []);
 
   // Set skill level when personality changes
   useEffect(() => {
@@ -178,8 +180,14 @@ export default function PlayVsAI() {
   };
 
   const handleUndo = () => {
-    undoMove(); // Undo engine move
-    if (game.turn() !== playerColor) undoMove(); // Undo player move if needed
+    if (turn === playerColor) {
+      // It's our turn, meaning the AI just played. Undo the AI's move and our move.
+      undoMove();
+      undoMove();
+    } else {
+      // It's the AI's turn, meaning we just played. Undo just our move.
+      undoMove();
+    }
     if (workerRef.current) workerRef.current.postMessage("stop");
     setIsThinking(false);
   };
@@ -309,7 +317,7 @@ export default function PlayVsAI() {
               onPieceDrop={onDrop}
               onSquareClick={onSquareClick}
               arePiecesDraggable={true}
-              boardOrientation={playerColor === "w" ? (isFlipped ? "black" : "white") : (isFlipped ? "white" : "black")}
+              boardOrientation={isFlipped ? "black" : "white"}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}
               animationDuration={250}

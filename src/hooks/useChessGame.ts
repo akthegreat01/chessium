@@ -20,23 +20,26 @@ export function useChessGame(initialFen: string = 'start') {
   const history = useMemo(() => game.history({ verbose: true }) as Move[], [game]);
 
   const makeMove = useCallback((moveDetails: { from: string; to: string; promotion?: string }) => {
-    const gameCopy = new Chess(game.fen());
-    try {
-      const move = gameCopy.move({
-        from: moveDetails.from,
-        to: moveDetails.to,
-        promotion: moveDetails.promotion || 'q',
-      });
-      if (move) {
-        setGame(gameCopy);
-        return move;
+    let moveResult: Move | null = null;
+    setGame((prevGame) => {
+      const gameCopy = new Chess(prevGame.fen());
+      try {
+        const move = gameCopy.move({
+          from: moveDetails.from,
+          to: moveDetails.to,
+          promotion: moveDetails.promotion || 'q',
+        });
+        if (move) {
+          moveResult = move;
+          return gameCopy;
+        }
+      } catch (e) {
+        // Invalid move
       }
-    } catch (e) {
-      // Invalid move
-      return null;
-    }
-    return null;
-  }, [game]);
+      return prevGame;
+    });
+    return moveResult;
+  }, []);
 
   const loadFen = useCallback((newFen: string) => {
     const gameCopy = new Chess();
@@ -65,13 +68,18 @@ export function useChessGame(initialFen: string = 'start') {
   }, []);
 
   const undoMove = useCallback(() => {
-    const gameCopy = new Chess(game.fen());
-    const move = gameCopy.undo();
-    if (move) {
-      setGame(gameCopy);
-    }
-    return move;
-  }, [game]);
+    let moveResult: Move | null = null;
+    setGame((prevGame) => {
+      const gameCopy = new Chess(prevGame.fen());
+      const move = gameCopy.undo();
+      if (move) {
+        moveResult = move;
+        return gameCopy;
+      }
+      return prevGame;
+    });
+    return moveResult;
+  }, []);
 
   return {
     game,
