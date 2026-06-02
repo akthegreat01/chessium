@@ -321,7 +321,7 @@ export default function PlayPage() {
               <div className="p-6 border-b border-[#2a2a30] flex items-center justify-between bg-[#1a1a1f]">
                 <h2 className="text-2xl font-bold text-white">Choose Your Opponent</h2>
                 <button 
-                  onClick={() => selectedBot && setIsModalOpen(false)}
+                  onClick={() => setIsModalOpen(false)}
                   className="text-[#6b6b75] hover:text-white"
                 >
                   <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
