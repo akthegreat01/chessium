@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const PIECES = ["♔", "♕", "♖", "♗", "♘", "♙", "♚", "♛", "♜", "♝", "♞", "♟"];
 
@@ -149,33 +150,31 @@ export default function Hero() {
           transition={{ duration: 0.6, delay: 0.55 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
         >
-          <a
-            href="/signup"
-            className="group relative inline-flex items-center justify-center px-8 py-4 rounded-xl text-base font-semibold text-white bg-[#81b64c] hover:bg-[#9fcc6b] transition-all duration-300 shadow-lg hover:shadow-[0_0_30px_rgba(129,182,76,0.3)] min-w-[200px]"
-          >
-            <span className="flex items-center gap-2">
-              Start Free
-              <svg
-                className="w-4 h-4 transition-transform group-hover:translate-x-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-            </span>
-          </a>
-          <a
-            href="/analysis"
-            className="inline-flex items-center justify-center px-8 py-4 rounded-xl text-base font-semibold text-white border border-[#2a2a30] hover:border-[#3a3a42] hover:bg-[#1a1a1f] transition-all duration-300 min-w-[200px]"
-          >
-            Analyze a Game
-          </a>
+          <Link href="/signup" passHref legacyBehavior>
+            <a className="group relative inline-flex items-center justify-center px-8 py-4 rounded-xl text-base font-semibold text-white bg-[#81b64c] hover:bg-[#9fcc6b] transition-all duration-300 shadow-lg hover:shadow-[0_0_30px_rgba(129,182,76,0.3)] min-w-[200px]">
+              <span className="flex items-center gap-2">
+                Start Free
+                <svg
+                  className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              </span>
+            </a>
+          </Link>
+          <Link href="/analysis" passHref legacyBehavior>
+            <a className="inline-flex items-center justify-center px-8 py-4 rounded-xl text-base font-semibold text-white border border-[#2a2a30] hover:border-[#3a3a42] hover:bg-[#1a1a1f] transition-all duration-300 min-w-[200px]">
+              Analyze a Game
+            </a>
+          </Link>
         </motion.div>
 
         {/* Mockup Preview */}
@@ -183,9 +182,9 @@ export default function Hero() {
           initial={{ opacity: 0, y: 40, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.7 }}
-          className="relative mx-auto max-w-4xl"
+          className="relative mx-auto max-w-5xl"
         >
-          <div className="relative rounded-2xl border border-[#2a2a30] overflow-hidden shadow-elevated bg-[#111113]">
+          <div className="relative rounded-2xl border border-[#2a2a30] overflow-hidden shadow-2xl bg-[#0d0d0e]">
             {/* Browser chrome */}
             <div className="flex items-center gap-2 px-4 py-3 border-b border-[#2a2a30] bg-[#0a0a0b]">
               <div className="flex gap-1.5">
@@ -194,211 +193,134 @@ export default function Hero() {
                 <div className="w-3 h-3 rounded-full bg-[#28ca41]" />
               </div>
               <div className="flex-1 flex justify-center">
-                <div className="px-4 py-1 rounded-lg bg-[#141416] text-xs text-[#6b6b75] font-mono">
-                  chessium.com/analysis
+                <div className="px-4 py-1.5 rounded-full bg-[#141416] text-xs text-[#6b6b75] font-mono tracking-wide">
+                  chessium.in/analysis
                 </div>
               </div>
             </div>
 
-            {/* Analysis UI Mockup */}
-            <div className="p-6 grid grid-cols-1 md:grid-cols-[1fr_300px] gap-6">
-              {/* Board Area */}
-              <div className="space-y-4">
-                {/* Mini chess board */}
-                <div className="aspect-square max-w-[360px] mx-auto grid grid-cols-8 grid-rows-8 rounded-lg overflow-hidden border border-[#2a2a30]">
+            {/* Premium UI Mockup */}
+            <div className="p-8 grid grid-cols-1 md:grid-cols-[1fr_320px] gap-8 bg-[#0d0d0e]">
+              
+              {/* Left Column: Board & Eval Graph */}
+              <div className="flex flex-col gap-6">
+                
+                {/* Board */}
+                <div className="aspect-square w-full max-w-[460px] mx-auto grid grid-cols-8 grid-rows-8 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)]">
                   {Array.from({ length: 64 }, (_, i) => {
                     const row = Math.floor(i / 8);
                     const col = i % 8;
                     const isLight = (row + col) % 2 === 0;
+                    
+                    // Simple piece representation for the mock
+                    let piece = null;
+                    if (row === 0) piece = ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"][col];
+                    if (row === 1) piece = "♟";
+                    if (row === 6) piece = "♙";
+                    if (row === 7) piece = ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"][col];
+
                     return (
                       <div
                         key={i}
                         className={`${
                           isLight ? "bg-[#ebecd0]" : "bg-[#739552]"
-                        } flex items-center justify-center text-sm sm:text-lg`}
+                        } flex items-center justify-center text-2xl sm:text-4xl text-white opacity-90`}
+                        style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
                       >
-                        {/* Show some pieces on starting position */}
-                        {row === 0 &&
-                          [
-                            "♜",
-                            "♞",
-                            "♝",
-                            "♛",
-                            "♚",
-                            "♝",
-                            "♞",
-                            "♜",
-                          ][col]}
-                        {row === 1 && "♟"}
-                        {row === 6 && "♙"}
-                        {row === 7 &&
-                          [
-                            "♖",
-                            "♘",
-                            "♗",
-                            "♕",
-                            "♔",
-                            "♗",
-                            "♘",
-                            "♖",
-                          ][col]}
+                        {piece}
                       </div>
                     );
                   })}
                 </div>
 
-                {/* Eval Graph Mockup */}
-                <div className="h-16 rounded-lg bg-[#0a0a0b] border border-[#2a2a30] overflow-hidden relative">
-                  <svg
-                    viewBox="0 0 200 40"
-                    className="w-full h-full"
-                    preserveAspectRatio="none"
-                  >
+                {/* Eval Graph */}
+                <div className="h-16 w-full max-w-[460px] mx-auto rounded-xl bg-[#141416] border border-[#2a2a30] overflow-hidden relative shadow-inner">
+                  <svg viewBox="0 0 400 40" className="w-full h-full" preserveAspectRatio="none">
                     <defs>
-                      <linearGradient
-                        id="evalGrad"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="0%"
-                          stopColor="#81b64c"
-                          stopOpacity="0.3"
-                        />
-                        <stop
-                          offset="100%"
-                          stopColor="#81b64c"
-                          stopOpacity="0"
-                        />
+                      <linearGradient id="evalGradHero" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#81b64c" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#81b64c" stopOpacity="0" />
                       </linearGradient>
                     </defs>
                     <path
-                      d="M0,20 Q10,18 20,16 T40,14 T60,12 T80,15 T100,10 T120,8 T140,12 T160,6 T180,10 T200,5"
-                      fill="none"
-                      stroke="#81b64c"
-                      strokeWidth="1.5"
+                      d="M0,25 Q40,20 80,22 T160,25 T240,15 T320,22 T400,10 L400,40 L0,40 Z"
+                      fill="url(#evalGradHero)"
                     />
                     <path
-                      d="M0,20 Q10,18 20,16 T40,14 T60,12 T80,15 T100,10 T120,8 T140,12 T160,6 T180,10 T200,5 L200,20 L0,20 Z"
-                      fill="url(#evalGrad)"
+                      d="M0,25 Q40,20 80,22 T160,25 T240,15 T320,22 T400,10"
+                      fill="none"
+                      stroke="#81b64c"
+                      strokeWidth="2"
+                      style={{ filter: "drop-shadow(0 0 4px rgba(129,182,76,0.6))" }}
                     />
-                    <line
-                      x1="0"
-                      y1="20"
-                      x2="200"
-                      y2="20"
-                      stroke="#2a2a30"
-                      strokeWidth="0.5"
-                    />
+                    <line x1="0" y1="20" x2="400" y2="20" stroke="#2a2a30" strokeWidth="1" />
                   </svg>
                 </div>
               </div>
 
-              {/* Side Panel Mockup */}
-              <div className="space-y-4 hidden md:block">
+              {/* Right Column: Panels */}
+              <div className="flex flex-col gap-6 hidden md:flex">
+                
                 {/* Accuracy */}
-                <div className="p-4 rounded-xl bg-[#0a0a0b] border border-[#2a2a30]">
-                  <div className="text-xs text-[#6b6b75] mb-3 uppercase tracking-wider">
+                <div className="p-6 rounded-2xl bg-[#0a0a0b] border border-[#2a2a30] flex flex-col justify-between">
+                  <div className="text-xs text-[#6b6b75] uppercase tracking-widest text-center mb-6 font-medium">
                     Accuracy
                   </div>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center px-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white">
-                        94.2
-                      </div>
-                      <div className="text-xs text-[#a0a0a8]">White</div>
+                      <div className="text-4xl font-bold text-white tracking-tight mb-1">94.2</div>
+                      <div className="text-sm text-[#81b64c] font-medium">White</div>
                     </div>
+                    <div className="w-px h-12 bg-[#2a2a30]"></div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-[#a0a0a8]">
-                        87.6
-                      </div>
-                      <div className="text-xs text-[#a0a0a8]">Black</div>
+                      <div className="text-4xl font-bold text-[#a0a0a8] tracking-tight mb-1">87.6</div>
+                      <div className="text-sm text-[#6b6b75] font-medium">Black</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Moves */}
-                <div className="p-4 rounded-xl bg-[#0a0a0b] border border-[#2a2a30]">
-                  <div className="text-xs text-[#6b6b75] mb-3 uppercase tracking-wider">
+                <div className="p-6 rounded-2xl bg-[#0a0a0b] border border-[#2a2a30] flex-1">
+                  <div className="text-xs text-[#6b6b75] uppercase tracking-widest text-center mb-6 font-medium">
                     Moves
                   </div>
-                  <div className="space-y-1.5 text-sm font-mono">
+                  <div className="space-y-4 text-sm font-mono pl-4">
                     {[
-                      { n: "1.", w: "e4", wc: "best", b: "e5", bc: "best" },
-                      {
-                        n: "2.",
-                        w: "Nf3",
-                        wc: "best",
-                        b: "Nc6",
-                        bc: "best",
-                      },
-                      {
-                        n: "3.",
-                        w: "Bb5",
-                        wc: "excellent",
-                        b: "a6",
-                        bc: "good",
-                      },
-                      {
-                        n: "4.",
-                        w: "Ba4",
-                        wc: "best",
-                        b: "Nf6",
-                        bc: "best",
-                      },
+                      { n: "1.", w: "e4", b: "e5" },
+                      { n: "2.", w: "Nf3", b: "Nc6" },
+                      { n: "3.", w: "Bb5", b: "a6" },
+                      { n: "4.", w: "Ba4", b: "Nf6" },
                     ].map((move) => (
-                      <div
-                        key={move.n}
-                        className="flex items-center gap-2 py-0.5"
-                      >
+                      <div key={move.n} className="flex items-center gap-6">
                         <span className="text-[#6b6b75] w-6">{move.n}</span>
-                        <span className="flex items-center gap-1 w-16">
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              move.wc === "best"
-                                ? "bg-[#81b64c]"
-                                : move.wc === "excellent"
-                                ? "bg-[#96bc4b]"
-                                : "bg-[#96bc4b]"
-                            }`}
-                          />
-                          {move.w}
-                        </span>
-                        <span className="flex items-center gap-1 w-16">
-                          <span
-                            className={`w-1.5 h-1.5 rounded-full ${
-                              move.bc === "best"
-                                ? "bg-[#81b64c]"
-                                : move.bc === "good"
-                                ? "bg-[#96bc4b]"
-                                : "bg-[#f7c631]"
-                            }`}
-                          />
-                          {move.b}
-                        </span>
+                        <div className="flex items-center gap-2 w-20">
+                          <span className="w-2 h-2 rounded-full bg-[#81b64c] shadow-[0_0_8px_rgba(129,182,76,0.8)]" />
+                          <span className="text-white">{move.w}</span>
+                        </div>
+                        <div className="flex items-center gap-2 w-20">
+                          <span className="w-2 h-2 rounded-full bg-[#81b64c] shadow-[0_0_8px_rgba(129,182,76,0.8)]" />
+                          <span className="text-white">{move.b}</span>
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Engine Suggestion */}
-                <div className="p-4 rounded-xl bg-[#0a0a0b] border border-[#2a2a30]">
-                  <div className="text-xs text-[#6b6b75] mb-3 uppercase tracking-wider">
+                {/* Engine Depth */}
+                <div className="p-5 rounded-2xl bg-[#0a0a0b] border border-[#2a2a30]">
+                  <div className="text-xs text-[#6b6b75] uppercase tracking-widest text-center mb-4 font-medium">
                     Engine (Depth 22)
                   </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="px-1.5 py-0.5 rounded bg-[#81b64c]/20 text-[#81b64c] text-xs font-bold">
-                        +0.3
-                      </span>
-                      <span className="text-[#a0a0a8] font-mono">
-                        O-O Bd6 d3 O-O
-                      </span>
+                  <div className="flex items-center justify-center gap-3">
+                    <div className="px-2 py-1 rounded bg-[#81b64c]/20 text-[#81b64c] text-sm font-bold border border-[#81b64c]/30">
+                      +0.3
+                    </div>
+                    <div className="text-[#a0a0a8] font-mono text-sm tracking-wide">
+                      O-O Bd6 d3 O-O
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>

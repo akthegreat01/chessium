@@ -32,6 +32,28 @@ const COURSE_CONTENT: Record<string, any> = {
       "Look at the board below. The White Knight on c7 is forking the Black King on e8 and the Black Rook on a8! This is a classic Royal Fork."
     ],
     fen: "r3k2r/ppN1pppp/8/8/8/8/PPPPPPPP/R3K2R b KQkq - 0 1"
+  },
+  "endgame-mastery": {
+    title: "Endgame Mastery",
+    color: "#5c8bb0",
+    theory: [
+      "The endgame is the phase of the game where most pieces have been traded off.",
+      "The most fundamental endgame is King and Pawn vs King. If the defending King can get in front of the pawn and take the 'Opposition', it is usually a draw.",
+      "**The Opposition** is a key concept where Kings face each other with one square between them. The player who does *not* have to move has the opposition.",
+      "In the position below, White to move wins by outflanking the Black King!"
+    ],
+    fen: "8/8/8/8/8/4k3/4P3/4K3 w - - 0 1"
+  },
+  "ruy-lopez": {
+    title: "The Ruy Lopez",
+    color: "#1baca6",
+    theory: [
+      "The Ruy Lopez (or Spanish Game) is one of the oldest and most classic chess openings, starting with 1.e4 e5 2.Nf3 Nc6 3.Bb5.",
+      "White's 3rd move (Bb5) puts pressure on the c6 Knight, which defends the e5 pawn. White's goal is to control the center, castle quickly, and build long-term positional pressure.",
+      "Black has many defenses, but the most popular are the Morphy Defense (3...a6) and the Berlin Defense (3...Nf6).",
+      "Below is the starting position of the Ruy Lopez after 3.Bb5."
+    ],
+    fen: "r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
   }
 };
 

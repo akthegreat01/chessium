@@ -17,6 +17,8 @@ export default function PlayPage() {
   const [isBotThinking, setIsBotThinking] = useState(false);
   const [moveFrom, setMoveFrom] = useState<string | null>(null);
   const [optionSquares, setOptionSquares] = useState<Record<string, any>>({});
+  const [visualOrientation, setVisualOrientation] = useState<"white" | "black">("white");
+  const [theme, setTheme] = useState<"classic" | "green" | "blue" | "purple" | "neon">("green");
   const router = useRouter();
   
   const { game, position, history, makeMove, isGameOver, turn } = useChessGame();
@@ -24,7 +26,9 @@ export default function PlayPage() {
 
   const handleStartGame = (bot: BotPersonality, color: "white" | "black" | "random") => {
     setSelectedBot(bot);
-    setPlayerColor(color === "random" ? (Math.random() > 0.5 ? "white" : "black") : color);
+    const chosenColor = color === "random" ? (Math.random() > 0.5 ? "white" : "black") : color;
+    setPlayerColor(chosenColor);
+    setVisualOrientation(chosenColor);
     setIsModalOpen(false);
   };
 
@@ -214,14 +218,39 @@ export default function PlayPage() {
           </div>
         )}
 
+        {/* Toolbar */}
+        <div className="flex items-center justify-end gap-2 px-2">
+          <select 
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as any)}
+            className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#81b64c]"
+          >
+            <option value="green">Green</option>
+            <option value="classic">Classic</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Purple</option>
+            <option value="neon">Neon</option>
+          </select>
+          <button 
+            onClick={() => setVisualOrientation(prev => prev === "white" ? "black" : "white")}
+            className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] hover:text-white rounded-lg p-1.5 transition-colors"
+            title="Flip Board"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+          </button>
+        </div>
+
         <div className="w-full aspect-[1/1] relative shadow-elevated">
           <Board 
             position={position} 
             onPieceDrop={handlePieceDrop}
             onSquareClick={onSquareClick}
             customSquareStyles={optionSquares}
-            boardOrientation={playerColor}
+            boardOrientation={visualOrientation}
             arePiecesDraggable={!isBotThinking && !isGameOver}
+            theme={theme}
           />
         </div>
 

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/dashboard/', '/admin/', '/settings/', '/api/'],
     },
-    sitemap: 'https://chessium.app/sitemap.xml',
+    sitemap: 'https://chessium.in/sitemap.xml',
   };
 }

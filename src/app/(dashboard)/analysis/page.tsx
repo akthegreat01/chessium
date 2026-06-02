@@ -29,6 +29,8 @@ export default function AnalysisPage() {
   const [optionSquares, setOptionSquares] = useState<Record<string, any>>({});
   const [currentLines, setCurrentLines] = useState<{eval: {cp: number, mate: number | null}, moves: string[], depth: number}[]>([]);
   const [isThinking, setIsThinking] = useState(false);
+  const [visualOrientation, setVisualOrientation] = useState<"white" | "black">("white");
+  const [theme, setTheme] = useState<"classic" | "green" | "blue" | "purple" | "neon">("green");
 
   // Full Game Analysis State
   const [gameAnalysis, setGameAnalysis] = useState<GameAnalysis | null>(null);
@@ -398,12 +400,38 @@ export default function AnalysisPage() {
             <EvalBar centipawns={currentEval?.cp || 0} mateIn={currentEval?.mate || null} orientation="white" />
           </div>
           <div className="flex-1 flex flex-col justify-between">
+            {/* Toolbar */}
+            <div className="flex items-center justify-end gap-2 px-2 mb-2">
+              <select 
+                value={theme}
+                onChange={(e) => setTheme(e.target.value as any)}
+                className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-[#81b64c]"
+              >
+                <option value="green">Green</option>
+                <option value="classic">Classic</option>
+                <option value="blue">Blue</option>
+                <option value="purple">Purple</option>
+                <option value="neon">Neon</option>
+              </select>
+              <button 
+                onClick={() => setVisualOrientation(prev => prev === "white" ? "black" : "white")}
+                className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] hover:text-white rounded-lg p-1 transition-colors"
+                title="Flip Board"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                </svg>
+              </button>
+            </div>
+
             {/* Top Player (Black by default if board is white-oriented) */}
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-[#2a2a30] rounded flex items-center justify-center text-sm">B</div>
+              <div className="w-8 h-8 bg-[#2a2a30] rounded flex items-center justify-center text-sm">
+                {visualOrientation === "white" ? "B" : "W"}
+              </div>
               <div className="font-semibold text-white">
-                {blackPlayer}
-                {blackElo && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({blackElo})</span>}
+                {visualOrientation === "white" ? blackPlayer : whitePlayer}
+                {(visualOrientation === "white" ? blackElo : whiteElo) && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({visualOrientation === "white" ? blackElo : whiteElo})</span>}
               </div>
             </div>
 
@@ -412,14 +440,18 @@ export default function AnalysisPage() {
               onPieceDrop={currentMoveIndex === history.length - 1 ? handlePieceDrop : undefined}
               onSquareClick={currentMoveIndex === history.length - 1 ? onSquareClick : undefined}
               customSquareStyles={customSquareStyles}
+              boardOrientation={visualOrientation}
+              theme={theme}
             />
 
             {/* Bottom Player (White by default) */}
             <div className="flex items-center gap-2 mt-2">
-              <div className="w-8 h-8 bg-white rounded flex items-center justify-center text-sm text-black">W</div>
+              <div className="w-8 h-8 bg-white rounded flex items-center justify-center text-sm text-black">
+                {visualOrientation === "white" ? "W" : "B"}
+              </div>
               <div className="font-semibold text-white">
-                {whitePlayer}
-                {whiteElo && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({whiteElo})</span>}
+                {visualOrientation === "white" ? whitePlayer : blackPlayer}
+                {(visualOrientation === "white" ? whiteElo : blackElo) && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({visualOrientation === "white" ? whiteElo : blackElo})</span>}
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://chessium.app';
+  const baseUrl = 'https://chessium.in';
 
   return [
     {

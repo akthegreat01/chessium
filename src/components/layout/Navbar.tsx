@@ -89,20 +89,21 @@ export default function Navbar({
               </div>
             ) : (
               <>
-                <button
-                  onClick={onLogin}
+                <Link
+                  href="/login"
                   className="rounded-lg px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:text-text-primary"
                 >
                   Login
-                </button>
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={onSignUp}
-                  className="rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-white shadow-[0_0_20px_rgba(129,182,76,0.15)] transition-colors hover:bg-accent-hover"
-                >
-                  Sign Up
-                </motion.button>
+                </Link>
+                <Link href="/signup" passHref legacyBehavior>
+                  <motion.a
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="rounded-xl bg-accent px-5 py-2 text-sm font-semibold text-white shadow-[0_0_20px_rgba(129,182,76,0.15)] transition-colors hover:bg-accent-hover"
+                  >
+                    Sign Up
+                  </motion.a>
+                </Link>
               </>
             )}
           </div>
@@ -187,24 +188,20 @@ export default function Navbar({
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <button
-                      onClick={() => {
-                        onLogin?.();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full rounded-xl border border-border px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-white/5"
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block w-full text-center rounded-xl border border-border px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-white/5"
                     >
                       Login
-                    </button>
-                    <button
-                      onClick={() => {
-                        onSignUp?.();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="w-full rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
+                    </Link>
+                    <Link
+                      href="/signup"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block w-full text-center rounded-xl bg-accent px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
                     >
                       Sign Up
-                    </button>
+                    </Link>
                   </div>
                 )}
               </div>
