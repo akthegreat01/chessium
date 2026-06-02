@@ -66,6 +66,70 @@ export default function DashboardPage() {
     }
   };
 
+  const fetchExternalGames = async (chesscom: string, lichess: string) => {
+    let fetchedGames: any[] = [];
+    if (lichess) {
+      try {
+        const res = await fetch(`https://lichess.org/api/games/user/${lichess}?max=5&pgnInJson=true`, { headers: { Accept: 'application/x-ndjson' }});
+        if (res.ok) {
+          const text = await res.text();
+          const jsonLines = text.split('\n').filter(Boolean).map(line => JSON.parse(line));
+          const lichessGames = jsonLines.map((g: any) => ({
+            id: g.id,
+            player_color: g.players.white.user.id.toLowerCase() === lichess.toLowerCase() ? "white" : "black",
+            opponent_name: g.players.white.user.id.toLowerCase() === lichess.toLowerCase() ? g.players.black.user.name : g.players.white.user.name,
+            result: g.winner === undefined ? 'draw' : g.winner === (g.players.white.user.id.toLowerCase() === lichess.toLowerCase() ? 'white' : 'black') ? 'win' : 'loss',
+            time_control: g.speed,
+            created_at: new Date(g.createdAt).toISOString(),
+            pgn: g.pgn,
+            platform: "lichess"
+          }));
+          fetchedGames = [...fetchedGames, ...lichessGames];
+        }
+      } catch(e) {}
+    }
+    
+    if (chesscom) {
+      try {
+        const res = await fetch(`https://api.chess.com/pub/player/${chesscom}/games/archives`);
+        if (res.ok) {
+          const data = await res.json();
+          const lastArchive = data.archives[data.archives.length - 1];
+          if (lastArchive) {
+            const res2 = await fetch(lastArchive);
+            if (res2.ok) {
+              const data2 = await res2.json();
+              const last5 = data2.games.slice(-5).reverse();
+              const chesscomGames = last5.map((g: any) => ({
+                id: g.url,
+                player_color: g.white.username.toLowerCase() === chesscom.toLowerCase() ? "white" : "black",
+                opponent_name: g.white.username.toLowerCase() === chesscom.toLowerCase() ? g.black.username : g.white.username,
+                result: g.white.username.toLowerCase() === chesscom.toLowerCase() 
+                  ? (g.white.result === 'win' ? 'win' : (g.white.result === 'repetition' || g.white.result === 'agreed' ? 'draw' : 'loss'))
+                  : (g.black.result === 'win' ? 'win' : (g.black.result === 'repetition' || g.black.result === 'agreed' ? 'draw' : 'loss')),
+                time_control: g.time_class,
+                created_at: new Date(g.end_time * 1000).toISOString(),
+                pgn: g.pgn,
+                platform: "chesscom"
+              }));
+              fetchedGames = [...fetchedGames, ...chesscomGames];
+            }
+          }
+        }
+      } catch(e) {}
+    }
+    
+    setGames(prev => {
+      const merged = [...prev];
+      fetchedGames.forEach(fg => {
+         if (!merged.find(g => g.id === fg.id)) {
+           merged.push(fg);
+         }
+      });
+      return merged.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).slice(0, 5);
+    });
+  };
+
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -89,6 +153,7 @@ export default function DashboardPage() {
               
               if (data.chess_com_username || data.lichess_username) {
                 fetchExternalRatings(data.chess_com_username, data.lichess_username);
+                fetchExternalGames(data.chess_com_username, data.lichess_username);
               }
             }
           });
@@ -111,6 +176,7 @@ export default function DashboardPage() {
         
         if (savedChesscom || savedLichess) {
           fetchExternalRatings(savedChesscom || "", savedLichess || "");
+          fetchExternalGames(savedChesscom || "", savedLichess || "");
         }
       }
     });
@@ -156,6 +222,7 @@ export default function DashboardPage() {
     }
     
     await fetchExternalRatings(chesscomUsername, lichessUsername);
+    await fetchExternalGames(chesscomUsername, lichessUsername);
     setIsSavingAccounts(false);
   };
 
@@ -278,36 +345,44 @@ export default function DashboardPage() {
               {games.length === 0 ? (
                 <div className="p-8 text-center text-[#a0a0a8]">No recent games found. Play a game to see it here!</div>
               ) : (
-                games.map((game, i) => (
-                  <div
-                    key={game.id || i}
-                    className="flex items-center gap-4 p-4 border-b border-[#2a2a30] last:border-0 hover:bg-[#1a1a1f] transition-colors"
-                  >
-                    <div className="w-12 h-12 bg-[#0a0a0b] rounded-lg flex items-center justify-center text-xl border border-[#2a2a30]">
-                      {game.player_color === "white" ? "♔" : "♚"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold text-white truncate">vs {game.opponent_name || "Guest"}</span>
-                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${game.result === 'win' ? 'bg-[#81b64c]/10 text-[#81b64c]' : game.result === 'loss' ? 'bg-[#ca3431]/10 text-[#ca3431]' : 'bg-[#a0a0a8]/10 text-[#a0a0a8]'}`}>
-                          {game.result === 'win' ? 'Won' : game.result === 'loss' ? 'Lost' : 'Draw'}
-                        </span>
+                games.map((game, i) => {
+                  let analysisUrl = "/analysis";
+                  if (game.pgn) {
+                    analysisUrl = `/analysis?pgn=${encodeURIComponent(game.pgn)}`;
+                  }
+                  
+                  return (
+                  <Link href={analysisUrl} key={game.id || i} className="block">
+                    <div
+                      className="flex items-center gap-4 p-4 border-b border-[#2a2a30] last:border-0 hover:bg-[#1a1a1f] transition-colors"
+                    >
+                      <div className="w-12 h-12 bg-[#0a0a0b] rounded-lg flex items-center justify-center text-xl border border-[#2a2a30]">
+                        {game.player_color === "white" ? "♔" : "♚"}
                       </div>
-                      <div className="text-xs text-[#6b6b75]">
-                        {game.time_control || 'Custom'} • {new Date(game.created_at).toLocaleDateString()}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-white truncate">vs {game.opponent_name || "Guest"}</span>
+                          <span className={`px-2 py-0.5 rounded text-xs font-medium ${game.result === 'win' ? 'bg-[#81b64c]/10 text-[#81b64c]' : game.result === 'loss' ? 'bg-[#ca3431]/10 text-[#ca3431]' : 'bg-[#a0a0a8]/10 text-[#a0a0a8]'}`}>
+                            {game.result === 'win' ? 'Won' : game.result === 'loss' ? 'Lost' : 'Draw'}
+                          </span>
+                          {game.platform && (
+                            <span className="px-2 py-0.5 rounded text-xs font-medium bg-[#2a2a30] text-[#a0a0a8]">
+                              {game.platform === 'lichess' ? 'Lichess' : 'Chess.com'}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-[#6b6b75]">
+                          {game.time_control || 'Custom'} • {new Date(game.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                      <div className="hidden sm:block text-right">
+                        <button className="text-sm font-medium text-[#81b64c] hover:text-[#9fcc6b] px-4 py-2 rounded-lg border border-[#2a2a30] hover:border-[#81b64c]/50 transition-colors bg-[#0a0a0b]">
+                          Review
+                        </button>
                       </div>
                     </div>
-                    <div className="hidden sm:block text-right">
-                      <div className="text-sm font-medium text-white mb-1">Accuracy</div>
-                      <div className="text-xs text-[#81b64c]">{game.accuracy ? `${game.accuracy}%` : 'N/A'}</div>
-                    </div>
-                    <Link href={`/analysis?pgn=${encodeURIComponent(game.pgn || '')}`} className="p-2 rounded-lg text-[#a0a0a8] hover:text-white hover:bg-[#2a2a30] transition-colors">
-                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                      </svg>
-                    </Link>
-                  </div>
-                ))
+                  </Link>
+                )})
               )}
             </div>
             <div className="mt-4">

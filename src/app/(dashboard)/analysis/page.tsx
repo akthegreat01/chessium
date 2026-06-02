@@ -98,6 +98,17 @@ export default function AnalysisPage() {
     }
   }, [shouldAutoAnalyze, history.length, isAnalyzingGame, isReady]);
 
+  // Load PGN from URL on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const pgnParam = urlParams.get("pgn");
+    if (pgnParam) {
+      loadPgn(pgnParam);
+      // Clean up URL without refreshing
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, [loadPgn]);
+
   // Parse eval from PGN on load
   useEffect(() => {
     const rawPgn = game.pgn();
@@ -453,6 +464,11 @@ export default function AnalysisPage() {
                 onPieceDrop={currentMoveIndex === history.length - 1 ? handlePieceDrop : undefined}
                 onSquareClick={currentMoveIndex === history.length - 1 ? onSquareClick : undefined}
                 customSquareStyles={customSquareStyles}
+                customArrows={
+                  settings.showBestMoveArrow && currentLines.length > 0 && currentLines[0].moves.length > 0
+                  ? [[currentLines[0].moves[0].substring(0, 2), currentLines[0].moves[0].substring(2, 4), "rgba(129, 182, 76, 0.7)"]]
+                  : []
+                }
                 boardOrientation={visualOrientation}
                 theme={settings.boardTheme}
               />
@@ -636,6 +652,31 @@ export default function AnalysisPage() {
                 >
                   Run Full Analysis
                 </button>
+                <div className="flex gap-2 w-full">
+                  <button
+                    onClick={() => {
+                      const url = new URL(window.location.href);
+                      url.searchParams.set("pgn", game.pgn());
+                      navigator.clipboard.writeText(url.toString());
+                      alert("Share link copied to clipboard!");
+                    }}
+                    className="flex-1 py-3 text-sm font-bold text-white border border-[#2a2a30] hover:bg-[#1a1a1f] rounded-xl transition-colors shadow-sm flex items-center justify-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    Share
+                  </button>
+                  <button
+                    onClick={() => {
+                      loadPgn("");
+                      setGameAnalysis(null);
+                    }}
+                    className="flex-1 py-3 text-sm font-bold text-[#ca3431] border border-[#ca3431]/30 hover:bg-[#ca3431]/10 rounded-xl transition-colors shadow-sm"
+                  >
+                    New Game
+                  </button>
+                </div>
               </div>
             )}
           </div>
