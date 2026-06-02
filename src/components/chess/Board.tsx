@@ -47,6 +47,20 @@ export default function Board({
   // without extensive custom piece images, but we can respect moveAnimation.
   const animDuration = settings.moveAnimation ? animationDuration : 0;
 
+  // Generate custom square styles for all 64 squares based on theme colors
+  const boardSquareStyles: Record<string, CSSProperties> = {};
+  const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+  for (let i = 0; i < 8; i++) {
+    for (let j = 0; j < 8; j++) {
+      const square = `${files[i]}${8 - j}`;
+      const isDark = (i + j) % 2 !== 0;
+      boardSquareStyles[square] = { backgroundColor: isDark ? colors.dark : colors.light };
+    }
+  }
+
+  // Merge the generated board styles with any custom styles provided via props
+  const mergedSquareStyles = { ...boardSquareStyles, ...customSquareStyles };
+
   return (
     <div className="w-full max-w-full aspect-square rounded-xl overflow-hidden shadow-card border border-[#2a2a30]">
       <Chessboard
@@ -62,10 +76,14 @@ export default function Board({
         onSquareClick={onSquareClick}
         boardOrientation={boardOrientation}
         arrows={customArrows.map(arrow => ({ startSquare: arrow[0], endSquare: arrow[1], color: arrow[2] || "rgba(0, 0, 0, 0.2)" }))}
-        squareStyles={customSquareStyles}
+        customArrows={customArrows.map(arrow => [arrow[0], arrow[1], arrow[2] || "rgba(0, 0, 0, 0.2)"] as [string, string, string])}
+        squareStyles={mergedSquareStyles}
+        customSquareStyles={mergedSquareStyles}
         darkSquareStyle={{ backgroundColor: colors.dark }}
         lightSquareStyle={{ backgroundColor: colors.light }}
-        dropSquareStyle={{ boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" }}
+        customDarkSquareStyle={{ backgroundColor: colors.dark }}
+        customLightSquareStyle={{ backgroundColor: colors.light }}
+        customBoardStyle={{ borderRadius: "12px" }}
         animationDurationInMs={animDuration}
         allowDrawingArrows={areArrowsAllowed}
         allowDragging={arePiecesDraggable}
