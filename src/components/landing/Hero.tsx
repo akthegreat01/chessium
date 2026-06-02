@@ -39,6 +39,10 @@ export default function Hero() {
       {/* Animated grid background */}
       <div className="absolute inset-0 bg-grid opacity-50" />
 
+      {/* Silver Edge Gradients */}
+      <div className="absolute inset-y-0 left-0 w-[20vw] bg-gradient-to-r from-gray-300/10 to-transparent pointer-events-none opacity-50 mix-blend-screen" />
+      <div className="absolute inset-y-0 right-0 w-[20vw] bg-gradient-to-l from-gray-300/10 to-transparent pointer-events-none opacity-50 mix-blend-screen" />
+
       {/* Floating chess pieces */}
       <div className="absolute inset-0 pointer-events-none">
         {pieces.map((p) => (
@@ -71,37 +75,21 @@ export default function Hero() {
       {/* Radial glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-[#81b64c] opacity-[0.04] blur-[120px]" />
 
-      {/* Huge Leaning Rook on the Left */}
-      <div className="absolute left-[-15%] top-1/2 -translate-y-1/2 w-[60vw] max-w-[800px] aspect-square pointer-events-none z-0 perspective-[1200px] hidden md:block">
+      {/* Huge Static Rook on the Left */}
+      <div className="absolute left-[-15%] top-[10%] w-[55vw] max-w-[800px] aspect-square pointer-events-none z-0 hidden md:block">
         <motion.div
-          initial={{ opacity: 0, x: -100, rotateY: 35, rotateZ: 20 }}
-          animate={{ 
-            opacity: 1, 
-            x: 0,
-            rotateY: [35, 25, 35],
-            rotateZ: [20, 15, 20],
-            y: [0, -30, 0]
-          }}
-          transition={{ 
-            opacity: { duration: 1.2 },
-            x: { duration: 1.2, ease: "easeOut" },
-            rotateY: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-            rotateZ: { duration: 10, repeat: Infinity, ease: "easeInOut" },
-            y: { duration: 7, repeat: Infinity, ease: "easeInOut" }
-          }}
-          style={{ transformStyle: "preserve-3d" }}
-          className="relative w-full h-full"
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="relative w-full h-full flex items-center justify-center"
         >
-          {/* Deep shadow for the realistic effect */}
-          <div className="absolute inset-0 bg-black blur-[60px] opacity-80 translate-y-32 translate-x-16 rounded-full" style={{ transform: "translateZ(-150px)" }} />
-          {/* Subtle glow */}
-          <div className="absolute inset-0 bg-[#81b64c] blur-[120px] opacity-20 rounded-full" style={{ transform: "translateZ(-50px)" }} />
+          {/* Silver/White ambient glow behind the rook */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-300/15 via-gray-500/5 to-transparent blur-[100px] rounded-full scale-110" />
           
           <img 
             src="/logo.png" 
             alt="Chessium Giant Rook" 
-            className="w-full h-full object-contain drop-shadow-[30px_30px_40px_rgba(0,0,0,0.9)]"
-            style={{ transform: "translateZ(50px)" }}
+            className="relative z-10 w-full h-full object-contain drop-shadow-[15px_15px_40px_rgba(0,0,0,0.8)]"
           />
         </motion.div>
       </div>
