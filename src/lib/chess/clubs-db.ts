@@ -69,7 +69,10 @@ export async function getClubMembers(clubId: string) {
     `)
     .eq("club_id", clubId);
 
-  if (error || !data) return [];
+  if (error || !data) {
+    console.error("Error fetching club members:", error);
+    return [];
+  }
 
   return data.map((m: any) => ({
     id: m.id,
