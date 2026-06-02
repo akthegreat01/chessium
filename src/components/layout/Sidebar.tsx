@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
+import AdSlot from '@/components/ui/AdSlot';
 
 interface NavItem {
   label: string;
@@ -223,6 +224,13 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
           </>
         )}
       </nav>
+
+      {/* Ad slot for sidebar */}
+      {!isCollapsed && (
+        <div className="p-3 border-t border-border">
+          <AdSlot slot="sidebar-bottom" />
+        </div>
+      )}
 
       {/* Collapse toggle (desktop) */}
       <div className="hidden border-t border-border p-3 md:block">

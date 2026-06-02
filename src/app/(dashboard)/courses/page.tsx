@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import AdSlot from "@/components/ui/AdSlot";
 
 const COURSES = [
   {
@@ -115,6 +116,10 @@ export default function CoursesPage() {
             </div>
           </motion.div>
         ))}
+      </div>
+
+      <div className="mt-8">
+        <AdSlot slot="courses-bottom" />
       </div>
     </div>
   );

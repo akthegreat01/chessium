@@ -8,6 +8,7 @@ import EvalGraph from "@/components/chess/EvalGraph";
 import EngineLines from "@/components/chess/EngineLines";
 import { useChessGame } from "@/hooks/useChessGame";
 import { useStockfish } from "@/hooks/useStockfish";
+import AdSlot from "@/components/ui/AdSlot";
 
 export default function AnalysisPage() {
   const [pgnInput, setPgnInput] = useState("");
@@ -125,6 +126,10 @@ export default function AnalysisPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 4.5l7.5 7.5-7.5 7.5m6-15l7.5 7.5-7.5 7.5" />
             </svg>
           </button>
+        </div>
+
+        <div className="mt-auto pt-2 shrink-0">
+          <AdSlot slot="analysis-bottom" />
         </div>
       </div>
     </div>

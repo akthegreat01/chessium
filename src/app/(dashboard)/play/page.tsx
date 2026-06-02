@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Board from "@/components/chess/Board";
 import { BOT_PERSONALITIES, BotPersonality } from "@/lib/chess/bot";
 import { motion, AnimatePresence } from "motion/react";
 import { useChessGame } from "@/hooks/useChessGame";
+import { useStockfish } from "@/hooks/useStockfish";
 import MoveList from "@/components/chess/MoveList";
 
 export default function PlayPage() {
   const [selectedBot, setSelectedBot] = useState<BotPersonality | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [playerColor, setPlayerColor] = useState<"white" | "black">("white");
+  const [isBotThinking, setIsBotThinking] = useState(false);
   
   const { game, position, history, makeMove, isGameOver, turn } = useChessGame();
+  const { isReady, getBestMove, evaluatePosition } = useStockfish();
 
   const handleStartGame = (bot: BotPersonality, color: "white" | "black" | "random") => {
     setSelectedBot(bot);
@@ -21,7 +24,7 @@ export default function PlayPage() {
   };
 
   const handlePieceDrop = (source: string, target: string, piece: string) => {
-    if (isGameOver) return false;
+    if (isGameOver || isBotThinking) return false;
     
     // Only allow moving if it's the player's turn
     const isWhiteTurn = turn === 'w';
@@ -39,34 +42,78 @@ export default function PlayPage() {
     return move !== null;
   };
 
+  // Bot logic
+  useEffect(() => {
+    if (!selectedBot || isGameOver || !isReady || isBotThinking) return;
+
+    const isWhiteTurn = turn === 'w';
+    const isBotTurn = (playerColor === "white" && !isWhiteTurn) || (playerColor === "black" && isWhiteTurn);
+
+    if (isBotTurn) {
+      setIsBotThinking(true);
+      
+      // Map bot rating (e.g. 600-2500) to Stockfish depth (1 to 20)
+      const depth = Math.max(1, Math.min(20, Math.floor((selectedBot.rating - 400) / 100)));
+      
+      // Add slight artificial delay so it doesn't move instantly
+      const thinkTime = Math.random() * 1000 + 500;
+      
+      setTimeout(() => {
+        getBestMove(position, depth)
+          .then((bestMove) => {
+            if (bestMove) {
+              const from = bestMove.substring(0, 2);
+              const to = bestMove.substring(2, 4);
+              const promotion = bestMove.length > 4 ? bestMove[4] : undefined;
+              
+              makeMove({ from, to, promotion });
+            }
+          })
+          .catch(console.error)
+          .finally(() => {
+            setIsBotThinking(false);
+          });
+      }, thinkTime);
+    }
+  }, [turn, selectedBot, playerColor, isGameOver, isReady, position, makeMove, getBestMove, isBotThinking]);
+
   return (
     <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8 relative">
       {/* Board Area */}
       <div className="flex-1 flex flex-col gap-4 max-w-[700px] mx-auto w-full">
         {selectedBot && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-[#141416] border border-[#2a2a30] rounded-xl">
-            <div className="text-3xl bg-[#1a1a1f] w-12 h-12 flex items-center justify-center rounded-lg border border-[#2a2a30]">
-              {selectedBot.avatar}
-            </div>
-            <div>
-              <div className="font-bold text-white flex items-center gap-2">
-                {selectedBot.name}
-                <span className="text-xs bg-[#81b64c]/20 text-[#81b64c] px-2 py-0.5 rounded-full">
-                  Bot
-                </span>
+          <div className="flex items-center justify-between px-4 py-3 bg-[#141416] border border-[#2a2a30] rounded-xl">
+            <div className="flex items-center gap-3">
+              <div className="text-3xl bg-[#1a1a1f] w-12 h-12 flex items-center justify-center rounded-lg border border-[#2a2a30]">
+                {selectedBot.avatar}
               </div>
-              <div className="text-sm text-[#a0a0a8]">
-                {selectedBot.rating} Rating • {selectedBot.style}
+              <div>
+                <div className="font-bold text-white flex items-center gap-2">
+                  {selectedBot.name}
+                  <span className="text-xs bg-[#81b64c]/20 text-[#81b64c] px-2 py-0.5 rounded-full">
+                    Bot
+                  </span>
+                </div>
+                <div className="text-sm text-[#a0a0a8]">
+                  {selectedBot.rating} Rating • {selectedBot.style}
+                </div>
               </div>
             </div>
+            {isBotThinking && (
+              <div className="text-sm text-[#a0a0a8] flex items-center gap-2">
+                <span className="w-2 h-2 bg-[#81b64c] rounded-full animate-ping"></span>
+                Thinking...
+              </div>
+            )}
           </div>
         )}
 
-        <div className="w-full aspect-[1/1] relative">
+        <div className="w-full aspect-[1/1] relative shadow-elevated">
           <Board 
             position={position} 
             onPieceDrop={handlePieceDrop}
             boardOrientation={playerColor}
+            arePiecesDraggable={!isBotThinking && !isGameOver}
           />
         </div>
 
@@ -86,7 +133,7 @@ export default function PlayPage() {
         <div className="flex gap-2">
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="flex-1 bg-[#81b64c] hover:bg-[#9fcc6b] text-white py-3 rounded-xl font-semibold transition-colors"
+            className="flex-1 bg-[#81b64c] hover:bg-[#9fcc6b] text-white py-3 rounded-xl font-semibold transition-colors shadow-elevated"
           >
             New Game
           </button>

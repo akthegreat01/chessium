@@ -82,5 +82,28 @@ export function useStockfish() {
     [sendCommand, onMessage]
   );
 
-  return { sendCommand, onMessage, evaluatePosition, isReady };
+  const getBestMove = useCallback(
+    (fen: string, depth: number = 10): Promise<string | null> => {
+      return new Promise((resolve) => {
+        let bestMove: string | null = null;
+        
+        const cleanup = onMessage("bestmove-" + Date.now(), (line) => {
+          if (line.includes("bestmove")) {
+            const parts = line.split(" ");
+            if (parts.length >= 2) {
+              bestMove = parts[1];
+            }
+            cleanup();
+            resolve(bestMove);
+          }
+        });
+
+        sendCommand(`position fen ${fen}`);
+        sendCommand(`go depth ${depth}`);
+      });
+    },
+    [sendCommand, onMessage]
+  );
+
+  return { sendCommand, onMessage, evaluatePosition, getBestMove, isReady };
 }
