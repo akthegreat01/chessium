@@ -5,28 +5,35 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
 import AdSlot from "@/components/ui/AdSlot";
+import { createClubAction } from "./actions";
 
 export default function CreateClubPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
     
-    // Auto-generate slug
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
     
-    // In a real app, we'd hit a Server Action or Supabase here
-    // e.g., await createClub(name, slug, description);
-    
-    // Simulate network request
-    setTimeout(() => {
-      // Redirect to clubs directory or the new club page
-      router.push('/clubs');
-    }, 1000);
+    try {
+      const res = await createClubAction(formData);
+      if (res?.error) {
+        setError(res.error);
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.error(err);
+      setError("An unexpected error occurred.");
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -49,6 +56,11 @@ export default function CreateClubPage() {
         animate={{ opacity: 1, y: 0 }}
         className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 md:p-8 shadow-elevated"
       >
+        {error && (
+          <div className="mb-6 p-4 bg-[#ca3431]/10 border border-[#ca3431]/30 text-[#ca3431] rounded-xl text-sm font-medium">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="name" className="block text-sm font-bold text-white mb-2">Club Name</label>
