@@ -22,7 +22,7 @@ export default function EvalBar({ centipawns, mateIn, orientation = "white" }: E
   const isFlipped = orientation === "black";
 
   return (
-    <div className="relative w-8 h-full rounded overflow-hidden border border-[#2a2a30] bg-zinc-800 flex flex-col justify-end shadow-inner">
+    <div className="relative w-8 h-full rounded-xl overflow-hidden border border-[#2a2a30] bg-zinc-800 flex flex-col justify-end shadow-inner">
       {/* Black section is the background */}
       
       {/* White section */}

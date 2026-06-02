@@ -39,7 +39,7 @@ export default function Board({
   const colors = THEME_COLORS[theme] || THEME_COLORS.green;
 
   return (
-    <div className="w-full max-w-full aspect-square rounded-lg overflow-hidden shadow-card border border-[#2a2a30]">
+    <div className="w-full max-w-full aspect-square rounded-xl overflow-hidden shadow-card border border-[#2a2a30]">
       <Chessboard
         options={{
           position: position,

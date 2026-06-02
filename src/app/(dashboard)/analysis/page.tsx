@@ -393,68 +393,73 @@ export default function AnalysisPage() {
   return (
     <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
       {/* Left Column: Board & Graph */}
-      <div className="flex-1 flex flex-col gap-4 min-w-[300px]">
-        {/* Board Area */}
-        <div className="flex gap-4 max-w-[700px] mx-auto w-full aspect-[1/1] relative">
-          <div className="h-full">
-            <EvalBar centipawns={currentEval?.cp || 0} mateIn={currentEval?.mate || null} orientation={visualOrientation} />
+      <div className="flex-1 flex flex-col gap-4 min-w-[300px] min-h-0 items-center justify-center">
+        {/* Board Area - Responsive width constrained by viewport height to prevent scrolling */}
+        <div className="w-full flex flex-col" style={{ maxWidth: 'min(700px, calc(100vh - 14rem))' }}>
+          
+          {/* Toolbar */}
+          <div className="flex items-center justify-end gap-2 px-2 mb-2">
+            <select 
+              value={theme}
+              onChange={(e) => setTheme(e.target.value as any)}
+              className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-[#81b64c]"
+            >
+              <option value="green">Green</option>
+              <option value="classic">Classic</option>
+              <option value="blue">Blue</option>
+              <option value="purple">Purple</option>
+              <option value="neon">Neon</option>
+            </select>
+            <button 
+              onClick={() => setVisualOrientation(prev => prev === "white" ? "black" : "white")}
+              className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] hover:text-white rounded-lg p-1 transition-colors"
+              title="Flip Board"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+              </svg>
+            </button>
           </div>
-          <div className="flex-1 flex flex-col justify-between">
-            {/* Toolbar */}
-            <div className="flex items-center justify-end gap-2 px-2 mb-2">
-              <select 
-                value={theme}
-                onChange={(e) => setTheme(e.target.value as any)}
-                className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-[#81b64c]"
-              >
-                <option value="green">Green</option>
-                <option value="classic">Classic</option>
-                <option value="blue">Blue</option>
-                <option value="purple">Purple</option>
-                <option value="neon">Neon</option>
-              </select>
-              <button 
-                onClick={() => setVisualOrientation(prev => prev === "white" ? "black" : "white")}
-                className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] hover:text-white rounded-lg p-1 transition-colors"
-                title="Flip Board"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                </svg>
-              </button>
+
+          {/* Top Player (Black by default if board is white-oriented) */}
+          <div className="flex items-center gap-2 mb-3 px-1">
+            <div className="w-8 h-8 bg-[#2a2a30] rounded-md flex items-center justify-center text-sm font-bold shadow-sm">
+              {visualOrientation === "white" ? "B" : "W"}
             </div>
-
-            {/* Top Player (Black by default if board is white-oriented) */}
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-[#2a2a30] rounded flex items-center justify-center text-sm">
-                {visualOrientation === "white" ? "B" : "W"}
-              </div>
-              <div className="font-semibold text-white">
-                {visualOrientation === "white" ? blackPlayer : whitePlayer}
-                {(visualOrientation === "white" ? blackElo : whiteElo) && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({visualOrientation === "white" ? blackElo : whiteElo})</span>}
-              </div>
-            </div>
-
-            <Board 
-              position={historyFens[currentMoveIndex + 1] || position} 
-              onPieceDrop={currentMoveIndex === history.length - 1 ? handlePieceDrop : undefined}
-              onSquareClick={currentMoveIndex === history.length - 1 ? onSquareClick : undefined}
-              customSquareStyles={customSquareStyles}
-              boardOrientation={visualOrientation}
-              theme={theme}
-            />
-
-            {/* Bottom Player (White by default) */}
-            <div className="flex items-center gap-2 mt-2">
-              <div className="w-8 h-8 bg-white rounded flex items-center justify-center text-sm text-black">
-                {visualOrientation === "white" ? "W" : "B"}
-              </div>
-              <div className="font-semibold text-white">
-                {visualOrientation === "white" ? whitePlayer : blackPlayer}
-                {(visualOrientation === "white" ? whiteElo : blackElo) && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({visualOrientation === "white" ? whiteElo : blackElo})</span>}
-              </div>
+            <div className="font-semibold text-white">
+              {visualOrientation === "white" ? blackPlayer : whitePlayer}
+              {(visualOrientation === "white" ? blackElo : whiteElo) && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({visualOrientation === "white" ? blackElo : whiteElo})</span>}
             </div>
           </div>
+
+          {/* EvalBar & Board Row */}
+          <div className="flex gap-3 sm:gap-4 w-full">
+            <div className="shrink-0 w-6 sm:w-8 h-auto flex flex-col">
+              <EvalBar centipawns={currentEval?.cp || 0} mateIn={currentEval?.mate || null} orientation={visualOrientation} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <Board 
+                position={historyFens[currentMoveIndex + 1] || position} 
+                onPieceDrop={currentMoveIndex === history.length - 1 ? handlePieceDrop : undefined}
+                onSquareClick={currentMoveIndex === history.length - 1 ? onSquareClick : undefined}
+                customSquareStyles={customSquareStyles}
+                boardOrientation={visualOrientation}
+                theme={theme}
+              />
+            </div>
+          </div>
+
+          {/* Bottom Player (White by default) */}
+          <div className="flex items-center gap-2 mt-3 px-1">
+            <div className="w-8 h-8 bg-white rounded-md flex items-center justify-center text-sm font-bold text-black shadow-sm">
+              {visualOrientation === "white" ? "W" : "B"}
+            </div>
+            <div className="font-semibold text-white">
+              {visualOrientation === "white" ? whitePlayer : blackPlayer}
+              {(visualOrientation === "white" ? whiteElo : blackElo) && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({visualOrientation === "white" ? whiteElo : blackElo})</span>}
+            </div>
+          </div>
+
         </div>
       </div>
 
