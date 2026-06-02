@@ -162,29 +162,28 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
 
   if (playerMoves.length === 0) return 100;
 
-  let totalAccuracy = 0;
+  let totalLoss = 0;
   let count = 0;
 
   for (const move of playerMoves) {
     if (move.classification === 'book') continue;
 
-    // Accuracy based on win probability preservation
     const wpBefore = move.winProbBefore;
     const wpAfter = move.winProbAfter;
 
-    let accuracy = 100;
     if (wpAfter < wpBefore) {
-      const loss = wpBefore - wpAfter;
-      accuracy = 100 * Math.exp(-6 * Math.pow(loss, 1.2));
+      totalLoss += (wpBefore - wpAfter);
     }
     
-    totalAccuracy += accuracy;
     count++;
   }
 
   if (count === 0) return 100;
 
-  return Math.round((totalAccuracy / count) * 10) / 10;
+  const avgLoss = totalLoss / count;
+  const gameAccuracy = 100 * Math.exp(-6 * Math.pow(avgLoss, 1.2));
+
+  return Math.round(gameAccuracy * 10) / 10;
 }
 
 // ─── Full Game Analysis ─────────────────────────────────────────────────────
