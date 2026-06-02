@@ -90,13 +90,14 @@ export default function VisionTrainerPage() {
           }`}>
             <Chessboard 
               id="vision-board"
-              position="empty"
+              position="8/8/8/8/8/8/8/8 w - - 0 1"
               boardOrientation={orientation}
               customDarkSquareStyle={{ backgroundColor: settings.boardTheme === 'green' ? '#739552' : settings.boardTheme === 'blue' ? '#4A739C' : '#8A785D' }}
               customLightSquareStyle={{ backgroundColor: settings.boardTheme === 'green' ? '#EBECD0' : settings.boardTheme === 'blue' ? '#EAE9D2' : '#E8E5DF' }}
               onSquareClick={onSquareClick}
               showBoardNotation={showCoordinates}
               animationDuration={0}
+              arePiecesDraggable={false}
             />
           </div>
           
