@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { getClubBySlug } from "@/lib/chess/clubs-db";
+import { getClubBySlug, getClubMembers } from "@/lib/chess/clubs-db";
 import LiveLeaderboard from "@/components/clubs/LiveLeaderboard";
 import AdSlot from "@/components/ui/AdSlot";
 
@@ -12,15 +12,7 @@ export default async function ClubDashboardPage({ params }: { params: Promise<{ 
     return <div className="text-center p-12 text-[#a0a0a8]">Club not found.</div>;
   }
 
-  // Mock members for the leaderboard showcasing Live Chess.com API fetching
-  const members = [
-    { id: "1", username: "Hikaru", chessComUsername: "hikaru", role: "owner" },
-    { id: "2", username: "Magnus", chessComUsername: "magnuscarlsen", role: "member" },
-    { id: "3", username: "Gotham", chessComUsername: "gothamchess", role: "member" },
-    { id: "4", username: "Botez", chessComUsername: "alexandrabotez", role: "member" },
-    { id: "5", username: "Anna", chessComUsername: "anna_chess", role: "member" },
-    { id: "6", username: "GuestUser", chessComUsername: null, role: "member" }
-  ];
+  const members = await getClubMembers(club.id);
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
