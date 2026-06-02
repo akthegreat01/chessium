@@ -181,7 +181,11 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
   if (count === 0) return 100;
 
   const avgLoss = totalLoss / count;
-  const gameAccuracy = 100 * Math.exp(-6 * Math.pow(avgLoss, 1.2));
+  // Standard accuracy curve based on win probability loss
+  let gameAccuracy = 103.1668 * Math.exp(-0.04354 * (avgLoss * 100)) - 3.1669;
+  
+  // Clamp between 0 and 100
+  gameAccuracy = Math.max(0, Math.min(100, gameAccuracy));
 
   return Math.round(gameAccuracy * 10) / 10;
 }
