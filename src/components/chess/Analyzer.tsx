@@ -111,17 +111,17 @@ export default function Analyzer() {
             move.color, 
             res.bestMove === move.lan, 
             i < 10,
-            move.flags.includes('c') || move.flags.includes('e')
-          );
           setClassifications(c => ({ ...c, [i]: cls as any }));
         }
         return next;
       });
       setAnalyzedPercent(Math.round(((i + 1) / gameHistory.length) * 100));
+      setCurrentIndex(i); // Auto-advance the board to show progress visually
     }
     
     if (currentRunId === analysisRunIdRef.current) {
       setIsAutoAnalyzing(false);
+      // Optional: reset to beginning or stay at end after analysis
     }
   };
 
