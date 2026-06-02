@@ -8,60 +8,92 @@ import AdSlot from "@/components/ui/AdSlot";
 export default function PuzzlesPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white">Puzzle Dashboard</h1>
-          <p className="text-[#a0a0a8]">Sharpen your tactics and improve your vision.</p>
+      {/* Hero Section */}
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#141416] to-[#1a1a1f] border border-[#2a2a30] p-8 md:p-12 shadow-2xl">
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#81b64c]/10 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div className="relative z-10 max-w-2xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#81b64c]/10 border border-[#81b64c]/20 text-[#81b64c] text-sm font-semibold mb-6">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#81b64c] opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-[#81b64c]"></span>
+            </span>
+            Daily Challenge Available
+          </div>
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-white tracking-tight">
+            Sharpen Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#81b64c] to-[#9fcc6b]">Tactics</span>
+          </h1>
+          <p className="text-[#a0a0a8] text-lg mb-8 leading-relaxed">
+            Improve your vision, calculate faster, and win more games. Solve the daily puzzle to maintain your streak, or focus on specific themes.
+          </p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Daily Puzzle */}
-        <Link href="/puzzles/daily" className="block group">
-          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-5 hover:border-[#81b64c]/50 transition-colors h-full flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-white group-hover:text-[#81b64c] transition-colors">Daily Puzzle</h2>
-              <span className="bg-[#81b64c]/10 text-[#81b64c] text-xs font-semibold px-2 py-1 rounded">New</span>
+        {/* Daily Puzzle Card */}
+        <Link href="/puzzles/daily" className="block group lg:col-span-1">
+          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl overflow-hidden hover:border-[#81b64c]/50 transition-all duration-300 h-full flex flex-col shadow-elevated relative group-hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-br from-[#81b64c]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div className="p-6 pb-0 flex items-center justify-between mb-6 relative z-10">
+              <div>
+                <h2 className="text-2xl font-bold text-white group-hover:text-[#81b64c] transition-colors">Daily Puzzle</h2>
+                <div className="text-sm text-[#a0a0a8] mt-1">Keep your streak alive</div>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-[#1a1a1f] flex items-center justify-center text-2xl border border-[#2a2a30] group-hover:scale-110 transition-transform">
+                🔥
+              </div>
             </div>
-            <div className="pointer-events-none mb-4 flex-1">
-              <Board position="r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3" />
+            
+            <div className="px-6 pb-6 pointer-events-none flex-1 relative z-10">
+              <div className="rounded-xl overflow-hidden shadow-inner border border-[#2a2a30]">
+                <Board position="r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3" />
+              </div>
             </div>
-            <div className="text-sm text-[#a0a0a8]">
-              Solve the puzzle of the day to keep your streak alive.
+            
+            <div className="p-4 bg-[#1a1a1f] border-t border-[#2a2a30] flex justify-between items-center relative z-10">
+              <span className="text-white font-medium text-sm">Solve Now</span>
+              <svg className="w-5 h-5 text-[#81b64c] group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </div>
           </div>
         </Link>
 
         {/* Puzzle Themes */}
-        <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-5 flex flex-col">
-          <h2 className="text-xl font-bold text-white mb-4">Themes</h2>
-          <div className="grid grid-cols-2 gap-2 flex-1">
-            {["Mate in 1", "Mate in 2", "Fork", "Pin", "Skewer", "Endgame"].map((theme) => (
-              <button key={theme} className="bg-[#1a1a1f] border border-[#2a2a30] rounded-lg p-3 text-sm text-[#a0a0a8] hover:text-white hover:border-[#3a3a42] text-left transition-colors">
-                {theme}
-              </button>
+        <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 flex flex-col shadow-elevated lg:col-span-2">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-white">Thematic Training</h2>
+              <p className="text-[#a0a0a8] text-sm mt-1">Focus on specific tactical motifs</p>
+            </div>
+            <div className="w-10 h-10 rounded-full bg-[#1a1a1f] flex items-center justify-center border border-[#2a2a30]">
+              🎯
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 flex-1">
+            {[
+              { name: "Mate in 1", icon: "1️⃣" },
+              { name: "Mate in 2", icon: "2️⃣" },
+              { name: "Fork", icon: "🍴" },
+              { name: "Pin", icon: "📌" },
+              { name: "Skewer", icon: "🍢" },
+              { name: "Endgame", icon: "🏁" }
+            ].map((theme) => (
+              <Link 
+                href={`/puzzles/theme/${encodeURIComponent(theme.name)}`}
+                key={theme.name} 
+                className="group bg-[#1a1a1f] border border-[#2a2a30] rounded-xl p-4 flex flex-col gap-3 hover:border-[#81b64c]/50 hover:bg-[#1f1f25] transition-all hover:-translate-y-0.5"
+              >
+                <div className="text-2xl group-hover:scale-110 transition-transform origin-left">{theme.icon}</div>
+                <div className="font-semibold text-white group-hover:text-[#81b64c] transition-colors">{theme.name}</div>
+              </Link>
             ))}
           </div>
         </div>
 
-        {/* Stats */}
-        <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-5">
-          <h2 className="text-xl font-bold text-white mb-4">Your Stats</h2>
-          <div className="space-y-4">
-            <div>
-              <div className="text-sm text-[#a0a0a8] mb-1">Puzzle Rating</div>
-              <div className="text-3xl font-bold text-[#81b64c]">1500</div>
-            </div>
-            <div>
-              <div className="text-sm text-[#a0a0a8] mb-1">Solved Today</div>
-              <div className="text-2xl font-bold text-white">0</div>
-            </div>
-            <div>
-              <div className="text-sm text-[#a0a0a8] mb-1">Current Streak</div>
-              <div className="text-2xl font-bold text-white">0 days</div>
-            </div>
-          </div>
-        </div>
       </div>
       
       <div className="mt-8">

@@ -1,39 +1,51 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import Board from "@/components/chess/Board";
 import { Chess } from "chess.js";
 import AdSlot from "@/components/ui/AdSlot";
-import Link from "next/link";
+import { getRandomPuzzle, PuzzleData } from "@/lib/chess/puzzles-db";
 
-export default function DailyPuzzlePage() {
-  const [puzzle, setPuzzle] = useState<any>(null);
+export default function ThemePuzzlePage() {
+  const params = useParams();
+  const themeParam = decodeURIComponent(params.theme as string);
+  
+  const [puzzle, setPuzzle] = useState<PuzzleData | null>(null);
   const [position, setPosition] = useState<string>("start");
   const [orientation, setOrientation] = useState<"white" | "black">("white");
-  const [status, setStatus] = useState<"loading" | "playing" | "solved" | "failed">("loading");
+  const [status, setStatus] = useState<"loading" | "playing" | "solved" | "failed" | "not_found">("loading");
   const [moveIndex, setMoveIndex] = useState(0);
   
   const chessRef = useRef(new Chess());
 
+  const loadNewPuzzle = () => {
+    setStatus("loading");
+    setMoveIndex(0);
+    
+    // Slight timeout for UI transition
+    setTimeout(() => {
+      const p = getRandomPuzzle(themeParam);
+      if (!p) {
+        setStatus("not_found");
+        return;
+      }
+      
+      const chess = new Chess();
+      chess.load(p.fen);
+      
+      chessRef.current = chess;
+      setPosition(chess.fen());
+      setOrientation(chess.turn() === "w" ? "white" : "black");
+      setPuzzle(p);
+      setStatus("playing");
+    }, 300);
+  };
+
   useEffect(() => {
-    fetch("https://lichess.org/api/puzzle/daily")
-      .then(res => res.json())
-      .then(data => {
-        const chess = new Chess();
-        // Lichess daily puzzle gives the PGN of the game
-        const pgn = data.game.pgn;
-        chess.loadPgn(pgn);
-        
-        chessRef.current = chess;
-        setPosition(chess.fen());
-        setOrientation(chess.turn() === "w" ? "white" : "black");
-        
-        setPuzzle(data.puzzle);
-        setStatus("playing");
-        setMoveIndex(0);
-      })
-      .catch(console.error);
-  }, []);
+    loadNewPuzzle();
+  }, [themeParam]);
 
   // Helper to convert UCI (e.g. e2e4) to chess.js object
   const uciToObj = (uci: string) => ({
@@ -42,7 +54,7 @@ export default function DailyPuzzlePage() {
     promotion: uci[4] ? uci[4] : undefined
   });
 
-  // When puzzle starts, the opponent plays the first move of the solution
+  // When puzzle starts, if there is a solution, the opponent plays the first move
   useEffect(() => {
     if (puzzle && status === "playing" && moveIndex === 0) {
       const firstMove = puzzle.solution[0];
@@ -67,7 +79,7 @@ export default function DailyPuzzlePage() {
     
     // Try to make the move
     const moveStr = source + target + (promotion === "p" ? "" : promotion);
-    const expectedMove = puzzle.solution[moveIndex];
+    const expectedMove = puzzle!.solution[moveIndex];
     
     if (moveStr === expectedMove) {
       // Correct move
@@ -80,18 +92,18 @@ export default function DailyPuzzlePage() {
       setMoveIndex(prev => prev + 1);
       
       // Check if puzzle solved
-      if (moveIndex + 1 === puzzle.solution.length) {
+      if (moveIndex + 1 === puzzle!.solution.length) {
         setStatus("solved");
       } else {
         // Play opponent's next move
         setTimeout(() => {
-          const nextMove = puzzle.solution[moveIndex + 1];
+          const nextMove = puzzle!.solution[moveIndex + 1];
           try {
             chess.move(uciToObj(nextMove));
             setPosition(chess.fen());
             setMoveIndex(prev => prev + 1);
             
-            if (moveIndex + 2 === puzzle.solution.length) {
+            if (moveIndex + 2 === puzzle!.solution.length) {
               setStatus("solved");
             }
           } catch (err) {
@@ -123,19 +135,23 @@ export default function DailyPuzzlePage() {
 
   const handleRetry = () => {
     if (puzzle) {
-      // Reset position to before first move
       const chess = new Chess();
-      // We have to reload from PGN, but the PGN has all moves.
-      // Wait, we need to reset the board back to the initial state. 
-      // A quick hack is just reloading the page for now
-      window.location.reload();
+      chess.load(puzzle.fen);
+      chessRef.current = chess;
+      setPosition(chess.fen());
+      setOrientation(chess.turn() === "w" ? "white" : "black");
+      setStatus("playing");
+      setMoveIndex(0);
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto flex flex-col gap-6 md:p-6 lg:p-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-white">Daily Puzzle</h1>
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-1 capitalize">{themeParam} Puzzles</h1>
+          <p className="text-[#a0a0a8] text-sm">Practice specific tactics and patterns.</p>
+        </div>
         <Link href="/puzzles" className="text-[#81b64c] hover:text-[#9fcc6b] font-medium text-sm">
           ← Back to Puzzles
         </Link>
@@ -143,7 +159,7 @@ export default function DailyPuzzlePage() {
 
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1 max-w-[600px] w-full mx-auto">
-          <div className="aspect-square relative shadow-elevated rounded-lg overflow-hidden">
+          <div className="aspect-square relative shadow-elevated rounded-xl overflow-hidden">
             <Board 
               position={position}
               boardOrientation={orientation}
@@ -159,7 +175,13 @@ export default function DailyPuzzlePage() {
               <div className="text-center text-[#a0a0a8] py-8">Loading puzzle...</div>
             )}
             
-            {status === "playing" && (
+            {status === "not_found" && (
+              <div className="text-center text-[#a0a0a8] py-8">
+                No puzzles found for this theme. Check back later!
+              </div>
+            )}
+            
+            {status === "playing" && puzzle && (
               <div className="text-center py-4">
                 <div className="text-xl font-bold text-white mb-2">Find the best move</div>
                 <div className="text-[#a0a0a8]">
@@ -174,6 +196,7 @@ export default function DailyPuzzlePage() {
                 <div className="text-xl font-bold text-[#81b64c] mb-2">Puzzle Solved!</div>
                 <div className="text-[#a0a0a8] mb-6">Excellent calculation!</div>
                 <button 
+                  onClick={loadNewPuzzle}
                   className="w-full bg-[#81b64c] hover:bg-[#9fcc6b] text-white py-3 rounded-xl font-bold transition-colors"
                 >
                   Next Puzzle
@@ -201,15 +224,11 @@ export default function DailyPuzzlePage() {
                   <span className="text-[#a0a0a8]">Rating</span>
                   <span className="font-bold text-white">{puzzle.rating}</span>
                 </div>
-                <div className="flex justify-between text-sm mt-2">
-                  <span className="text-[#a0a0a8]">Themes</span>
-                  <span className="font-medium text-[#81b64c]">{puzzle.themes.slice(0,2).join(', ')}</span>
-                </div>
               </div>
             )}
           </div>
           
-          <AdSlot slot="daily-puzzle-sidebar" />
+          <AdSlot slot="theme-puzzle-sidebar" />
         </div>
       </div>
     </div>
