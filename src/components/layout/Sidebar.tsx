@@ -160,42 +160,9 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const sidebarContent = (
-    <div className="flex h-full flex-col">
-      {/* User card */}
-      {user && (
-        <div className="border-b border-border p-4">
-          <div className={`flex items-center gap-3 ${isCollapsed ? 'justify-center' : ''}`}>
-            {user.avatar ? (
-              <img
-                src={user.avatar}
-                alt={user.name}
-                className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-accent/20"
-              />
-            ) : (
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent/20 text-sm font-bold text-accent ring-2 ring-accent/10">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-            )}
-            {!isCollapsed && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="min-w-0"
-              >
-                <p className="truncate text-sm font-semibold text-text-primary">
-                  {user.name}
-                </p>
-                <p className="text-xs text-text-tertiary">
-                  {user.role ?? 'Free Plan'}
-                </p>
-              </motion.div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Nav List Helper Function */}
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+    <div className="flex h-full flex-col bg-[#0a0a0b]">
+      {/* Nav List */}
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-6 scrollbar-none">
         {(() => {
           const renderItem = (item: NavItem) => {
             const isActive = pathname === item.href;
@@ -204,30 +171,32 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
                 key={item.label}
                 href={item.href}
                 className={`
-                  group relative flex items-center gap-3 rounded-xl px-3 py-2.5
-                  text-sm font-medium transition-all duration-200
+                  group relative flex items-center gap-3 px-3 py-2.5 rounded-lg
+                  text-sm font-medium transition-all duration-300 mb-1
                   ${isCollapsed ? 'justify-center' : ''}
-                  ${item.comingSoon ? 'opacity-70 hover:opacity-100 cursor-default pointer-events-none' : ''}
+                  ${item.comingSoon ? 'opacity-40 cursor-default pointer-events-none' : ''}
                   ${
                     isActive && !item.comingSoon
-                      ? 'bg-accent/10 text-accent'
-                      : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                      ? 'bg-[#1a1a1f] text-white shadow-sm'
+                      : 'text-[#8a8a93] hover:bg-[#141416] hover:text-[#d0d0d5]'
                   }
                 `}
               >
                 {isActive && !item.comingSoon && (
                   <motion.div
-                    layoutId="sidebar-active"
-                    className="absolute inset-0 rounded-xl bg-accent/10 border border-accent/20"
-                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                    layoutId="sidebar-active-indicator"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-[#81b64c] shadow-[0_0_8px_rgba(129,182,76,0.6)]"
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                   />
                 )}
-                <span className="relative z-10 shrink-0">{item.icon}</span>
+                <span className={`relative z-10 shrink-0 transition-colors duration-300 ${isActive ? 'text-[#81b64c]' : 'text-[#6b6b75] group-hover:text-[#8a8a93]'}`}>
+                  {item.icon}
+                </span>
                 {!isCollapsed && (
                   <div className="relative z-10 flex flex-1 items-center justify-between">
                     <span>{item.label}</span>
                     {item.comingSoon && (
-                      <span className="text-[9px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-1.5 py-0.5 rounded">
+                      <span className="text-[9px] font-bold uppercase tracking-widest text-[#81b64c] bg-[#81b64c]/10 border border-[#81b64c]/20 px-1.5 py-0.5 rounded-md">
                         Soon
                       </span>
                     )}
@@ -241,16 +210,16 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
             <>
               {playNavItems.map(renderItem)}
               
-              <div className="my-3 h-px bg-border/50" />
-              {!isCollapsed && <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">Learn</p>}
+              <div className="my-6 h-px w-full bg-gradient-to-r from-transparent via-[#2a2a30] to-transparent" />
+              {!isCollapsed && <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[#505058]">Learn</p>}
               {learnNavItems.map(renderItem)}
 
-              <div className="my-3 h-px bg-border/50" />
-              {!isCollapsed && <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">Community</p>}
+              <div className="my-6 h-px w-full bg-gradient-to-r from-transparent via-[#2a2a30] to-transparent" />
+              {!isCollapsed && <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[#505058]">Community</p>}
               {communityNavItems.map(renderItem)}
 
-              <div className="my-3 h-px bg-border/50" />
-              {!isCollapsed && <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">Account</p>}
+              <div className="my-6 h-px w-full bg-gradient-to-r from-transparent via-[#2a2a30] to-transparent" />
+              {!isCollapsed && <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[#505058]">Account</p>}
               {settingsNavItems.map(renderItem)}
             </>
           );
@@ -259,9 +228,9 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
         {/* Admin section */}
         {isAdmin && (
           <>
-            <div className="my-3 h-px bg-border" />
+            <div className="my-6 h-px w-full bg-gradient-to-r from-transparent via-[#2a2a30] to-transparent" />
             {!isCollapsed && (
-              <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">
+              <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[#505058]">
                 Admin
               </p>
             )}
@@ -272,17 +241,26 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
                   key={item.href}
                   href={item.href}
                   className={`
-                    group relative flex items-center gap-3 rounded-xl px-3 py-2.5
-                    text-sm font-medium transition-all duration-200
+                    group relative flex items-center gap-3 px-3 py-2.5 rounded-lg
+                    text-sm font-medium transition-all duration-300 mb-1
                     ${isCollapsed ? 'justify-center' : ''}
                     ${
                       isActive
-                        ? 'bg-accent/10 text-accent'
-                        : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                        ? 'bg-[#1a1a1f] text-white shadow-sm'
+                        : 'text-[#8a8a93] hover:bg-[#141416] hover:text-[#d0d0d5]'
                     }
                   `}
                 >
-                  <span className="relative z-10 shrink-0">{item.icon}</span>
+                  {isActive && (
+                    <motion.div
+                      layoutId="sidebar-active-indicator"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-[#81b64c] shadow-[0_0_8px_rgba(129,182,76,0.6)]"
+                      transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                    />
+                  )}
+                  <span className={`relative z-10 shrink-0 transition-colors duration-300 ${isActive ? 'text-[#81b64c]' : 'text-[#6b6b75] group-hover:text-[#8a8a93]'}`}>
+                    {item.icon}
+                  </span>
                   {!isCollapsed && (
                     <span className="relative z-10">{item.label}</span>
                   )}
@@ -293,30 +271,52 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
         )}
       </nav>
 
-      {/* Ad slot for sidebar */}
-      {!isCollapsed && (
-        <div className="p-3 border-t border-border bg-gradient-to-t from-bg-tertiary to-transparent">
-          <AdSlot slot="sidebar-bottom" />
-        </div>
-      )}
+      {/* User profile (Bottom) */}
+      <div className="mt-auto border-t border-[#1a1a1f] p-3 bg-gradient-to-b from-transparent to-[#050506]">
+        {user && (
+          <div className={`mb-2 flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-[#141416] cursor-pointer ${isCollapsed ? 'justify-center' : ''}`}>
+            {user.avatar ? (
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-[#2a2a30]"
+              />
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#2a2a30] to-[#141416] text-xs font-bold text-white shadow-inner border border-[#3a3a40]">
+                {user.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            {!isCollapsed && (
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold text-white tracking-tight">
+                  {user.name}
+                </p>
+                <p className="truncate text-[11px] font-medium text-[#8a8a93]">
+                  {user.role ?? 'Free Plan'}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
-      {/* Collapse toggle (desktop) */}
-      <div className="hidden border-t border-border p-3 md:block">
-        <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm text-text-tertiary transition-colors hover:bg-white/5 hover:text-text-secondary"
-        >
-          <svg
-            className={`h-5 w-5 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={1.5}
+        {/* Collapse toggle (desktop) */}
+        <div className="hidden md:block">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-[#6b6b75] transition-all hover:bg-[#141416] hover:text-[#d0d0d5]"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
-          </svg>
-          {!isCollapsed && <span>Collapse</span>}
-        </button>
+            <svg
+              className={`h-4 w-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+            </svg>
+            {!isCollapsed && <span>Collapse Sidebar</span>}
+          </button>
+        </div>
       </div>
     </div>
   );
