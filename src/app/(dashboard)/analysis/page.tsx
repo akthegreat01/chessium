@@ -35,6 +35,15 @@ export default function AnalysisPage() {
     }
   }, [history.length]);
 
+  // Check for game review from Play page
+  useEffect(() => {
+    const reviewPgn = localStorage.getItem("chessium_review_pgn");
+    if (reviewPgn) {
+      loadPgn(reviewPgn);
+      localStorage.removeItem("chessium_review_pgn");
+    }
+  }, [loadPgn]);
+
   // Parse eval from PGN on load
   useEffect(() => {
     const rawPgn = game.pgn();

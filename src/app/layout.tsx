@@ -15,6 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://chessium.in'),
   title: {
     default: "Chessium — Analyze. Learn. Improve.",
     template: "%s | Chessium",
@@ -28,22 +29,35 @@ export const metadata: Metadata = {
     "chess courses",
     "stockfish",
     "chess engine",
-    "chess.com",
-    "lichess",
+    "play chess against bots",
+    "free chess analysis",
     "game analysis",
     "chess improvement",
     "chess learning",
     "online chess",
+    "learn chess openings",
   ],
   authors: [{ name: "Chessium" }],
   creator: "Chessium",
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
+    url: "https://chessium.in",
     siteName: "Chessium",
     title: "Chessium — Analyze. Learn. Improve.",
     description:
       "The modern chess platform for analysis, puzzles, courses, and improvement.",
+    images: [
+      {
+        url: '/og-image.jpg', // We should make sure we have a default OG image or assume one
+        width: 1200,
+        height: 630,
+        alt: 'Chessium Preview',
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
