@@ -95,7 +95,6 @@ export default function PlayVsAI() {
         setEngineReady(true);
       }
       
-      // Parse Best Move
       if (msg.startsWith("bestmove")) {
         const match = msg.match(/bestmove ([a-h][1-8][a-h][1-8][qrbn]?)/);
         if (match) {

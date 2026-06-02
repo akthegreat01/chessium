@@ -32,26 +32,25 @@ export function useChess({ initialFen = 'start', initialPgn }: UseChessProps = {
     }
   }
 
-  const game = gameRef.current!;
-
   // 2. React State perfectly synchronized with the mutable instance
-  const [fen, setFen] = useState<string>(game.fen());
-  const [history, setHistory] = useState<Move[]>(game.history({ verbose: true }) as Move[]);
-  const [turn, setTurn] = useState<'w' | 'b'>(game.turn());
-  const [isGameOver, setIsGameOver] = useState<boolean>(game.isGameOver());
+  const [fen, setFen] = useState<string>(() => gameRef.current!.fen());
+  const [history, setHistory] = useState<Move[]>(() => gameRef.current!.history({ verbose: true }) as Move[]);
+  const [turn, setTurn] = useState<'w' | 'b'>(() => gameRef.current!.turn());
+  const [isGameOver, setIsGameOver] = useState<boolean>(() => gameRef.current!.isGameOver());
 
   // 3. Synchronization Helper
   const syncState = useCallback(() => {
+    const game = gameRef.current!;
     setFen(game.fen());
     setHistory(game.history({ verbose: true }) as Move[]);
     setTurn(game.turn());
     setIsGameOver(game.isGameOver());
-  }, [game]);
+  }, []);
 
   // 4. Expose robust actions
   const makeMove = useCallback((moveDetails: { from: string; to: string; promotion?: string } | string): Move | null => {
     try {
-      const move = game.move(moveDetails);
+      const move = gameRef.current!.move(moveDetails);
       if (move) {
         syncState();
         return move;
@@ -60,47 +59,48 @@ export function useChess({ initialFen = 'start', initialPgn }: UseChessProps = {
       // Invalid move
     }
     return null;
-  }, [game, syncState]);
+  }, [syncState]);
 
   const undoMove = useCallback((): Move | null => {
-    const move = game.undo();
+    const move = gameRef.current!.undo();
     if (move) syncState();
     return move;
-  }, [game, syncState]);
+  }, [syncState]);
 
   const loadFen = useCallback((newFen: string) => {
     try {
       if (newFen === 'start') {
-        game.reset();
+        gameRef.current!.reset();
       } else {
-        game.load(newFen);
+        gameRef.current!.load(newFen);
       }
       syncState();
       return true;
     } catch (e) {
       return false;
     }
-  }, [game, syncState]);
+  }, [syncState]);
 
   const loadPgn = useCallback((pgn: string) => {
     try {
       const loadedGame = robustLoadPgn(pgn);
       // We must copy state into our ref instance
-      game.loadPgn(loadedGame.pgn());
+      gameRef.current!.loadPgn(loadedGame.pgn());
       syncState();
       return true;
     } catch (e) {
       return false;
     }
-  }, [game, syncState]);
+  }, [syncState]);
 
   const resetGame = useCallback(() => {
-    game.reset();
+    gameRef.current!.reset();
     syncState();
-  }, [game, syncState]);
+  }, [syncState]);
 
   return {
-    game, // Expose the raw instance for advanced reads (do NOT mutate directly)
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    get game() { return gameRef.current as Chess; }, // Expose the raw instance via getter
     fen,
     history,
     turn,

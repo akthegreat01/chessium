@@ -91,24 +91,42 @@ export class ChessEngine {
     this.worker.postMessage(`go depth ${depth}`);
   }
 
-  evaluatePositionAsync(fen: string, depth: number): Promise<EngineEvaluation> {
+  private resolveCurrentPromise: ((val: EngineEvaluation) => void) | null = null;
+  private evalTimeout: NodeJS.Timeout | null = null;
+
+  evaluatePositionAsync(fen: string, depth: number, timeoutMs: number = 30000): Promise<EngineEvaluation> {
     return new Promise((resolve) => {
-      // Use a custom callback that resolves the promise only when analysis is fully done (bestmove is sent)
-      // We know it's fully done when isAnalyzing becomes false. But the onMessage handles it.
-      // We can patch currentCallback to resolve.
       this.init();
       if (!this.worker) return resolve({ score: 0, mate: null, depth: 0, bestMove: "", pv: "" });
+      
+      // If there's an existing promise, resolve it so it doesn't hang forever
+      if (this.resolveCurrentPromise) {
+        this.resolveCurrentPromise(this.currentEval);
+      }
       
       this.stop();
       this.currentEval = { score: 0, mate: null, depth: 0, bestMove: "", pv: "" };
       this.isAnalyzing = true;
+      this.resolveCurrentPromise = resolve;
+      
+      if (this.evalTimeout) clearTimeout(this.evalTimeout);
+      this.evalTimeout = setTimeout(() => {
+        if (this.isAnalyzing) {
+          this.isAnalyzing = false;
+          if (this.resolveCurrentPromise) {
+            this.resolveCurrentPromise(this.currentEval);
+            this.resolveCurrentPromise = null;
+          }
+        }
+      }, timeoutMs);
       
       this.currentCallback = (data) => {
-        // If we want to resolve only on completion, we check if isAnalyzing is false.
-        // Wait, currentCallback is called on depth updates too! 
-        // We will modify onMessage slightly or just resolve when it's done.
         if (!this.isAnalyzing) {
-          resolve(data);
+          if (this.evalTimeout) clearTimeout(this.evalTimeout);
+          if (this.resolveCurrentPromise) {
+            this.resolveCurrentPromise(data);
+            this.resolveCurrentPromise = null;
+          }
         }
       };
 
@@ -124,9 +142,15 @@ export class ChessEngine {
       this.worker.postMessage('stop');
       this.isAnalyzing = false;
     }
+    if (this.evalTimeout) clearTimeout(this.evalTimeout);
   }
 
   terminate() {
+    this.stop();
+    if (this.resolveCurrentPromise) {
+      this.resolveCurrentPromise(this.currentEval);
+      this.resolveCurrentPromise = null;
+    }
     if (this.worker) {
       this.worker.terminate();
       this.worker = null;

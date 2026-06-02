@@ -46,15 +46,14 @@ export function calculateAccuracyFromLosses(whiteWPLosses: number[], blackWPLoss
     if (wpDrops.length === 0) return 100;
     
     const moveAccuracies = wpDrops.map(drop => {
-      // Small WP drops (<2%) don't hurt much, massive drops (>20%) hurt heavily.
-      // Accuracy per move ranges from 0 to 100.
+      // Chess.com style accuracy maps WP drops less aggressively
       let moveAcc = 100;
       if (drop <= 0) moveAcc = 100;
       else if (drop <= 2) moveAcc = 99; // Best/Great
-      else if (drop <= 5) moveAcc = 95 - (drop - 2) * 2; // Good
-      else if (drop <= 10) moveAcc = 85 - (drop - 5) * 3; // Inaccuracy
-      else if (drop <= 20) moveAcc = 70 - (drop - 10) * 4; // Mistake
-      else moveAcc = Math.max(0, 30 - (drop - 20) * 1.5); // Blunder
+      else if (drop <= 5) moveAcc = 95 - (drop - 2) * 1.5; // Good
+      else if (drop <= 10) moveAcc = 90 - (drop - 5) * 2; // Inaccuracy
+      else if (drop <= 20) moveAcc = 80 - (drop - 10) * 2.5; // Mistake
+      else moveAcc = Math.max(0, 55 - (drop - 20) * 1.5); // Blunder
 
       return Math.max(0, Math.min(100, moveAcc));
     });

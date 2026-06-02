@@ -68,6 +68,7 @@ export default function Analyzer() {
   const engineRef = useRef<ChessEngine | null>(null);
   const moveListRef = useRef<HTMLDivElement>(null);
   const autoPlayTimer = useRef<NodeJS.Timeout | null>(null);
+  const analysisRunIdRef = useRef<number>(0);
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data }) => {
@@ -79,16 +80,25 @@ export default function Analyzer() {
 
   const runFullAnalysis = async (gameHistory: Move[]) => {
     if (!engineRef.current) return;
+    
+    analysisRunIdRef.current += 1;
+    const currentRunId = analysisRunIdRef.current;
+    
     setIsAutoAnalyzing(true);
     setAnalyzedPercent(0);
     
     const tempGame = new Chess();
     const initEval = await engineRef.current.evaluatePositionAsync(tempGame.fen(), 14);
+    if (currentRunId !== analysisRunIdRef.current) return;
+    
     setEvaluations(prev => ({ ...prev, [-1]: initEval }));
 
     for (let i = 0; i < gameHistory.length; i++) {
+      if (currentRunId !== analysisRunIdRef.current) return;
+      
       tempGame.move(gameHistory[i]);
       const res = await engineRef.current.evaluatePositionAsync(tempGame.fen(), 14);
+      if (currentRunId !== analysisRunIdRef.current) return;
       
       setEvaluations(prev => {
         const next = { ...prev, [i]: res };
@@ -110,7 +120,9 @@ export default function Analyzer() {
       setAnalyzedPercent(Math.round(((i + 1) / gameHistory.length) * 100));
     }
     
-    setIsAutoAnalyzing(false);
+    if (currentRunId === analysisRunIdRef.current) {
+      setIsAutoAnalyzing(false);
+    }
   };
 
   useEffect(() => {
@@ -409,7 +421,10 @@ export default function Analyzer() {
 
   const pgnMoves = history.map(m => m.san);
   const opening = detectOpening(pgnMoves);
-  const evalArray = history.map((_, i) => evaluations[i] ? evaluations[i].score : 0);
+  const evalArray = useMemo(() => [
+    evaluations[-1]?.score || 0,
+    ...history.map((_, i) => evaluations[i] ? evaluations[i].score : 0)
+  ], [evaluations, history]);
 
   const currentClassification = classifications[currentIndex];
 
@@ -806,7 +821,7 @@ export default function Analyzer() {
         {/* Eval Graph */}
         <div className="px-4 pt-4">
           <div className="bg-white/[0.02] border border-white/5 rounded-xl overflow-hidden p-1">
-            <EvalGraph evaluations={evalArray} currentIndex={currentIndex} onPointClick={setCurrentIndex} />
+            <EvalGraph evaluations={evalArray} currentIndex={currentIndex + 1} onPointClick={(idx) => setCurrentIndex(idx - 1)} />
           </div>
         </div>
 
