@@ -61,14 +61,14 @@ export default function Board({
           : undefined}
         onSquareClick={onSquareClick}
         boardOrientation={boardOrientation}
-        customArrows={customArrows.map(arrow => [arrow[0], arrow[1], arrow[2] || "rgba(0, 0, 0, 0.2)"] as [string, string, string])}
-        customSquareStyles={customSquareStyles}
-        customDarkSquareStyle={{ backgroundColor: colors.dark }}
-        customLightSquareStyle={{ backgroundColor: colors.light }}
-        customDropSquareStyle={{ boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" }}
-        animationDuration={animDuration}
-        areArrowsAllowed={areArrowsAllowed}
-        arePiecesDraggable={arePiecesDraggable}
+        arrows={customArrows.map(arrow => ({ startSquare: arrow[0], endSquare: arrow[1], color: arrow[2] || "rgba(0, 0, 0, 0.2)" }))}
+        squareStyles={customSquareStyles}
+        darkSquareStyle={{ backgroundColor: colors.dark }}
+        lightSquareStyle={{ backgroundColor: colors.light }}
+        dropSquareStyle={{ boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" }}
+        animationDurationInMs={animDuration}
+        allowDrawingArrows={areArrowsAllowed}
+        allowDragging={arePiecesDraggable}
       />
     </div>
   );
