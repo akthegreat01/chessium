@@ -52,13 +52,13 @@ export function classifyMove(
   if (wpDrop >= 20) return "Blunder";
 
   // Mistakes are moderate drops
-  if (wpDrop >= 10) return "Mistake";
+  if (wpDrop >= 9) return "Mistake";
 
   // Inaccuracies are minor drops
-  if (wpDrop >= 5) return "Inaccuracy";
+  if (wpDrop >= 4) return "Inaccuracy";
 
   // Small drops are still good/excellent
-  if (wpDrop >= 2) return "Good";
+  if (wpDrop >= 1.5) return "Good";
   
   return "Excellent";
 }

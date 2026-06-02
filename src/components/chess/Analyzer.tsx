@@ -109,7 +109,7 @@ export default function Analyzer() {
             prevEval.score, 
             res.score, 
             move.color, 
-            res.bestMove === move.lan, 
+            prevEval.bestMove === move.lan, 
             i < 10,
             move.flags.includes('c') || move.flags.includes('e')
           );
