@@ -175,7 +175,7 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
     let accuracy = 100;
     if (wpAfter < wpBefore) {
       const loss = wpBefore - wpAfter;
-      accuracy = 100 * Math.pow(1 - loss, 2);
+      accuracy = 100 * Math.exp(-6 * Math.pow(loss, 1.2));
     }
     
     totalAccuracy += accuracy;
