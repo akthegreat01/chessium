@@ -27,7 +27,7 @@ export default async function DashboardLayout({
     ? {
         name: profile.display_name || profile.username,
         avatar: profile.avatar_url,
-        role: profile.role === "admin" ? "Admin" : "Free Plan",
+        role: profile.role === "admin" ? "Admin" : "Player",
       }
     : { name: user.email?.split("@")[0] || "User" };
 

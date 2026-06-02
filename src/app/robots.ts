@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/dashboard/', '/admin/', '/settings/', '/api/'],
+      disallow: ['/api/'],
     },
     sitemap: 'https://chessium.in/sitemap.xml',
   };
