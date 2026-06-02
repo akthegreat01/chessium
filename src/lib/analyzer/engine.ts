@@ -65,6 +65,11 @@ export class ChessEngine {
     }
     
     if (msg.startsWith('bestmove')) {
+      if (this.ignoreNextBestMove) {
+        this.ignoreNextBestMove = false;
+        return; // Ignore the asynchronous response from a previous stop() command
+      }
+
       const match = msg.match(/bestmove (\S+)/);
       if (match) {
         this.currentEval.bestMove = match[1];
@@ -137,10 +142,13 @@ export class ChessEngine {
     });
   }
 
+  private ignoreNextBestMove = false;
+  
   stop() {
     if (this.worker && this.isAnalyzing) {
       this.worker.postMessage('stop');
       this.isAnalyzing = false;
+      this.ignoreNextBestMove = true;
     }
     if (this.evalTimeout) clearTimeout(this.evalTimeout);
   }
