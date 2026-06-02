@@ -397,7 +397,7 @@ export default function AnalysisPage() {
         {/* Board Area */}
         <div className="flex gap-4 max-w-[700px] mx-auto w-full aspect-[1/1] relative">
           <div className="h-full">
-            <EvalBar centipawns={currentEval?.cp || 0} mateIn={currentEval?.mate || null} orientation="white" />
+            <EvalBar centipawns={currentEval?.cp || 0} mateIn={currentEval?.mate || null} orientation={visualOrientation} />
           </div>
           <div className="flex-1 flex flex-col justify-between">
             {/* Toolbar */}
