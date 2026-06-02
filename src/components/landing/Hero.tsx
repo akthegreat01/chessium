@@ -3,6 +3,8 @@
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Board from "@/components/chess/Board";
+import EvalGraph from "@/components/chess/EvalGraph";
 
 const PIECES = ["♔", "♕", "♖", "♗", "♘", "♙", "♚", "♛", "♜", "♝", "♞", "♟"];
 
@@ -197,55 +199,36 @@ export default function Hero() {
               <div className="flex flex-col gap-6">
                 
                 {/* Board */}
-                <div className="aspect-square w-full max-w-[460px] mx-auto grid grid-cols-8 grid-rows-8 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-                  {Array.from({ length: 64 }, (_, i) => {
-                    const row = Math.floor(i / 8);
-                    const col = i % 8;
-                    const isLight = (row + col) % 2 === 0;
-                    
-                    // Simple piece representation for the mock
-                    let piece = null;
-                    if (row === 0) piece = ["♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"][col];
-                    if (row === 1) piece = "♟";
-                    if (row === 6) piece = "♙";
-                    if (row === 7) piece = ["♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"][col];
-
-                    return (
-                      <div
-                        key={i}
-                        className={`${
-                          isLight ? "bg-[#ebecd0]" : "bg-[#739552]"
-                        } flex items-center justify-center text-2xl sm:text-4xl text-white opacity-90`}
-                        style={{ textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}
-                      >
-                        {piece}
-                      </div>
-                    );
-                  })}
+                <div className="aspect-square w-full max-w-[460px] mx-auto rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                  <div className="pointer-events-none">
+                    <Board 
+                      position="r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 3 3"
+                      arePiecesDraggable={false}
+                    />
+                  </div>
                 </div>
 
                 {/* Eval Graph */}
-                <div className="h-16 w-full max-w-[460px] mx-auto rounded-xl bg-[#141416] border border-[#2a2a30] overflow-hidden relative shadow-inner">
-                  <svg viewBox="0 0 400 40" className="w-full h-full" preserveAspectRatio="none">
-                    <defs>
-                      <linearGradient id="evalGradHero" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#81b64c" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#81b64c" stopOpacity="0" />
-                      </linearGradient>
-                    </defs>
-                    <path
-                      d="M0,25 Q40,20 80,22 T160,25 T240,15 T320,22 T400,10 L400,40 L0,40 Z"
-                      fill="url(#evalGradHero)"
-                    />
-                    <path
-                      d="M0,25 Q40,20 80,22 T160,25 T240,15 T320,22 T400,10"
-                      fill="none"
-                      stroke="#81b64c"
-                      strokeWidth="2"
-                      style={{ filter: "drop-shadow(0 0 4px rgba(129,182,76,0.6))" }}
-                    />
-                    <line x1="0" y1="20" x2="400" y2="20" stroke="#2a2a30" strokeWidth="1" />
-                  </svg>
+                <div className="w-full max-w-[460px] mx-auto relative shadow-inner">
+                  <EvalGraph 
+                    data={[
+                      { moveNumber: 0, cp: 20, mate: null },
+                      { moveNumber: 1, cp: 30, mate: null },
+                      { moveNumber: 2, cp: 25, mate: null },
+                      { moveNumber: 3, cp: 40, mate: null },
+                      { moveNumber: 4, cp: 10, mate: null },
+                      { moveNumber: 5, cp: -15, mate: null },
+                      { moveNumber: 6, cp: -30, mate: null },
+                      { moveNumber: 7, cp: -10, mate: null },
+                      { moveNumber: 8, cp: 50, mate: null },
+                      { moveNumber: 9, cp: 80, mate: null },
+                      { moveNumber: 10, cp: 120, mate: null },
+                      { moveNumber: 11, cp: 100, mate: null },
+                      { moveNumber: 12, cp: 250, mate: null },
+                    ]}
+                    currentMoveIndex={10}
+                    onMoveClick={() => {}}
+                  />
                 </div>
               </div>
 
