@@ -73,14 +73,37 @@ export default function Hero() {
       {/* Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
         {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="flex justify-center mb-6"
-        >
-          <img src="/logo.png" alt="Chessium Logo" className="w-24 h-24 object-contain drop-shadow-[0_0_15px_rgba(129,182,76,0.5)]" />
-        </motion.div>
+        <div className="flex justify-center mb-10 perspective-[1000px]">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, rotateX: 20, rotateY: -20 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              rotateX: [10, -10, 10],
+              rotateY: [-10, 10, -10],
+              y: [0, -15, 0]
+            }}
+            transition={{ 
+              opacity: { duration: 0.8 },
+              scale: { duration: 0.8 },
+              rotateX: { duration: 6, repeat: Infinity, ease: "easeInOut" },
+              rotateY: { duration: 8, repeat: Infinity, ease: "easeInOut" },
+              y: { duration: 5, repeat: Infinity, ease: "easeInOut" }
+            }}
+            style={{ transformStyle: "preserve-3d" }}
+            className="relative"
+          >
+            {/* Glow behind the logo */}
+            <div className="absolute inset-0 bg-[#81b64c] blur-[60px] opacity-40 rounded-full scale-150 animate-pulse-glow" style={{ transform: "translateZ(-50px)" }} />
+            
+            <img 
+              src="/logo.png" 
+              alt="Chessium Logo" 
+              className="relative z-10 w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-[0_20px_30px_rgba(129,182,76,0.3)]"
+              style={{ transform: "translateZ(20px)" }}
+            />
+          </motion.div>
+        </div>
 
         {/* Badge */}
         <motion.div

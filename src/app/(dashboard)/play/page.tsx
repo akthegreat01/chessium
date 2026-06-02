@@ -15,6 +15,8 @@ export default function PlayPage() {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [playerColor, setPlayerColor] = useState<"white" | "black">("white");
   const [isBotThinking, setIsBotThinking] = useState(false);
+  const [moveFrom, setMoveFrom] = useState<string | null>(null);
+  const [optionSquares, setOptionSquares] = useState<Record<string, any>>({});
   const router = useRouter();
   
   const { game, position, history, makeMove, isGameOver, turn } = useChessGame();
@@ -48,6 +50,97 @@ export default function PlayPage() {
     });
     
     return move !== null;
+  };
+
+  const onSquareClick = (square: string) => {
+    if (isGameOver || isBotThinking) return;
+
+    // Only allow interacting if it's the player's turn
+    const isWhiteTurn = turn === 'w';
+    if ((playerColor === "white" && !isWhiteTurn) || (playerColor === "black" && isWhiteTurn)) {
+      return;
+    }
+
+    // If we haven't selected a piece to move yet
+    if (!moveFrom) {
+      const piece = game.get(square as any);
+      if (piece && piece.color === turn) {
+        // Get valid moves for this piece
+        const moves = game.moves({ square: square as any, verbose: true });
+        if (moves.length === 0) return;
+
+        setMoveFrom(square);
+        
+        // Highlight possible moves
+        const newOptionSquares: Record<string, any> = {};
+        moves.forEach((m) => {
+          const targetPiece = game.get(m.to as any);
+          newOptionSquares[m.to] = {
+            background:
+              targetPiece && targetPiece.color !== piece.color
+                ? "radial-gradient(circle, rgba(0,0,0,.4) 85%, transparent 85%)"
+                : "radial-gradient(circle, rgba(0,0,0,.4) 25%, transparent 25%)",
+            borderRadius: "50%"
+          };
+        });
+        // Highlight the selected square
+        newOptionSquares[square] = {
+          background: "rgba(255, 255, 0, 0.4)",
+        };
+        setOptionSquares(newOptionSquares);
+      }
+      return;
+    }
+
+    // We already have a moveFrom square, so try to make the move
+    const moves = game.moves({ square: moveFrom as any, verbose: true });
+    const foundMove = moves.find((m) => m.to === square);
+
+    if (foundMove) {
+      // It's a valid move
+      makeMove({
+        from: moveFrom,
+        to: square,
+        promotion: foundMove.promotion,
+      });
+      // Reset state
+      setMoveFrom(null);
+      setOptionSquares({});
+      return;
+    }
+
+    // If they clicked an invalid square, or another piece
+    const piece = game.get(square as any);
+    if (piece && piece.color === turn && square !== moveFrom) {
+      // They selected a different piece of their own color
+      const newMoves = game.moves({ square: square as any, verbose: true });
+      if (newMoves.length === 0) {
+        setMoveFrom(null);
+        setOptionSquares({});
+        return;
+      }
+      setMoveFrom(square);
+      
+      const newOptionSquares: Record<string, any> = {};
+      newMoves.forEach((m) => {
+        const targetPiece = game.get(m.to as any);
+        newOptionSquares[m.to] = {
+          background:
+            targetPiece && targetPiece.color !== piece.color
+              ? "radial-gradient(circle, rgba(0,0,0,.4) 85%, transparent 85%)"
+              : "radial-gradient(circle, rgba(0,0,0,.4) 25%, transparent 25%)",
+          borderRadius: "50%"
+        };
+      });
+      newOptionSquares[square] = {
+        background: "rgba(255, 255, 0, 0.4)",
+      };
+      setOptionSquares(newOptionSquares);
+    } else {
+      // They clicked an invalid square or the same square to deselect
+      setMoveFrom(null);
+      setOptionSquares({});
+    }
   };
 
   // Bot logic
@@ -125,6 +218,8 @@ export default function PlayPage() {
           <Board 
             position={position} 
             onPieceDrop={handlePieceDrop}
+            onSquareClick={onSquareClick}
+            customSquareStyles={optionSquares}
             boardOrientation={playerColor}
             arePiecesDraggable={!isBotThinking && !isGameOver}
           />

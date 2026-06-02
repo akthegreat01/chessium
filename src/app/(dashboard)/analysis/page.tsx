@@ -25,6 +25,8 @@ export default function AnalysisPage() {
   const { evaluatePosition, isReady, sendCommand, onMessage } = useStockfish();
 
   const [evalData, setEvalData] = useState<{moveNumber: number, cp: number, mate: number | null}[]>([]);
+  const [moveFrom, setMoveFrom] = useState<string | null>(null);
+  const [optionSquares, setOptionSquares] = useState<Record<string, any>>({});
   const [currentLines, setCurrentLines] = useState<{eval: {cp: number, mate: number | null}, moves: string[], depth: number}[]>([]);
   const [isThinking, setIsThinking] = useState(false);
 
@@ -241,20 +243,104 @@ export default function AnalysisPage() {
 
   // Move handling
   const handlePieceDrop = (source: string, target: string, piece: string) => {
-    // Prevent moving if we are viewing past history
-    if (currentMoveIndex !== history.length - 1) return false;
-
+    if (isAnalyzingGame) return false;
+    
     const promotion = piece[1].toLowerCase();
     const move = makeMove({
       from: source,
       to: target,
       promotion: promotion === "p" ? undefined : promotion,
     });
-    return move !== null;
+    
+    if (move) {
+      setCurrentMoveIndex(history.length); // will update after effect
+      setGameAnalysis(null); // clear full analysis since line changed
+      return true;
+    }
+    return false;
+  };
+
+  const onSquareClick = (square: string) => {
+    if (isAnalyzingGame) return;
+
+    if (!moveFrom) {
+      const piece = game.get(square as any);
+      if (piece && piece.color === turn) {
+        const moves = game.moves({ square: square as any, verbose: true });
+        if (moves.length === 0) return;
+
+        setMoveFrom(square);
+        
+        const newOptionSquares: Record<string, any> = {};
+        moves.forEach((m) => {
+          const targetPiece = game.get(m.to as any);
+          newOptionSquares[m.to] = {
+            background:
+              targetPiece && targetPiece.color !== piece.color
+                ? "radial-gradient(circle, rgba(0,0,0,.4) 85%, transparent 85%)"
+                : "radial-gradient(circle, rgba(0,0,0,.4) 25%, transparent 25%)",
+            borderRadius: "50%"
+          };
+        });
+        newOptionSquares[square] = {
+          background: "rgba(255, 255, 0, 0.4)",
+        };
+        setOptionSquares(newOptionSquares);
+      }
+      return;
+    }
+
+    const moves = game.moves({ square: moveFrom as any, verbose: true });
+    const foundMove = moves.find((m) => m.to === square);
+
+    if (foundMove) {
+      const move = makeMove({
+        from: moveFrom,
+        to: square,
+        promotion: foundMove.promotion,
+      });
+      if (move) {
+        setCurrentMoveIndex(history.length);
+        setGameAnalysis(null);
+      }
+      setMoveFrom(null);
+      setOptionSquares({});
+      return;
+    }
+
+    const piece = game.get(square as any);
+    if (piece && piece.color === turn && square !== moveFrom) {
+      const newMoves = game.moves({ square: square as any, verbose: true });
+      if (newMoves.length === 0) {
+        setMoveFrom(null);
+        setOptionSquares({});
+        return;
+      }
+      setMoveFrom(square);
+      
+      const newOptionSquares: Record<string, any> = {};
+      newMoves.forEach((m) => {
+        const targetPiece = game.get(m.to as any);
+        newOptionSquares[m.to] = {
+          background:
+            targetPiece && targetPiece.color !== piece.color
+              ? "radial-gradient(circle, rgba(0,0,0,.4) 85%, transparent 85%)"
+              : "radial-gradient(circle, rgba(0,0,0,.4) 25%, transparent 25%)",
+            borderRadius: "50%"
+        };
+      });
+      newOptionSquares[square] = {
+        background: "rgba(255, 255, 0, 0.4)",
+      };
+      setOptionSquares(newOptionSquares);
+    } else {
+      setMoveFrom(null);
+      setOptionSquares({});
+    }
   };
 
   // Build classification icon overlay if analysis exists
-  const customSquareStyles: Record<string, React.CSSProperties> = {};
+  const customSquareStyles: Record<string, React.CSSProperties> = { ...optionSquares };
   if (gameAnalysis && currentMoveIndex >= 0) {
     const moveStats = gameAnalysis.moves[currentMoveIndex];
     if (moveStats && history[currentMoveIndex]) {
@@ -277,6 +363,7 @@ export default function AnalysisPage() {
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="${color}" stroke="white" stroke-width="2"/><text x="12" y="16" font-family="Arial" font-size="10" font-weight="bold" fill="white" text-anchor="middle">${text}</text></svg>`;
         const dataUri = `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
         customSquareStyles[targetSquare] = {
+          ...customSquareStyles[targetSquare],
           backgroundImage: dataUri,
           backgroundRepeat: "no-repeat",
           backgroundPosition: "top -5px right -5px",
@@ -312,28 +399,27 @@ export default function AnalysisPage() {
           </div>
           <div className="flex-1 flex flex-col justify-between">
             {/* Top Player (Black by default if board is white-oriented) */}
-            <div className="flex items-center gap-3 px-2 py-2 mb-1 bg-[#141416] rounded-t-lg border border-[#2a2a30] border-b-0">
-              <div className="w-8 h-8 rounded-md bg-[#2a2a30] flex items-center justify-center text-sm font-bold text-white shadow-inner">{blackPlayer.charAt(0)}</div>
-              <div className="flex flex-col">
-                <span className="font-bold text-white text-sm leading-tight">{blackPlayer}</span>
-                {blackElo && <span className="text-[#a0a0a8] text-xs font-mono">{blackElo}</span>}
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-8 h-8 bg-[#2a2a30] rounded flex items-center justify-center text-sm">B</div>
+              <div className="font-semibold text-white">
+                {blackPlayer}
+                {blackElo && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({blackElo})</span>}
               </div>
             </div>
 
-            <div className="flex-1 rounded-sm overflow-hidden border-x border-[#2a2a30]">
-              <Board 
-                position={historyFens[currentMoveIndex + 1] || position} 
-                onPieceDrop={handlePieceDrop} 
-                customSquareStyles={customSquareStyles}
-              />
-            </div>
+            <Board 
+              position={historyFens[currentMoveIndex + 1] || position} 
+              onPieceDrop={currentMoveIndex === history.length - 1 ? handlePieceDrop : undefined}
+              onSquareClick={currentMoveIndex === history.length - 1 ? onSquareClick : undefined}
+              customSquareStyles={customSquareStyles}
+            />
 
             {/* Bottom Player (White by default) */}
-            <div className="flex items-center gap-3 px-2 py-2 mt-1 bg-[#141416] rounded-b-lg border border-[#2a2a30] border-t-0">
-              <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center text-sm font-bold text-[#0a0a0b] shadow-inner">{whitePlayer.charAt(0)}</div>
-              <div className="flex flex-col">
-                <span className="font-bold text-white text-sm leading-tight">{whitePlayer}</span>
-                {whiteElo && <span className="text-[#a0a0a8] text-xs font-mono">{whiteElo}</span>}
+            <div className="flex items-center gap-2 mt-2">
+              <div className="w-8 h-8 bg-white rounded flex items-center justify-center text-sm text-black">W</div>
+              <div className="font-semibold text-white">
+                {whitePlayer}
+                {whiteElo && <span className="ml-2 text-[#a0a0a8] text-sm font-normal">({whiteElo})</span>}
               </div>
             </div>
           </div>

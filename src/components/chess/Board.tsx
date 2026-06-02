@@ -6,6 +6,7 @@ import { CSSProperties } from "react";
 interface BoardProps {
   position: string;
   onPieceDrop?: (sourceSquare: string, targetSquare: string, piece: string) => boolean;
+  onSquareClick?: (square: string) => void;
   boardOrientation?: "white" | "black";
   customArrows?: string[][];
   customSquareStyles?: Record<string, CSSProperties>;
@@ -26,6 +27,7 @@ const THEME_COLORS = {
 export default function Board({
   position,
   onPieceDrop,
+  onSquareClick,
   boardOrientation = "white",
   customArrows = [],
   customSquareStyles = {},
@@ -45,6 +47,11 @@ export default function Board({
             ? ({ sourceSquare, targetSquare, piece }) => {
                 if (!sourceSquare || !targetSquare || !piece) return false;
                 return onPieceDrop(sourceSquare, targetSquare, piece.pieceType || "");
+              }
+            : undefined,
+          onSquareClick: onSquareClick 
+            ? ({ square }) => {
+                onSquareClick(square);
               }
             : undefined,
           boardOrientation: boardOrientation,
