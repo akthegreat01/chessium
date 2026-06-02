@@ -20,6 +20,7 @@ export default async function ClubDashboardPage({ params }: { params: Promise<{ 
   const { data: { user } } = await supabase.auth.getUser();
   const members = await getClubMembers(club.id);
   const isMember = user ? members.some(m => m.user_id === user.id) : false;
+  const isOwner = user ? club.owner_id === user.id : false;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -43,7 +44,7 @@ export default async function ClubDashboardPage({ params }: { params: Promise<{ 
               </p>
             </div>
             
-            <ClubActions clubId={club.id} clubSlug={club.slug} isMember={isMember} />
+            <ClubActions clubId={club.id} clubSlug={club.slug} isMember={isMember} isOwner={isOwner} />
           </div>
         </div>
       </div>

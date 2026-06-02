@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { joinClubAction } from "@/app/(dashboard)/clubs/[slug]/actions";
+import { joinClubAction, deleteClubAction } from "@/app/(dashboard)/clubs/[slug]/actions";
 
-export default function ClubActions({ clubId, clubSlug, isMember }: { clubId: string, clubSlug: string, isMember: boolean }) {
+export default function ClubActions({ clubId, clubSlug, isMember, isOwner = false }: { clubId: string, clubSlug: string, isMember: boolean, isOwner?: boolean }) {
   const router = useRouter();
   const [isJoining, setIsJoining] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -30,17 +30,41 @@ export default function ClubActions({ clubId, clubSlug, isMember }: { clubId: st
     }
   };
 
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this club? This action cannot be undone.")) {
+      const res = await deleteClubAction(clubId);
+      if (!res?.error) {
+        router.push("/clubs");
+      } else {
+        alert(res.error);
+      }
+    }
+  };
+
   if (isMember) {
     return (
-      <button 
-        onClick={handleInvite}
-        className="px-8 py-3 bg-[#1a1a1f] border border-[#2a2a30] hover:bg-[#2a2a30] text-white font-bold rounded-xl transition-all shadow-elevated flex items-center gap-2"
-      >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-        </svg>
-        {copied ? "Link Copied!" : "Invite Friends"}
-      </button>
+      <div className="flex flex-col md:flex-row gap-3">
+        {isOwner && (
+          <button 
+            onClick={handleDelete}
+            className="px-6 py-3 bg-[#ca3431]/10 border border-[#ca3431]/30 hover:bg-[#ca3431]/20 text-[#ca3431] font-bold rounded-xl transition-all shadow-elevated flex items-center justify-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            Delete Club
+          </button>
+        )}
+        <button 
+          onClick={handleInvite}
+          className="px-8 py-3 bg-[#1a1a1f] border border-[#2a2a30] hover:bg-[#2a2a30] text-white font-bold rounded-xl transition-all shadow-elevated flex items-center justify-center gap-2"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+          </svg>
+          {copied ? "Link Copied!" : "Invite Friends"}
+        </button>
+      </div>
     );
   }
 
