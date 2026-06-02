@@ -111,6 +111,8 @@ export default function Analyzer() {
             move.color, 
             res.bestMove === move.lan, 
             i < 10,
+            move.flags.includes('c') || move.flags.includes('e')
+          );
           setClassifications(c => ({ ...c, [i]: cls as any }));
         }
         return next;
