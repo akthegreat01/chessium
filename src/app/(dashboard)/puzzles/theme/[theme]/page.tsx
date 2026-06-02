@@ -54,25 +54,10 @@ export default function ThemePuzzlePage() {
     promotion: uci[4] ? uci[4] : undefined
   });
 
-  // When puzzle starts, if there is a solution, the opponent plays the first move
-  useEffect(() => {
-    if (puzzle && status === "playing" && moveIndex === 0) {
-      const firstMove = puzzle.solution[0];
-      const chess = chessRef.current;
-      setTimeout(() => {
-        try {
-          chess.move(uciToObj(firstMove));
-          setPosition(chess.fen());
-          setMoveIndex(1);
-        } catch (err) {
-          console.error("Failed to play puzzle's first move:", err);
-        }
-      }, 500);
-    }
-  }, [puzzle, status, moveIndex]);
+  // Themed puzzles start with the user's turn. No auto-play on moveIndex === 0.
 
   const handlePieceDrop = (source: string, target: string, piece: string) => {
-    if (status !== "playing" || moveIndex % 2 === 0) return false;
+    if (status !== "playing" || moveIndex % 2 !== 0) return false;
 
     const chess = chessRef.current;
     const promotion = piece[1].toLowerCase();
@@ -164,7 +149,7 @@ export default function ThemePuzzlePage() {
               position={position}
               boardOrientation={orientation}
               onPieceDrop={handlePieceDrop}
-              arePiecesDraggable={status === "playing" && moveIndex % 2 !== 0}
+              arePiecesDraggable={status === "playing" && moveIndex % 2 === 0}
             />
           </div>
         </div>

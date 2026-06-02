@@ -7,6 +7,7 @@ import { MASTER_GAMES, MasterGame } from "@/lib/chess/master-games-db";
 import { Chess, Move } from "chess.js";
 import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
+import { playMoveSound } from "@/lib/audio";
 
 export default function MasterGameViewer() {
   const params = useParams();
@@ -74,6 +75,14 @@ export default function MasterGameViewer() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [currentMoveIndex, history.length]);
 
+  // Play sound on move change
+  useEffect(() => {
+    if (currentMoveIndex >= 0 && history[currentMoveIndex]) {
+      const san = history[currentMoveIndex].san;
+      playMoveSound(san.includes('x'), settings.soundEnabled);
+    }
+  }, [currentMoveIndex, history, settings.soundEnabled]);
+
   if (!game) {
     return <div className="text-center p-12 text-[#a0a0a8]">Game not found.</div>;
   }
@@ -109,11 +118,11 @@ export default function MasterGameViewer() {
           <div className="w-full max-w-[650px] mx-auto flex flex-col gap-2">
             
             {/* Top Player Info */}
-            <div className="flex items-center gap-3 px-2">
-              <div className="w-8 h-8 rounded-lg bg-[#2a2a30] flex items-center justify-center font-bold text-white shadow-sm">
+            <div className="flex items-center gap-4 px-3 py-2 bg-[#141416] border border-[#2a2a30] rounded-t-xl">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#2a2a30] to-[#1a1a1f] border border-[#3a3a42] flex items-center justify-center font-bold text-white shadow-sm text-lg">
                 {isFlipped ? game.white[0] : game.black[0]}
               </div>
-              <div className="font-bold text-white">
+              <div className="font-bold text-white text-lg tracking-wide">
                 {isFlipped ? game.white : game.black}
               </div>
             </div>
@@ -128,11 +137,11 @@ export default function MasterGameViewer() {
             />
 
             {/* Bottom Player Info */}
-            <div className="flex items-center gap-3 px-2">
-              <div className="w-8 h-8 rounded-lg bg-[#2a2a30] flex items-center justify-center font-bold text-white shadow-sm">
+            <div className="flex items-center gap-4 px-3 py-2 bg-[#141416] border border-[#2a2a30] rounded-b-xl">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#2a2a30] to-[#1a1a1f] border border-[#3a3a42] flex items-center justify-center font-bold text-white shadow-sm text-lg">
                 {isFlipped ? game.black[0] : game.white[0]}
               </div>
-              <div className="font-bold text-white">
+              <div className="font-bold text-white text-lg tracking-wide">
                 {isFlipped ? game.black : game.white}
               </div>
             </div>

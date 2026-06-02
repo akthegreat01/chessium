@@ -7,6 +7,7 @@ import { OPENINGS_DB, Opening } from "@/lib/chess/openings-db";
 import { Chess, Move } from "chess.js";
 import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
+import AdSlot from "@/components/ui/AdSlot";
 
 export default function OpeningExplorerPage() {
   const params = useParams();
@@ -161,6 +162,34 @@ export default function OpeningExplorerPage() {
               {opening.description}
             </p>
             
+            {/* Extended Theory Section for AdSense Length */}
+            {opening.detailedTheory && (
+              <div className="mb-6 border-t border-[#2a2a30] pt-6">
+                <h4 className="text-lg font-bold text-white mb-3">Deep Theoretical Concepts</h4>
+                {opening.detailedTheory.split('\n\n').map((paragraph, i) => (
+                  <p key={i} className="text-[#a0a0a8] leading-relaxed mb-4">
+                    {paragraph}
+                  </p>
+                ))}
+                <div className="my-6">
+                  <AdSlot format="horizontal" />
+                </div>
+              </div>
+            )}
+            
+            {opening.history && (
+              <div className="mb-6 border-t border-[#2a2a30] pt-6">
+                <h4 className="text-lg font-bold text-white mb-3">Historical Context</h4>
+                <p className="text-[#a0a0a8] leading-relaxed mb-4">
+                  {opening.history}
+                </p>
+              </div>
+            )}
+
+            <div className="my-6">
+              <AdSlot format="horizontal" />
+            </div>
+            
             <h4 className="font-bold text-white mb-3 flex items-center gap-2">
               <svg className="w-5 h-5 text-[#81b64c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
@@ -179,7 +208,7 @@ export default function OpeningExplorerPage() {
 
           <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 shadow-elevated flex-1 flex flex-col">
             <h3 className="text-xl font-bold text-white mb-4">Main Line</h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mb-6">
               {history.map((move, i) => {
                 const isWhite = i % 2 === 0;
                 const moveNum = Math.floor(i / 2) + 1;
@@ -201,6 +230,9 @@ export default function OpeningExplorerPage() {
                   </React.Fragment>
                 );
               })}
+            </div>
+            <div className="mt-auto">
+              <AdSlot format="square" />
             </div>
           </div>
 

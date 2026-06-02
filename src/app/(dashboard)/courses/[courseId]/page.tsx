@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { getCourse } from "@/lib/chess/courses-db";
 import { motion } from "motion/react";
+import AdSlot from "@/components/ui/AdSlot";
 
 export default function CourseOverviewPage() {
   const params = useParams();
@@ -41,9 +42,42 @@ export default function CourseOverviewPage() {
             </div>
           </div>
         </div>
-        <p className="text-[#a0a0a8] text-lg leading-relaxed max-w-2xl">
+        <p className="text-[#a0a0a8] text-lg leading-relaxed max-w-2xl mb-8">
           {course.description}
         </p>
+
+        {course.longDescription && (
+          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 shadow-elevated mb-8">
+            <h2 className="text-xl font-bold text-white mb-4">Course Overview</h2>
+            {course.longDescription.split('\n\n').map((para, idx) => (
+              <p key={idx} className="text-[#a0a0a8] leading-relaxed mb-4">
+                {para}
+              </p>
+            ))}
+            <div className="mt-6 mb-2">
+              <AdSlot format="horizontal" />
+            </div>
+          </div>
+        )}
+
+        {course.whatYouWillLearn && (
+          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 shadow-elevated mb-8">
+            <h2 className="text-xl font-bold text-white mb-4">What You Will Learn</h2>
+            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {course.whatYouWillLearn.map((item, idx) => (
+                <li key={idx} className="flex items-start gap-3 text-[#d0d0d5]">
+                  <svg className="w-6 h-6 text-[#81b64c] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-8">
+              <AdSlot format="horizontal" />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 shadow-elevated">
@@ -73,6 +107,9 @@ export default function CourseOverviewPage() {
               </motion.div>
             </Link>
           ))}
+        </div>
+        <div className="mt-8">
+          <AdSlot format="square" />
         </div>
       </div>
     </div>

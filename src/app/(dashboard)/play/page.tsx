@@ -7,18 +7,20 @@ import { motion, AnimatePresence } from "motion/react";
 import { useChessGame } from "@/hooks/useChessGame";
 import { useStockfish } from "@/hooks/useStockfish";
 import MoveList from "@/components/chess/MoveList";
+import { useSettings } from "@/contexts/SettingsContext";
 
 import { useRouter } from "next/navigation";
 
 export default function PlayPage() {
   const [selectedBot, setSelectedBot] = useState<BotPersonality | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const [colorPreference, setColorPreference] = useState<"white" | "black" | "random">("white");
   const [playerColor, setPlayerColor] = useState<"white" | "black">("white");
   const [isBotThinking, setIsBotThinking] = useState(false);
   const [moveFrom, setMoveFrom] = useState<string | null>(null);
   const [optionSquares, setOptionSquares] = useState<Record<string, any>>({});
   const [visualOrientation, setVisualOrientation] = useState<"white" | "black">("white");
-  const [theme, setTheme] = useState<"classic" | "green" | "blue" | "purple" | "neon">("green");
+  const { settings, updateSettings } = useSettings();
   const router = useRouter();
   
   const { game, position, history, makeMove, isGameOver, turn } = useChessGame();
@@ -218,11 +220,10 @@ export default function PlayPage() {
           </div>
         )}
 
-        {/* Toolbar */}
         <div className="flex items-center justify-end gap-2 px-2">
           <select 
-            value={theme}
-            onChange={(e) => setTheme(e.target.value as any)}
+            value={settings.boardTheme}
+            onChange={(e) => updateSettings({ boardTheme: e.target.value as any })}
             className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#81b64c]"
           >
             <option value="green">Green</option>
@@ -250,7 +251,7 @@ export default function PlayPage() {
             customSquareStyles={optionSquares}
             boardOrientation={visualOrientation}
             arePiecesDraggable={!isBotThinking && !isGameOver}
-            theme={theme}
+            theme={settings.boardTheme}
           />
         </div>
 
@@ -329,11 +330,30 @@ export default function PlayPage() {
                 </button>
               </div>
 
+              <div className="px-6 py-4 border-b border-[#2a2a30] bg-[#111113] flex items-center gap-4 justify-center">
+                <span className="text-[#a0a0a8] text-sm font-medium">I play as:</span>
+                <div className="flex bg-[#1a1a1f] rounded-lg p-1 border border-[#2a2a30]">
+                  {(['white', 'random', 'black'] as const).map(c => (
+                    <button
+                      key={c}
+                      onClick={() => setColorPreference(c)}
+                      className={`px-4 py-1.5 rounded-md text-sm font-bold transition-colors capitalize ${
+                        colorPreference === c 
+                          ? 'bg-[#2a2a30] text-white shadow-sm' 
+                          : 'text-[#6b6b75] hover:text-[#a0a0a8]'
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               <div className="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {BOT_PERSONALITIES.map(bot => (
                   <button
                     key={bot.id}
-                    onClick={() => handleStartGame(bot, "white")}
+                    onClick={() => handleStartGame(bot, colorPreference)}
                     className="flex flex-col items-center text-center p-6 bg-[#141416] border border-[#2a2a30] rounded-xl hover:bg-[#1a1a1f] hover:border-[#81b64c]/50 transition-all group"
                   >
                     <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">

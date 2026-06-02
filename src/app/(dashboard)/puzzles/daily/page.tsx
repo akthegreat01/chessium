@@ -23,6 +23,14 @@ export default function DailyPuzzlePage() {
         // Lichess daily puzzle gives the PGN of the game
         const pgn = data.game.pgn;
         chess.loadPgn(pgn);
+        const moves = chess.history();
+        chess.reset();
+        
+        // Play up to initialPly
+        const initialPly = data.puzzle.initialPly;
+        for (let i = 0; i < initialPly; i++) {
+          if (moves[i]) chess.move(moves[i]);
+        }
         
         chessRef.current = chess;
         setPosition(chess.fen());

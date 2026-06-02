@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
+import { useSettings } from "@/contexts/SettingsContext";
 import { Chess, Move } from "chess.js";
 
 export function useChessGame(initialPgn?: string) {
@@ -26,6 +27,8 @@ export function useChessGame(initialPgn?: string) {
 
   const [moveAudio, setMoveAudio] = useState<HTMLAudioElement | null>(null);
   const [captureAudio, setCaptureAudio] = useState<HTMLAudioElement | null>(null);
+  
+  const { settings } = useSettings();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -42,12 +45,14 @@ export function useChessGame(initialPgn?: string) {
       
       const result = g.move(move);
       if (result) {
-        if (result.captured && captureAudio) {
-          captureAudio.currentTime = 0;
-          captureAudio.play().catch(e => console.log("Audio play failed:", e));
-        } else if (moveAudio) {
-          moveAudio.currentTime = 0;
-          moveAudio.play().catch(e => console.log("Audio play failed:", e));
+        if (settings.soundEnabled) {
+          if (result.captured && captureAudio) {
+            captureAudio.currentTime = 0;
+            captureAudio.play().catch(e => console.log("Audio play failed:", e));
+          } else if (moveAudio) {
+            moveAudio.currentTime = 0;
+            moveAudio.play().catch(e => console.log("Audio play failed:", e));
+          }
         }
         triggerUpdate(g);
         return result;

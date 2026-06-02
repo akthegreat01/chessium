@@ -29,7 +29,7 @@ export default function EvalBar({ centipawns, mateIn, orientation = "white" }: E
       <div
         className="absolute w-full bg-white transition-all duration-300 ease-in-out"
         style={{
-          height: `${isFlipped ? 100 - whitePercent : whitePercent}%`,
+          height: `${whitePercent}%`,
           bottom: isFlipped ? "auto" : 0,
           top: isFlipped ? 0 : "auto",
         }}
@@ -41,9 +41,6 @@ export default function EvalBar({ centipawns, mateIn, orientation = "white" }: E
           className={`text-[10px] font-bold z-10 ${
             whitePercent > 50 ? "text-zinc-800" : "text-white"
           }`}
-          style={{
-            transform: isFlipped ? "rotate(180deg)" : "none",
-          }}
         >
           {displayText}
         </span>

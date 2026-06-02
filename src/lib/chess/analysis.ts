@@ -172,12 +172,13 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
     const wpBefore = move.winProbBefore;
     const wpAfter = move.winProbAfter;
 
-    // Clamp to avoid division by zero and negative values
-    const accuracy = wpBefore > 0.001
-      ? Math.min(1, wpAfter / wpBefore) * 100
-      : wpAfter >= wpBefore ? 100 : 0;
-
-    totalAccuracy += Math.max(0, Math.min(100, accuracy));
+    let accuracy = 100;
+    if (wpAfter < wpBefore) {
+      const loss = wpBefore - wpAfter;
+      accuracy = 100 * Math.pow(1 - loss, 2);
+    }
+    
+    totalAccuracy += accuracy;
     count++;
   }
 

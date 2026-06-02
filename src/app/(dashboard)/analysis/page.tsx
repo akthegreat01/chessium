@@ -11,6 +11,8 @@ import { useStockfish } from "@/hooks/useStockfish";
 import AdSlot from "@/components/ui/AdSlot";
 import { analyzeGame } from "@/lib/chess/analysis";
 import { getEngine } from "@/lib/chess/engine";
+import { playMoveSound } from "@/lib/audio";
+import { useSettings } from "@/contexts/SettingsContext";
 import type { GameAnalysis } from "@/types/chess";
 
 export default function AnalysisPage() {
@@ -21,6 +23,7 @@ export default function AnalysisPage() {
   const [isImporting, setIsImporting] = useState(false);
   
   const { game, position, history, historyFens, makeMove, loadPgn, turn } = useChessGame();
+  const { settings, updateSettings } = useSettings();
   
   const { evaluatePosition, isReady, sendCommand, onMessage } = useStockfish();
 
@@ -30,7 +33,6 @@ export default function AnalysisPage() {
   const [currentLines, setCurrentLines] = useState<{eval: {cp: number, mate: number | null}, moves: string[], depth: number}[]>([]);
   const [isThinking, setIsThinking] = useState(false);
   const [visualOrientation, setVisualOrientation] = useState<"white" | "black">("white");
-  const [theme, setTheme] = useState<"classic" | "green" | "blue" | "purple" | "neon">("green");
 
   // Full Game Analysis State
   const [gameAnalysis, setGameAnalysis] = useState<GameAnalysis | null>(null);
@@ -79,6 +81,14 @@ export default function AnalysisPage() {
       setShouldAutoAnalyze(true);
     }
   }, [loadPgn]);
+
+  // Play sound on move change
+  useEffect(() => {
+    if (currentMoveIndex >= 0 && history[currentMoveIndex]) {
+      const san = history[currentMoveIndex].san;
+      playMoveSound(san.includes('x'), settings.soundEnabled);
+    }
+  }, [currentMoveIndex, history, settings.soundEnabled]);
 
   // Auto-analyze when flag is set and game is loaded
   useEffect(() => {
@@ -400,9 +410,9 @@ export default function AnalysisPage() {
           {/* Toolbar */}
           <div className="flex items-center justify-end gap-2 px-2 mb-2">
             <select 
-              value={theme}
-              onChange={(e) => setTheme(e.target.value as any)}
-              className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] text-xs rounded-lg px-2 py-1 focus:outline-none focus:border-[#81b64c]"
+              value={settings.boardTheme}
+              onChange={(e) => updateSettings({ boardTheme: e.target.value as any })}
+              className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#81b64c]"
             >
               <option value="green">Green</option>
               <option value="classic">Classic</option>
@@ -444,7 +454,7 @@ export default function AnalysisPage() {
                 onSquareClick={currentMoveIndex === history.length - 1 ? onSquareClick : undefined}
                 customSquareStyles={customSquareStyles}
                 boardOrientation={visualOrientation}
-                theme={theme}
+                theme={settings.boardTheme}
               />
             </div>
           </div>

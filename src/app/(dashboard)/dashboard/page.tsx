@@ -25,21 +25,20 @@ export default function DashboardPage() {
 
   // Helper to fetch external ratings
   const fetchExternalRatings = async (chesscom: string, lichess: string) => {
-    const newStats = [...stats];
-    
+    let rapidVal: number | null = null;
+    let rapidLabel = "";
+    let puzzleVal: number | null = null;
+    let puzzleLabel = "";
+
     if (chesscom) {
       try {
         const res = await fetch(`https://api.chess.com/pub/player/${chesscom}/stats`);
         if (res.ok) {
           const data = await res.json();
           const rapid = data.chess_rapid?.last?.rating;
-          if (rapid) {
-            newStats[0] = { ...newStats[0], value: rapid, label: "Chess.com Rapid" };
-          }
+          if (rapid) { rapidVal = rapid; rapidLabel = "Chess.com Rapid"; }
           const puzzle = data.tactics?.highest?.rating;
-          if (puzzle) {
-            newStats[1] = { ...newStats[1], value: puzzle, label: "Chess.com Puzzles" };
-          }
+          if (puzzle) { puzzleVal = puzzle; puzzleLabel = "Chess.com Puzzles"; }
         }
       } catch(e) { console.error(e); }
     }
@@ -50,18 +49,21 @@ export default function DashboardPage() {
         if (res.ok) {
           const data = await res.json();
           const rapid = data.perfs?.rapid?.rating;
-          if (rapid) {
-            newStats[0] = { ...newStats[0], value: rapid, label: "Lichess Rapid" };
-          }
+          if (rapid) { rapidVal = rapid; rapidLabel = "Lichess Rapid"; }
           const puzzle = data.perfs?.puzzle?.rating;
-          if (puzzle) {
-            newStats[1] = { ...newStats[1], value: puzzle, label: "Lichess Puzzles" };
-          }
+          if (puzzle) { puzzleVal = puzzle; puzzleLabel = "Lichess Puzzles"; }
         }
       } catch(e) { console.error(e); }
     }
     
-    setStats(newStats);
+    if (rapidVal || puzzleVal) {
+      setStats(prev => {
+        const newStats = [...prev];
+        if (rapidVal) newStats[0] = { ...newStats[0], value: rapidVal, label: rapidLabel };
+        if (puzzleVal) newStats[1] = { ...newStats[1], value: puzzleVal, label: puzzleLabel };
+        return newStats;
+      });
+    }
   };
 
   useEffect(() => {
@@ -110,6 +112,11 @@ export default function DashboardPage() {
         const pgn = data.game.pgn;
         // Parse PGN strictly just to get the FEN up to the puzzle start
         chess.loadPgn(pgn);
+        const moves = chess.history();
+        chess.reset();
+        for (let i = 0; i < data.puzzle.initialPly; i++) {
+          if (moves[i]) chess.move(moves[i]);
+        }
         setDailyPuzzle({
           fen: chess.fen(),
           rating: data.puzzle.rating,

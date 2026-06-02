@@ -8,11 +8,9 @@ import { Chess } from "chess.js";
 import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
 
-export default function LessonPage() {
-  const params = useParams();
+export default function LessonPage({ params }: { params: Promise<{ courseId: string; lessonId: string }> }) {
   const router = useRouter();
-  const courseId = params.courseId as string;
-  const lessonId = params.lessonId as string;
+  const { courseId, lessonId } = React.use(params);
   const { settings } = useSettings();
   
   const course = getCourse(courseId);
