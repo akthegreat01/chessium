@@ -74,10 +74,44 @@ export function useChessGame(initialPgn?: string) {
   const isGameOver = useMemo(() => game.isGameOver(), [position]);
   const turn = useMemo(() => game.turn(), [position]);
 
+  const historyFens = useMemo(() => {
+    const tempChess = new Chess();
+    // Default initial position or whatever the game started with if it's a puzzle?
+    // Actually, `game.header()` might have a FEN, but let's just initialize it carefully:
+    // If it's a puzzle, the initial board state isn't the standard starting FEN.
+    // Instead of rebuilding the game from moves, we can just use `game.history()`? No, chess.js doesn't give FENs per move easily.
+    // A better approach for `historyFens`:
+    // It's safer to just load the same PGN into a fresh instance, but we need the initial FEN if it exists.
+    // Actually, if we use tempChess.loadPgn(game.pgn()), it will just be at the end.
+    // Let's get the moves and starting FEN.
+    
+    // Check if there is a custom starting FEN
+    const initialFen = game.history().length > 0 ? (
+       // It's tricky to get the starting FEN of a loaded PGN from chess.js directly, but we can reset and see if it was standard.
+       // The easiest way is to parse the headers.
+       game.header()?.FEN || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    ) : game.fen();
+
+    try {
+      tempChess.load(initialFen);
+    } catch {
+      // Fallback
+    }
+
+    const fens = [tempChess.fen()];
+    const moves = game.history();
+    for (const m of moves) {
+      tempChess.move(m);
+      fens.push(tempChess.fen());
+    }
+    return fens;
+  }, [position]);
+
   return {
     game,
     position,
     history,
+    historyFens,
     makeMove,
     undoMove,
     resetGame,
