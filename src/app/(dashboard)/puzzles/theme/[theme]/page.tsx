@@ -12,7 +12,7 @@ export default function ThemePuzzlePage({ params }: { params: Promise<{ theme: s
   const themeParam = decodeURIComponent(theme);
   
   const [puzzle, setPuzzle] = useState<PuzzleData | null>(null);
-  const [position, setPosition] = useState<string>("8/8/8/8/8/8/8/8 w - - 0 1");
+  const [position, setPosition] = useState<string>("empty");
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [status, setStatus] = useState<"loading" | "playing" | "solved" | "failed" | "not_found">("loading");
   const [moveIndex, setMoveIndex] = useState(0);
@@ -23,23 +23,20 @@ export default function ThemePuzzlePage({ params }: { params: Promise<{ theme: s
     setStatus("loading");
     setMoveIndex(0);
     
-    // Slight timeout for UI transition
-    setTimeout(() => {
-      const p = getRandomPuzzle(themeParam);
-      if (!p) {
-        setStatus("not_found");
-        return;
-      }
-      
-      const chess = new Chess();
-      chess.load(p.fen);
-      
-      chessRef.current = chess;
-      setPosition(chess.fen());
-      setOrientation(chess.turn() === "w" ? "white" : "black");
-      setPuzzle(p);
-      setStatus("playing");
-    }, 300);
+    const p = getRandomPuzzle(themeParam);
+    if (!p) {
+      setStatus("not_found");
+      return;
+    }
+    
+    const chess = new Chess();
+    chess.load(p.fen);
+    
+    chessRef.current = chess;
+    setPosition(chess.fen());
+    setOrientation(chess.turn() === "w" ? "white" : "black");
+    setPuzzle(p);
+    setStatus("playing");
   };
 
   useEffect(() => {

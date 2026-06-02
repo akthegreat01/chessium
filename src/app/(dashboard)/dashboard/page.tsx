@@ -185,15 +185,11 @@ export default function DashboardPage() {
       .then(res => res.json())
       .then(data => {
         const chess = new Chess();
-        const pgn = data.game.pgn;
-        const moves = pgn.split(" ");
-        for (let i = 0; i < data.puzzle.initialPly; i++) {
-          if (moves[i]) {
-            try {
-              chess.move(moves[i]);
-            } catch(e) {
-              console.error(e);
-            }
+        if (data.puzzle && data.puzzle.fen) {
+          try {
+            chess.load(data.puzzle.fen);
+          } catch(e) {
+            console.error("Failed to load puzzle FEN", data.puzzle.fen, e);
           }
         }
         setDailyPuzzle({

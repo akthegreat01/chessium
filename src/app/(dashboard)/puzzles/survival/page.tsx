@@ -15,7 +15,7 @@ export default function PuzzleSurvivalPage() {
   const [puzzle, setPuzzle] = useState<PuzzleData | null>(null);
   
   const [chess] = useState(new Chess());
-  const [position, setPosition] = useState("");
+  const [position, setPosition] = useState("empty");
   const [moveIndex, setMoveIndex] = useState(0);
   const [status, setStatus] = useState<"playing" | "success" | "failed" | "gameover">("playing");
   const [orientation, setOrientation] = useState<"white" | "black">("white");
