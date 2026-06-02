@@ -21,6 +21,13 @@ export const PUZZLES_DB: Record<string, PuzzleData[]> = {
       solution: ["a7a8"],
       rating: 900,
       themes: ["Mate in 1", "Endgame"]
+    },
+    {
+      id: "mate_1_3",
+      fen: "rnbqkbnr/ppppp2p/8/5pp1/4P2P/8/PPPP1PP1/RNBQKBNR w KQkq - 0 3",
+      solution: ["d1h5"],
+      rating: 600,
+      themes: ["Mate in 1", "Fool's Mate"]
     }
   ],
   "Mate in 2": [
@@ -30,6 +37,13 @@ export const PUZZLES_DB: Record<string, PuzzleData[]> = {
       solution: ["d2h6", "g7h6", "h4f6"],
       rating: 1400,
       themes: ["Mate in 2", "Sacrifice"]
+    },
+    {
+      id: "mate_2_2",
+      fen: "5rk1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
+      solution: ["a1a8", "f8a8"],
+      rating: 1100,
+      themes: ["Mate in 2", "Back Rank Mate"]
     }
   ],
   "Fork": [
@@ -76,4 +90,12 @@ export function getRandomPuzzle(theme: string): PuzzleData | null {
   if (!puzzles || puzzles.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * puzzles.length);
   return puzzles[randomIndex];
+}
+
+// Helper to get a random puzzle from ALL themes
+export function getAnyRandomPuzzle(): PuzzleData | null {
+  const allThemes = Object.values(PUZZLES_DB).flat();
+  if (allThemes.length === 0) return null;
+  const randomIndex = Math.floor(Math.random() * allThemes.length);
+  return allThemes[randomIndex];
 }

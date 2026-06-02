@@ -31,18 +31,18 @@ export default function PuzzlesPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Daily Puzzle Card */}
-        <Link href="/puzzles/daily" className="block group lg:col-span-1">
+        {/* Survival Mode Card */}
+        <Link href="/puzzles/survival" className="block group lg:col-span-1">
           <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl overflow-hidden hover:border-[#81b64c]/50 transition-all duration-300 h-full flex flex-col shadow-elevated relative group-hover:-translate-y-1">
             <div className="absolute inset-0 bg-gradient-to-br from-[#81b64c]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             
             <div className="p-6 pb-0 flex items-center justify-between mb-6 relative z-10">
               <div>
-                <h2 className="text-2xl font-bold text-white group-hover:text-[#81b64c] transition-colors">Daily Puzzle</h2>
-                <div className="text-sm text-[#a0a0a8] mt-1">Keep your streak alive</div>
+                <h2 className="text-2xl font-bold text-white group-hover:text-[#81b64c] transition-colors">Survival Mode</h2>
+                <div className="text-sm text-[#a0a0a8] mt-1">3 Lives. Highest Streak Wins.</div>
               </div>
               <div className="w-12 h-12 rounded-xl bg-[#1a1a1f] flex items-center justify-center text-2xl border border-[#2a2a30] group-hover:scale-110 transition-transform">
-                🔥
+                ❤️
               </div>
             </div>
             
@@ -53,8 +53,8 @@ export default function PuzzlesPage() {
             </div>
             
             <div className="p-4 bg-[#1a1a1f] border-t border-[#2a2a30] flex justify-between items-center relative z-10">
-              <span className="text-white font-medium text-sm">Solve Now</span>
-              <svg className="w-5 h-5 text-[#81b64c] group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <span className="text-white font-medium text-sm">Play Now</span>
+              <svg className="w-5 h-5 text-[#ca3431] group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </div>
