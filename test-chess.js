@@ -1,18 +1,13 @@
-const { Chess } = require('chess.js');
-const pgn = "e4 e5 Nf3 Nc6 d4 exd4 Bc4 Nf6 e5 d5 Bb5 Ne4 Nxd4 Bd7 Bxc6 bxc6 O-O Be7 f3 Nc5 Nd2 O-O N2b3 Ne6 Be3 c5 Nxe6 fxe6 Nxc5 c6 Qd2 Bc8 a4 Rf5 Kh1 Rxe5 Bd4 Rh5 Qe2 Bxc5 Bxc5 Qh4 Bd6 Bd7 Qf2 Qg5 Qg3 Qh6 Rae1 Re8 Bf4 Qf6 Be5 Qh6 Bf4 Qf6 Be5 Qf7 Bd4 Rh6 Bxa7 Rg6 Qf2 e5 f4 e4 Be3 Qf5 Kg1 Ree6 Rd1 Rh6 c4 Reg6 cxd5 cxd5 Qd2 Be6 Qa5";
-
-const chess = new Chess();
-const loaded = chess.loadPgn(pgn);
-console.log("Loaded with loadPgn:", loaded);
-
-const chess2 = new Chess();
+const { Chess } = require("chess.js");
+const pgn = "e4 c5 Bc4 Nc6 a4 Ne5 Ba2 d6 f4 Bg4 Ne2 Ng6 h3 Nxf4 hxg4 Nxg2+ Kf1 Nf6 Kxg2 Nxg4 Nf4 Ne5 d4 cxd4 Qxd4 e6 Nc3 Qg5+ Kf2 Ng4+ Kf1 Be7 Rg1 Nh2+ Kf2";
 const moves = pgn.split(" ");
-for (let move of moves) {
+const chess = new Chess();
+for (let i = 0; i < 34; i++) {
   try {
-    chess2.move(move);
-  } catch (e) {
-    console.log("Failed on", move, e);
+    chess.move(moves[i]);
+  } catch(e) {
+    console.error("Failed on move", i, moves[i], e.message);
     break;
   }
 }
-console.log("Loaded with split:", chess2.history().length);
+console.log("Final FEN:", chess.fen());

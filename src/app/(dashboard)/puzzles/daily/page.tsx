@@ -20,19 +20,13 @@ export default function DailyPuzzlePage() {
       .then(res => res.json())
       .then(data => {
         const chess = new Chess();
-        // Lichess daily puzzle gives the PGN of the game
-        const pgn = data.game.pgn;
-        const moves = pgn.split(" ");
         
-        // Play up to initialPly
-        const initialPly = data.puzzle.initialPly;
-        for (let i = 0; i < initialPly; i++) {
-          if (moves[i]) {
-            try {
-              chess.move(moves[i]);
-            } catch(e) {
-              console.error("Failed to make move", moves[i], e);
-            }
+        // Use the FEN provided by the puzzle API instead of replaying PGN
+        if (data.puzzle && data.puzzle.fen) {
+          try {
+            chess.load(data.puzzle.fen);
+          } catch(e) {
+            console.error("Failed to load puzzle FEN", data.puzzle.fen, e);
           }
         }
         

@@ -18,11 +18,11 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL('https://chessium.in'),
   title: {
-    default: "Chessium — Analyze. Learn. Improve.",
+    default: "Chessium — Master Every Move",
     template: "%s | Chessium",
   },
   description:
-    "Analyze games, solve puzzles, learn from courses, and master chess with powerful tools. Chessium is the modern chess platform for players who want to improve faster.",
+    "Master Every Move. AI-powered chess analysis, personalized training, and beautiful gameplay designed for ambitious players. Created by Akshath Kataria.",
   keywords: [
     "chess",
     "chess analysis",
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
     "online chess",
     "learn chess openings",
   ],
-  authors: [{ name: "Chessium" }],
-  creator: "Chessium",
+  authors: [{ name: "Akshath Kataria", url: "https://chessium.in" }],
+  creator: "Akshath Kataria",
   alternates: {
     canonical: '/',
   },

@@ -13,6 +13,7 @@ import { analyzeGame } from "@/lib/chess/analysis";
 import { getEngine } from "@/lib/chess/engine";
 import { playMoveSound } from "@/lib/audio";
 import { useSettings } from "@/contexts/SettingsContext";
+import { createClient } from "@/lib/supabase/client";
 import type { GameAnalysis } from "@/types/chess";
 
 export default function AnalysisPage() {
@@ -33,6 +34,22 @@ export default function AnalysisPage() {
   const [currentLines, setCurrentLines] = useState<{eval: {cp: number, mate: number | null}, moves: string[], depth: number}[]>([]);
   const [isThinking, setIsThinking] = useState(false);
   const [visualOrientation, setVisualOrientation] = useState<"white" | "black">("white");
+
+  useEffect(() => {
+    // Sync usernames from database to local storage for a seamless experience across devices
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        supabase.from("profiles").select("chess_com_username, lichess_username").eq("id", user.id).single()
+          .then(({ data }) => {
+            if (data) {
+              if (data.chess_com_username) localStorage.setItem("chessium_chesscom_user", data.chess_com_username);
+              if (data.lichess_username) localStorage.setItem("chessium_lichess_user", data.lichess_username);
+            }
+          });
+      }
+    });
+  }, []);
 
   // Full Game Analysis State
   const [gameAnalysis, setGameAnalysis] = useState<GameAnalysis | null>(null);
@@ -213,12 +230,29 @@ export default function AnalysisPage() {
       return;
     }
 
-    if (!usernameInput.trim()) return;
+    const savedUser = localStorage.getItem(`chessium_${importTab}_user`);
+    let username = usernameInput.trim() || savedUser;
+
+    if (!username) {
+      const promptRes = window.prompt(`Enter your ${importTab === 'chesscom' ? 'Chess.com' : 'Lichess'} username:`);
+      if (!promptRes) return;
+      username = promptRes;
+      localStorage.setItem(`chessium_${importTab}_user`, username);
+      
+      // Save to database so they don't have to enter it again on other devices
+      const supabase = createClient();
+      supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+          const updateData = importTab === 'chesscom' ? { chess_com_username: username } : { lichess_username: username };
+          supabase.from("profiles").update(updateData).eq("id", user.id).then();
+        }
+      });
+    }
 
     setIsImporting(true);
     try {
       if (importTab === "chesscom") {
-        const archivesRes = await fetch(`https://api.chess.com/pub/player/${usernameInput}/games/archives`);
+        const archivesRes = await fetch(`https://api.chess.com/pub/player/${username}/games/archives`);
         const archivesData = await archivesRes.json();
         if (archivesData.archives && archivesData.archives.length > 0) {
           const latestArchiveUrl = archivesData.archives[archivesData.archives.length - 1];
@@ -240,7 +274,7 @@ export default function AnalysisPage() {
           alert("No game archives found for this user.");
         }
       } else if (importTab === "lichess") {
-        const res = await fetch(`https://lichess.org/api/games/user/${usernameInput}?max=1&pgnInJson=false`);
+        const res = await fetch(`https://lichess.org/api/games/user/${username}?max=1&pgnInJson=false`);
         const pgn = await res.text();
         if (pgn.trim()) {
           loadPgn(pgn);

@@ -50,6 +50,7 @@ export default function Board({
   return (
     <div className="w-full max-w-full aspect-square rounded-xl overflow-hidden shadow-card border border-[#2a2a30]">
       <Chessboard
+        key={activeTheme}
         position={position}
         onPieceDrop={onPieceDrop 
           ? (sourceSquare, targetSquare, piece) => {
