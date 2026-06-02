@@ -44,7 +44,7 @@ export class StockfishEngine {
   // Engine path
   private readonly enginePath: string;
 
-  constructor(enginePath = '/stockfish/stockfish-16.1-lite-single.js') {
+  constructor(enginePath = '/stockfish/stockfish-18-lite-single.js') {
     this.enginePath = enginePath;
   }
 

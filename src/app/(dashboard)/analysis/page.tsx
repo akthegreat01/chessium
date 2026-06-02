@@ -36,6 +36,7 @@ export default function AnalysisPage() {
   // Navigation State
   const [currentMoveIndex, setCurrentMoveIndex] = useState(-1);
   const prevHistoryLengthRef = useRef(history.length);
+  const [shouldAutoAnalyze, setShouldAutoAnalyze] = useState(false);
   
   // Sync currentMoveIndex when history changes (new moves or new game loaded)
   useEffect(() => {
@@ -71,8 +72,17 @@ export default function AnalysisPage() {
     if (reviewPgn) {
       loadPgn(reviewPgn);
       localStorage.removeItem("chessium_review_pgn");
+      setShouldAutoAnalyze(true);
     }
   }, [loadPgn]);
+
+  // Auto-analyze when flag is set and game is loaded
+  useEffect(() => {
+    if (shouldAutoAnalyze && history.length > 1 && !isAnalyzingGame && isReady) {
+      setShouldAutoAnalyze(false);
+      handleRunAnalysis();
+    }
+  }, [shouldAutoAnalyze, history.length, isAnalyzingGame, isReady]);
 
   // Parse eval from PGN on load
   useEffect(() => {
@@ -168,6 +178,7 @@ export default function AnalysisPage() {
     if (pgnInput.trim()) {
       loadPgn(pgnInput);
       setPgnInput("");
+      setShouldAutoAnalyze(true);
     }
   };
 
@@ -193,6 +204,7 @@ export default function AnalysisPage() {
             if (latestGame.pgn) {
               loadPgn(latestGame.pgn);
               setUsernameInput("");
+              setShouldAutoAnalyze(true);
             } else {
               alert("No PGN found in the latest game.");
             }
@@ -208,6 +220,7 @@ export default function AnalysisPage() {
         if (pgn.trim()) {
           loadPgn(pgn);
           setUsernameInput("");
+          setShouldAutoAnalyze(true);
         } else {
           alert("No games found for this user.");
         }
@@ -274,6 +287,20 @@ export default function AnalysisPage() {
     }
   }
 
+  // Compute graph data (use gameAnalysis if available, else live evalData)
+  const computedEvalData = gameAnalysis && gameAnalysis.moves.length > 0
+    ? [
+        { moveNumber: -1, cp: gameAnalysis.moves[0].evalBefore.cp, mate: gameAnalysis.moves[0].evalBefore.mate },
+        ...gameAnalysis.moves.map((m, i) => ({
+          moveNumber: i,
+          cp: m.evalAfter.cp,
+          mate: m.evalAfter.mate
+        }))
+      ]
+    : evalData;
+
+  const currentEval = computedEvalData.find(d => d.moveNumber === currentMoveIndex);
+
   return (
     <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
       {/* Left Column: Board & Graph */}
@@ -281,7 +308,7 @@ export default function AnalysisPage() {
         {/* Board Area */}
         <div className="flex gap-4 max-w-[700px] mx-auto w-full aspect-[1/1] relative">
           <div className="h-full">
-            <EvalBar centipawns={evalData[currentMoveIndex]?.cp || 0} mateIn={evalData[currentMoveIndex]?.mate || null} orientation="white" />
+            <EvalBar centipawns={currentEval?.cp || 0} mateIn={currentEval?.mate || null} orientation="white" />
           </div>
           <div className="flex-1 flex flex-col justify-between">
             {/* Top Player (Black by default if board is white-oriented) */}
@@ -422,7 +449,7 @@ export default function AnalysisPage() {
                 <div className="bg-[#141416] border border-[#2a2a30] rounded-xl p-4">
                   <h3 className="text-white font-bold mb-4">Evaluation Graph</h3>
                   <EvalGraph 
-                    data={evalData} 
+                    data={computedEvalData} 
                     currentMoveIndex={currentMoveIndex}
                     onMoveClick={setCurrentMoveIndex}
                   />
