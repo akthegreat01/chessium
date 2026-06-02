@@ -9,9 +9,8 @@ import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
 import { playMoveSound } from "@/lib/audio";
 
-export default function MasterGameViewer() {
-  const params = useParams();
-  const gameId = params.id as string;
+export default function MasterGameViewer({ params }: { params: Promise<{ id: string }> }) {
+  const { id: gameId } = React.use(params);
   const { settings } = useSettings();
   
   const [game, setGame] = useState<MasterGame | null>(null);

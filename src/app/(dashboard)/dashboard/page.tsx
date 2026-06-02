@@ -110,12 +110,15 @@ export default function DashboardPage() {
       .then(data => {
         const chess = new Chess();
         const pgn = data.game.pgn;
-        // Parse PGN strictly just to get the FEN up to the puzzle start
-        chess.loadPgn(pgn);
-        const moves = chess.history();
-        chess.reset();
+        const moves = pgn.split(" ");
         for (let i = 0; i < data.puzzle.initialPly; i++) {
-          if (moves[i]) chess.move(moves[i]);
+          if (moves[i]) {
+            try {
+              chess.move(moves[i]);
+            } catch(e) {
+              console.error(e);
+            }
+          }
         }
         setDailyPuzzle({
           fen: chess.fen(),

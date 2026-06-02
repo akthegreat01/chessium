@@ -1,16 +1,15 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import Board from "@/components/chess/Board";
 import { Chess } from "chess.js";
 import AdSlot from "@/components/ui/AdSlot";
 import { getRandomPuzzle, PuzzleData } from "@/lib/chess/puzzles-db";
 
-export default function ThemePuzzlePage() {
-  const params = useParams();
-  const themeParam = decodeURIComponent(params.theme as string);
+export default function ThemePuzzlePage({ params }: { params: Promise<{ theme: string }> }) {
+  const { theme } = React.use(params);
+  const themeParam = decodeURIComponent(theme);
   
   const [puzzle, setPuzzle] = useState<PuzzleData | null>(null);
   const [position, setPosition] = useState<string>("start");

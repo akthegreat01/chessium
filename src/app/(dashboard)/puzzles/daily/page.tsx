@@ -22,14 +22,18 @@ export default function DailyPuzzlePage() {
         const chess = new Chess();
         // Lichess daily puzzle gives the PGN of the game
         const pgn = data.game.pgn;
-        chess.loadPgn(pgn);
-        const moves = chess.history();
-        chess.reset();
+        const moves = pgn.split(" ");
         
         // Play up to initialPly
         const initialPly = data.puzzle.initialPly;
         for (let i = 0; i < initialPly; i++) {
-          if (moves[i]) chess.move(moves[i]);
+          if (moves[i]) {
+            try {
+              chess.move(moves[i]);
+            } catch(e) {
+              console.error("Failed to make move", moves[i], e);
+            }
+          }
         }
         
         chessRef.current = chess;
