@@ -200,6 +200,14 @@ export async function analyzeGame(
   const moveSansArray = tempChess.history();
   
   const chess = new Chess();
+  try {
+    chess.loadPgn(pgn);
+  } catch (e) {
+    console.error("Invalid PGN provided to analyzeGame", e);
+  }
+  while (chess.undo()) {
+    // rewind to start position
+  }
 
   // Detect opening
   const opening = detectOpening(moveSansArray);
@@ -224,9 +232,16 @@ export async function analyzeGame(
     const bestResult = await engine.analyze({ fen: fenBefore, depth });
 
     // Play the actual move
-    const move = chess.move(san);
+    let move;
+    try {
+      move = chess.move(san);
+    } catch (e) {
+      console.warn(`Invalid move ${san} at position ${fenBefore}, skipping...`, e);
+      continue;
+    }
     if (!move) {
-      throw new Error(`Invalid move: ${san} at position ${fenBefore}`);
+      console.warn(`Invalid move ${san} at position ${fenBefore}, skipping...`);
+      continue;
     }
 
     const fenAfter = chess.fen();

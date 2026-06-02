@@ -189,7 +189,7 @@ const OPENINGS: Opening[] = [
   // D70–D99: Grünfeld Defense
   { eco: 'D70', name: 'Grünfeld Defense', moves: '1. d4 Nf6 2. c4 g6 3. Nc3 d5' },
   { eco: 'D76', name: 'Grünfeld: Russian Variation', moves: '1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. e3' },
-  { eco: 'D80', name: 'Grünfeld Defense', moves: '1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bg2' },
+  { eco: 'D80', name: 'Grünfeld Defense', moves: '1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Bg5' },
   { eco: 'D85', name: 'Grünfeld: Exchange Variation', moves: '1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. cxd5 Nxd5' },
   { eco: 'D97', name: 'Grünfeld: Russian, Smyslov', moves: '1. d4 Nf6 2. c4 g6 3. Nc3 d5 4. Nf3 Bg7 5. Qb3' },
 
@@ -254,8 +254,9 @@ function getOpeningMap(): Map<string, Opening> {
 
     let valid = true;
     for (const san of sans) {
-      const result = chess.move(san);
-      if (!result) {
+      try {
+        chess.move(san);
+      } catch (e) {
         valid = false;
         break;
       }
@@ -287,8 +288,11 @@ export function detectOpening(moves: string[]): Opening | null {
   let lastOpening: Opening | null = null;
 
   for (const san of moves) {
-    const result = chess.move(san);
-    if (!result) break;
+    try {
+      chess.move(san);
+    } catch (e) {
+      break;
+    }
 
     const key = fenKey(chess.fen());
     const opening = map.get(key);

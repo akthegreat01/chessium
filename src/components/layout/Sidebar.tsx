@@ -296,13 +296,6 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
       {/* Ad slot for sidebar */}
       {!isCollapsed && (
         <div className="p-3 border-t border-border bg-gradient-to-t from-bg-tertiary to-transparent">
-          <div className="rounded-xl border border-accent/20 bg-accent/5 p-4 mb-4 text-center">
-            <h4 className="text-sm font-bold text-white mb-1">Chessium Pro</h4>
-            <p className="text-xs text-text-secondary mb-3">Unlock unlimited engine depth and game reviews.</p>
-            <button className="w-full rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-white hover:bg-accent-hover transition-colors">
-              Upgrade Now
-            </button>
-          </div>
           <AdSlot slot="sidebar-bottom" />
         </div>
       )}
