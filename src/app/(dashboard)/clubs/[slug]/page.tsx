@@ -3,6 +3,8 @@ import Link from "next/link";
 import { getClubBySlug, getClubMembers } from "@/lib/chess/clubs-db";
 import LiveLeaderboard from "@/components/clubs/LiveLeaderboard";
 import AdSlot from "@/components/ui/AdSlot";
+import ClubActions from "@/components/clubs/ClubActions";
+import { createClient } from "@/lib/supabase/server";
 
 export default async function ClubDashboardPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -12,7 +14,10 @@ export default async function ClubDashboardPage({ params }: { params: Promise<{ 
     return <div className="text-center p-12 text-[#a0a0a8]">Club not found.</div>;
   }
 
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   const members = await getClubMembers(club.id);
+  const isMember = user ? members.some(m => m.user_id === user.id) : false;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -36,9 +41,7 @@ export default async function ClubDashboardPage({ params }: { params: Promise<{ 
               </p>
             </div>
             
-            <button className="px-8 py-3 bg-[#81b64c] hover:bg-[#9fcc6b] text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(129,182,76,0.3)] hover:-translate-y-0.5">
-              Join Club
-            </button>
+            <ClubActions clubId={club.id} clubSlug={club.slug} isMember={isMember} />
           </div>
         </div>
       </div>

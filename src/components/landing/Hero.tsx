@@ -75,7 +75,7 @@ export default function Hero() {
       </div>
 
       {/* Radial glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-[#81b64c] opacity-[0.04] blur-[120px]" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-[#81b64c] opacity-[0.04] blur-[120px] pointer-events-none" />
 
       {/* Huge Static Rook on the Left */}
       <div className="absolute left-[-15%] top-[10%] w-[55vw] max-w-[800px] aspect-square pointer-events-none z-0 hidden md:block">
@@ -300,7 +300,7 @@ export default function Hero() {
           </div>
 
           {/* Glow behind mockup */}
-          <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-3/4 h-40 bg-[#81b64c] opacity-[0.06] blur-[80px] rounded-full" />
+          <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-3/4 h-40 bg-[#81b64c] opacity-[0.06] blur-[80px] rounded-full pointer-events-none" />
         </motion.div>
       </div>
 

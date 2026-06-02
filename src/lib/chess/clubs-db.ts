@@ -60,6 +60,7 @@ export async function getClubMembers(clubId: string) {
     .from("club_members")
     .select(`
       id,
+      user_id,
       role,
       profiles (
         username,
@@ -72,6 +73,7 @@ export async function getClubMembers(clubId: string) {
 
   return data.map((m: any) => ({
     id: m.id,
+    user_id: m.user_id,
     role: m.role,
     username: m.profiles?.username || "Unknown",
     chessComUsername: m.profiles?.chess_com_username || null

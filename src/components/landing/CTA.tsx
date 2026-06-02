@@ -7,7 +7,7 @@ export default function CTA() {
     <section className="py-24 sm:py-32 relative overflow-hidden">
       {/* Background effects */}
       <div className="absolute inset-0 gradient-hero" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#81b64c] opacity-[0.03] blur-[100px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[#81b64c] opacity-[0.03] blur-[100px] pointer-events-none" />
 
       <div className="relative max-w-4xl mx-auto px-6 text-center">
         <motion.div
