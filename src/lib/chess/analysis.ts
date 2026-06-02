@@ -40,6 +40,19 @@ function effectiveCP(evalData: EvalData): number {
   return evalData.cp;
 }
 
+/**
+ * Standardize engine evaluation to always be from White's perspective.
+ */
+function toWhitePerspective(evalData: EvalData, fen: string): EvalData {
+  const isWhiteToMove = fen.split(' ')[1] === 'w';
+  if (isWhiteToMove) return evalData;
+  return {
+    ...evalData,
+    cp: -evalData.cp,
+    mate: evalData.mate !== null ? -evalData.mate : null,
+  };
+}
+
 // ─── Move Classification ────────────────────────────────────────────────────
 
 /**
@@ -214,10 +227,11 @@ export async function analyzeGame(
 
   // Analyze initial position
   const initialFen = chess.fen();
-  const initialEval = await engine.analyze({ fen: initialFen, depth });
+  const initialEvalRaw = await engine.analyze({ fen: initialFen, depth });
+  const initialEvalWhite = toWhitePerspective(initialEvalRaw.evaluation, initialFen);
 
   const analyzedMoves: MoveAnalysis[] = [];
-  let prevEval: EvalData = initialEval.evaluation;
+  let prevEvalWhite: EvalData = initialEvalWhite;
 
   // Track opening book moves
   const openingMoveCount = opening ? opening.moves.split(/\s+/).filter((m) => !m.includes('.')).length : 0;
@@ -229,7 +243,7 @@ export async function analyzeGame(
     const moveNumber = Math.floor(i / 2) + 1;
 
     // Get the best move for this position from the engine
-    const bestResult = await engine.analyze({ fen: fenBefore, depth });
+    const bestResultRaw = await engine.analyze({ fen: fenBefore, depth });
 
     // Play the actual move
     let move;
@@ -247,38 +261,32 @@ export async function analyzeGame(
     const fenAfter = chess.fen();
 
     // Evaluate position after the move
-    const afterResult = await engine.analyze({ fen: fenAfter, depth });
-
-    // The eval after should be from the opposite perspective (engine evaluates from side to move)
-    const evalAfter: EvalData = {
-      ...afterResult.evaluation,
-      cp: -afterResult.evaluation.cp,
-      mate: afterResult.evaluation.mate !== null ? -afterResult.evaluation.mate : null,
-    };
+    const afterResultRaw = await engine.analyze({ fen: fenAfter, depth });
+    const evalAfterWhite = toWhitePerspective(afterResultRaw.evaluation, fenAfter);
 
     // Calculate win probabilities from the moving side's perspective
     const sideFactor = color === 'w' ? 1 : -1;
-    const wpBefore = winProbability(effectiveCP(prevEval) * sideFactor);
-    const wpAfter = winProbability(effectiveCP(evalAfter) * sideFactor);
+    const wpBefore = winProbability(effectiveCP(prevEvalWhite) * sideFactor);
+    const wpAfter = winProbability(effectiveCP(evalAfterWhite) * sideFactor);
     const epLoss = Math.max(0, wpBefore - wpAfter);
 
     // Is this move in the opening book?
     const isBook = i < openingMoveCount;
-    const isTopEngine = move.lan === bestResult.bestMove;
+    const isTopEngine = move.lan === bestResultRaw.bestMove;
 
     // Classify
     const classification: MoveClassification = isBook
       ? 'book'
-      : classifyMove(prevEval, evalAfter, color, isTopEngine, san, chess);
+      : classifyMove(prevEvalWhite, evalAfterWhite, color, isTopEngine, san, chess);
 
     // Build best move SAN
-    let bestMoveSan = bestResult.bestMove;
+    let bestMoveSan = bestResultRaw.bestMove;
     try {
       const tempChess = new Chess(fenBefore);
       const bestMoveObj = tempChess.move({
-        from: bestResult.bestMove.substring(0, 2),
-        to: bestResult.bestMove.substring(2, 4),
-        promotion: bestResult.bestMove.length > 4 ? bestResult.bestMove[4] : undefined,
+        from: bestResultRaw.bestMove.substring(0, 2),
+        to: bestResultRaw.bestMove.substring(2, 4),
+        promotion: bestResultRaw.bestMove.length > 4 ? bestResultRaw.bestMove[4] : undefined,
       });
       if (bestMoveObj) bestMoveSan = bestMoveObj.san;
     } catch {
@@ -292,9 +300,9 @@ export async function analyzeGame(
       color,
       fenBefore,
       fenAfter,
-      evalBefore: prevEval,
-      evalAfter,
-      bestMove: bestResult.bestMove,
+      evalBefore: prevEvalWhite,
+      evalAfter: evalAfterWhite,
+      bestMove: bestResultRaw.bestMove,
       bestMoveSan,
       classification,
       winProbBefore: wpBefore,
@@ -304,10 +312,10 @@ export async function analyzeGame(
       opening: isBook ? opening?.name : undefined,
     });
 
-    // Next iteration: eval before = negated eval after (since we evaluated from other side)
-    prevEval = evalAfter;
+    // Next iteration
+    prevEvalWhite = evalAfterWhite;
 
-    onProgress?.(i + 1, moveSans.length);
+    onProgress?.(i + 1, moveSansArray.length);
   }
 
   // Calculate accuracies

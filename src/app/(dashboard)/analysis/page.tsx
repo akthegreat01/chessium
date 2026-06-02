@@ -574,40 +574,33 @@ export default function AnalysisPage() {
                 </div>
 
                 <div className="bg-[#141416] border border-[#2a2a30] rounded-xl p-4">
-                  <h3 className="text-white font-bold mb-3">Move Classifications</h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="flex justify-between p-2 bg-[#1a1a1f] rounded-lg">
-                      <span className="text-[#26C281] font-semibold">Brilliant</span>
-                      <span className="text-white">{gameAnalysis.whiteSummary.brilliant + gameAnalysis.blackSummary.brilliant}</span>
+                  <div className="flex justify-between items-center mb-3">
+                    <h3 className="text-white font-bold">Move Classifications</h3>
+                    <div className="flex gap-4 text-xs font-semibold text-[#a0a0a8]">
+                      <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-white rounded-sm"></div>White</div>
+                      <div className="flex items-center gap-1.5"><div className="w-3 h-3 bg-black border border-[#2a2a30] rounded-sm"></div>Black</div>
                     </div>
-                    <div className="flex justify-between p-2 bg-[#1a1a1f] rounded-lg">
-                      <span className="text-[#5B8BBD] font-semibold">Great</span>
-                      <span className="text-white">{gameAnalysis.whiteSummary.great + gameAnalysis.blackSummary.great}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-[#1a1a1f] rounded-lg">
-                      <span className="text-[#81b64c] font-semibold">Best</span>
-                      <span className="text-white">{gameAnalysis.whiteSummary.best + gameAnalysis.blackSummary.best}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-[#1a1a1f] rounded-lg">
-                      <span className="text-[#9fcc6b] font-semibold">Excellent</span>
-                      <span className="text-white">{gameAnalysis.whiteSummary.excellent + gameAnalysis.blackSummary.excellent}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-[#1a1a1f] rounded-lg">
-                      <span className="text-[#F3CA20] font-semibold">Inaccuracy</span>
-                      <span className="text-white">{gameAnalysis.whiteSummary.inaccuracy + gameAnalysis.blackSummary.inaccuracy}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-[#1a1a1f] rounded-lg">
-                      <span className="text-[#E58E26] font-semibold">Mistake</span>
-                      <span className="text-white">{gameAnalysis.whiteSummary.mistake + gameAnalysis.blackSummary.mistake}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-[#1a1a1f] rounded-lg">
-                      <span className="text-[#FF3838] font-semibold">Blunder</span>
-                      <span className="text-white">{gameAnalysis.whiteSummary.blunder + gameAnalysis.blackSummary.blunder}</span>
-                    </div>
-                    <div className="flex justify-between p-2 bg-[#1a1a1f] rounded-lg">
-                      <span className="text-[#FF3838] font-semibold">Missed Win</span>
-                      <span className="text-white">{gameAnalysis.whiteSummary.missed_win + gameAnalysis.blackSummary.missed_win}</span>
-                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5 text-sm">
+                    {[
+                      { key: 'brilliant', label: 'Brilliant', color: '#26C281' },
+                      { key: 'great', label: 'Great', color: '#5B8BBD' },
+                      { key: 'best', label: 'Best', color: '#81b64c' },
+                      { key: 'excellent', label: 'Excellent', color: '#9fcc6b' },
+                      { key: 'good', label: 'Good', color: '#96bc4b' },
+                      { key: 'inaccuracy', label: 'Inaccuracy', color: '#F3CA20' },
+                      { key: 'mistake', label: 'Mistake', color: '#E58E26' },
+                      { key: 'blunder', label: 'Blunder', color: '#FF3838' },
+                      { key: 'missed_win', label: 'Missed Win', color: '#FF3838' },
+                    ].map(({ key, label, color }) => (
+                      <div key={key} className="flex items-center p-2 bg-[#1a1a1f] rounded-lg">
+                        <div className="flex-1 font-semibold" style={{ color }}>{label}</div>
+                        <div className="flex gap-4 w-24 justify-end pr-2">
+                          <span className="w-8 text-center text-white font-medium bg-white/5 rounded py-0.5">{gameAnalysis.whiteSummary[key as MoveClassification]}</span>
+                          <span className="w-8 text-center text-[#a0a0a8] font-medium bg-black/50 rounded border border-[#2a2a30] py-0.5">{gameAnalysis.blackSummary[key as MoveClassification]}</span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </>
