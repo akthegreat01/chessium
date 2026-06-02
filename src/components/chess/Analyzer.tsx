@@ -88,7 +88,7 @@ export default function Analyzer() {
     setAnalyzedPercent(0);
     
     const tempGame = new Chess();
-    const initEval = await engineRef.current.evaluatePositionAsync(tempGame.fen(), 14);
+    const initEval = await engineRef.current.evaluatePositionAsync(tempGame.fen(), 18);
     if (currentRunId !== analysisRunIdRef.current) return;
     
     setEvaluations(prev => ({ ...prev, [-1]: initEval }));
@@ -97,7 +97,7 @@ export default function Analyzer() {
       if (currentRunId !== analysisRunIdRef.current) return;
       
       tempGame.move(gameHistory[i]);
-      const res = await engineRef.current.evaluatePositionAsync(tempGame.fen(), 14);
+      const res = await engineRef.current.evaluatePositionAsync(tempGame.fen(), 18);
       if (currentRunId !== analysisRunIdRef.current) return;
       
       setEvaluations(prev => {
@@ -199,7 +199,7 @@ export default function Analyzer() {
 
   useEffect(() => {
     if (engineRef.current && engineEnabled && !isAutoAnalyzing && !evaluations[currentIndex]) {
-      engineRef.current.evaluatePositionAsync(currentFen, 14).then((evalData) => {
+      engineRef.current.evaluatePositionAsync(currentFen, 18).then((evalData) => {
         setEvaluations(prev => ({ ...prev, [currentIndex]: evalData }));
         
         if (currentIndex > 0) {
