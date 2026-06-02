@@ -41,7 +41,7 @@ export default function Navbar({
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 group">
-            <KnightIcon className="h-7 w-7 text-accent transition-transform duration-300 group-hover:scale-110" />
+            <img src="/logo.png" alt="Chessium Logo" className="h-8 w-8 object-contain transition-transform duration-300 group-hover:scale-110" />
             <span className="text-lg font-bold tracking-wider text-text-primary">
               CHESSIUM
             </span>

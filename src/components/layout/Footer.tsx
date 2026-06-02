@@ -78,9 +78,7 @@ export default function Footer() {
           {/* Logo + tagline */}
           <div className="col-span-2">
             <div className="flex items-center gap-2.5">
-              <svg className="h-7 w-7 text-accent" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 22H5v-2h14v2M13 2c-1.25 0-2.42.62-3.11 1.66L7 8l2 2 2.06-2.06C11.28 8.56 12 9.44 12 10.5V16h2v-5.5c0-1.7-.76-3.27-2.06-4.31L14 4h5V2h-6z" />
-              </svg>
+              <img src="/logo.png" alt="Chessium Logo" className="h-8 w-8 object-contain" />
               <span className="text-lg font-bold tracking-wider text-text-primary">
                 CHESSIUM
               </span>

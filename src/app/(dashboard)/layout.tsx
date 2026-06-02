@@ -40,11 +40,9 @@ export default async function DashboardLayout({
         {/* We can place a top header here if needed for mobile, but Sidebar handles its own mobile toggle */}
         <div className="md:hidden h-16 border-b border-[#2a2a30] flex items-center justify-between px-4 bg-[#0a0a0b] sticky top-0 z-30">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-[#81b64c] flex items-center justify-center text-white text-lg font-bold">
-              ♞
-            </div>
+            <img src="/logo.png" alt="Chessium Logo" className="h-8 w-8 object-contain" />
             <span className="text-lg font-bold tracking-tight text-white">
-              CHESS<span className="text-[#81b64c]">IUM</span>
+              CHESSIUM
             </span>
           </div>
         </div>

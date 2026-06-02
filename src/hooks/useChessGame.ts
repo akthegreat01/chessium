@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Chess, Move } from "chess.js";
 
 export function useChessGame(initialPgn?: string) {
@@ -24,6 +24,16 @@ export function useChessGame(initialPgn?: string) {
     setGame(newGame);
   }, []);
 
+  const [moveAudio, setMoveAudio] = useState<HTMLAudioElement | null>(null);
+  const [captureAudio, setCaptureAudio] = useState<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setMoveAudio(new Audio("/sounds/move.ogg"));
+      setCaptureAudio(new Audio("/sounds/capture.ogg"));
+    }
+  }, []);
+
   const makeMove = useCallback((move: string | { from: string; to: string; promotion?: string }) => {
     try {
       const g = new Chess(game.fen());
@@ -32,6 +42,13 @@ export function useChessGame(initialPgn?: string) {
       
       const result = g.move(move);
       if (result) {
+        if (result.captured && captureAudio) {
+          captureAudio.currentTime = 0;
+          captureAudio.play().catch(e => console.log("Audio play failed:", e));
+        } else if (moveAudio) {
+          moveAudio.currentTime = 0;
+          moveAudio.play().catch(e => console.log("Audio play failed:", e));
+        }
         triggerUpdate(g);
         return result;
       }
@@ -40,7 +57,7 @@ export function useChessGame(initialPgn?: string) {
       return null;
     }
     return null;
-  }, [game, triggerUpdate]);
+  }, [game, triggerUpdate, captureAudio, moveAudio]);
 
   const undoMove = useCallback(() => {
     const g = new Chess();

@@ -61,9 +61,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Chessium — Analyze. Learn. Improve.",
-    description:
-      "The modern chess platform for analysis, puzzles, courses, and improvement.",
+    title: "Chessium",
+    description: "The modern chess platform for analysis, puzzles, and courses.",
+  },
+  icons: {
+    icon: "/logo.png",
+    apple: "/logo.png",
   },
   robots: {
     index: true,
