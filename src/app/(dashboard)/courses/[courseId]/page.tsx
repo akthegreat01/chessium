@@ -1,22 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { getCourse } from "@/lib/chess/courses-db";
 import { motion } from "motion/react";
 import AdSlot from "@/components/ui/AdSlot";
+import { useCourseProgress } from "@/hooks/useCourseProgress";
 
 export default function CourseOverviewPage({ params }: { params: Promise<{ courseId: string }> }) {
   const { courseId } = React.use(params);
   const course = getCourse(courseId);
+  const { completedLessons, isCompleted, isLoaded } = useCourseProgress(courseId);
+
+  // We determine the "current" unlocked lesson.
+  // It's the first lesson in the array that is NOT completed.
+  const currentUnlockedIndex = useMemo(() => {
+    if (!course) return 0;
+    const index = course.lessons.findIndex(l => !isCompleted(l.id));
+    return index === -1 ? course.lessons.length - 1 : index;
+  }, [course, isCompleted]);
 
   if (!course) {
     return <div className="text-center p-12 text-[#a0a0a8]">Course not found.</div>;
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8 pb-20">
       {/* Top Header */}
       <div>
         <Link href="/courses" className="text-[#81b64c] hover:text-[#9fcc6b] text-sm font-medium mb-4 inline-block">
@@ -79,36 +89,87 @@ export default function CourseOverviewPage({ params }: { params: Promise<{ cours
         )}
       </div>
 
-      <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 shadow-elevated">
-        <h2 className="text-xl font-bold text-white mb-6">Course Lessons</h2>
+      <div className="bg-[#141416] border border-[#2a2a30] rounded-3xl p-8 shadow-elevated relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.02] pointer-events-none mix-blend-overlay"></div>
+        <h2 className="text-2xl font-black text-white mb-12 text-center">Learning Path</h2>
         
-        <div className="space-y-4">
-          {course.lessons.map((lesson, i) => (
-            <Link href={`/courses/${course.id}/lessons/${lesson.id}`} key={lesson.id} className="block group">
-              <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className="flex items-center gap-4 p-4 rounded-xl border border-[#2a2a30] bg-[#0a0a0b] hover:border-[#81b64c]/50 transition-colors"
-              >
-                <div className="w-10 h-10 rounded-full bg-[#1a1a1f] flex items-center justify-center font-bold text-[#a0a0a8] group-hover:bg-[#81b64c] group-hover:text-white transition-colors">
-                  {i + 1}
+        <div className="relative max-w-lg mx-auto">
+          {/* Vertical connection line */}
+          <div className="absolute left-1/2 top-10 bottom-10 w-2 bg-[#2a2a30] -translate-x-1/2 rounded-full z-0"></div>
+          
+          <div className="space-y-12 relative z-10">
+            {course.lessons.map((lesson, i) => {
+              const completed = isCompleted(lesson.id);
+              const isCurrent = i === currentUnlockedIndex;
+              const isLocked = i > currentUnlockedIndex;
+              
+              // Winding path offset
+              const isLeft = i % 2 === 0;
+              const xOffset = isLeft ? -40 : 40;
+
+              return (
+                <div key={lesson.id} className={`flex ${isLeft ? 'justify-start' : 'justify-end'} relative`}>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                    style={{ transform: `translateX(${xOffset}px)` }}
+                    className="relative"
+                  >
+                    {isLocked ? (
+                      // Locked Node
+                      <div className="w-24 h-24 rounded-full bg-[#1a1a1f] border-4 border-[#2a2a30] flex flex-col items-center justify-center opacity-70">
+                        <svg className="w-8 h-8 text-[#6b6b75] mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      </div>
+                    ) : (
+                      // Unlocked / Completed Node
+                      <Link href={`/courses/${course.id}/lessons/${lesson.id}`} className="block relative group">
+                        {isCurrent && (
+                          <span className="absolute inset-0 bg-[#81b64c] rounded-full animate-ping opacity-20 scale-125"></span>
+                        )}
+                        <div className={`w-24 h-24 rounded-full border-4 flex flex-col items-center justify-center relative z-10 transition-transform group-hover:scale-105 shadow-xl ${
+                          completed 
+                            ? "bg-[#81b64c] border-[#9fcc6b] text-white" 
+                            : "bg-[#2a2a30] border-[#81b64c] text-white"
+                        }`}>
+                          {completed ? (
+                            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                          ) : (
+                            <svg className="w-10 h-10 text-[#81b64c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          )}
+                        </div>
+                      </Link>
+                    )}
+
+                    {/* Lesson Label Bubble */}
+                    <div className={`absolute top-1/2 -translate-y-1/2 w-48 ${isLeft ? 'left-full ml-4' : 'right-full mr-4 text-right'}`}>
+                      <div className="bg-[#1a1a1f] border border-[#2a2a30] p-3 rounded-xl shadow-lg">
+                        <div className="text-xs text-[#81b64c] font-bold mb-1 uppercase tracking-wider">Lesson {i + 1}</div>
+                        <h3 className={`font-bold text-sm ${isLocked ? 'text-[#6b6b75]' : 'text-white'}`}>
+                          {lesson.title}
+                        </h3>
+                      </div>
+                      {/* Triangle pointer */}
+                      <div className={`absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-[#1a1a1f] border-[#2a2a30] rotate-45 ${
+                        isLeft ? '-left-1.5 border-b border-l' : '-right-1.5 border-t border-r'
+                      }`}></div>
+                    </div>
+                  </motion.div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-white group-hover:text-[#81b64c] transition-colors">{lesson.title}</h3>
-                  <p className="text-sm text-[#6b6b75]">{lesson.description}</p>
-                </div>
-                <div className="text-[#a0a0a8] group-hover:translate-x-1 transition-transform">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </motion.div>
-            </Link>
-          ))}
+              );
+            })}
+          </div>
         </div>
-        <div className="mt-8">
-          <AdSlot format="square" />
+        
+        <div className="mt-16">
+          <AdSlot format="horizontal" />
         </div>
       </div>
     </div>

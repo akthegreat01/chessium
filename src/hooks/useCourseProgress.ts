@@ -1,40 +1,55 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
-export function useCourseProgress() {
-  const [completedCourses, setCompletedCourses] = useState<string[]>([]);
+const STORAGE_KEY = 'chessium_course_progress';
+
+export function useCourseProgress(courseId: string) {
+  // progress tracks which lesson IDs are completed
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Load from local storage on client side
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('chessium_completed_courses');
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        try {
-          setCompletedCourses(JSON.parse(stored));
-        } catch (e) {
-          console.error("Failed to parse course progress", e);
+        const data = JSON.parse(stored);
+        if (data[courseId] && Array.isArray(data[courseId])) {
+          setCompletedLessons(data[courseId]);
         }
       }
+    } catch (e) {
+      console.error("Failed to load course progress", e);
+    } finally {
+      setIsLoaded(true);
     }
-  }, []);
+  }, [courseId]);
 
-  const markCompleted = useCallback((courseId: string) => {
-    setCompletedCourses(prev => {
-      if (prev.includes(courseId)) return prev;
-      const next = [...prev, courseId];
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('chessium_completed_courses', JSON.stringify(next));
+  const completeLesson = (lessonId: string) => {
+    setCompletedLessons(prev => {
+      if (prev.includes(lessonId)) return prev;
+      
+      const newProgress = [...prev, lessonId];
+      
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        const data = stored ? JSON.parse(stored) : {};
+        data[courseId] = newProgress;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.error("Failed to save course progress", e);
       }
-      return next;
+      
+      return newProgress;
     });
-  }, []);
+  };
 
-  const isCompleted = useCallback((courseId: string) => {
-    return completedCourses.includes(courseId);
-  }, [completedCourses]);
+  const isCompleted = (lessonId: string) => {
+    return completedLessons.includes(lessonId);
+  };
 
   return {
-    completedCourses,
-    markCompleted,
+    completedLessons,
+    isLoaded,
+    completeLesson,
     isCompleted
   };
 }

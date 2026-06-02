@@ -7,6 +7,7 @@ import { getCourse, getLesson } from "@/lib/chess/courses-db";
 import { Chess } from "chess.js";
 import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useCourseProgress } from "@/hooks/useCourseProgress";
 
 export default function LessonPage({ params }: { params: Promise<{ courseId: string; lessonId: string }> }) {
   const router = useRouter();
@@ -22,6 +23,7 @@ export default function LessonPage({ params }: { params: Promise<{ courseId: str
   const [message, setMessage] = useState("");
   
   const chessRef = useRef(new Chess());
+  const { completeLesson } = useCourseProgress(courseId);
 
   // Helper to convert UCI (e.g. e2e4) to chess.js object
   const uciToObj = (uci: string) => ({
@@ -44,15 +46,9 @@ export default function LessonPage({ params }: { params: Promise<{ courseId: str
     } else {
       setStatus("completed");
       setMessage("Lesson Completed! Great job.");
-      
-      // We could mark it completed in localStorage or Supabase here
-      const completed = JSON.parse(localStorage.getItem("chessium_completed_courses") || "[]");
-      if (!completed.includes(courseId)) {
-        completed.push(courseId);
-        localStorage.setItem("chessium_completed_courses", JSON.stringify(completed));
-      }
+      completeLesson(lessonId);
     }
-  }, [lesson, stepIndex, courseId]);
+  }, [lesson, stepIndex, courseId, lessonId, completeLesson]);
 
   if (!course || !lesson) {
     return <div className="text-center p-12 text-[#a0a0a8]">Lesson not found.</div>;
