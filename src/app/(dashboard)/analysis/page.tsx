@@ -220,6 +220,13 @@ export default function AnalysisPage() {
     }
   };
 
+  // Extracted header information
+  const whitePlayer = game.header()?.White || "White";
+  const blackPlayer = game.header()?.Black || "Black";
+  const whiteElo = game.header()?.WhiteElo || "";
+  const blackElo = game.header()?.BlackElo || "";
+
+  // Move handling
   const handlePieceDrop = (source: string, target: string, piece: string) => {
     // Prevent moving if we are viewing past history
     if (currentMoveIndex !== history.length - 1) return false;
@@ -276,12 +283,32 @@ export default function AnalysisPage() {
           <div className="h-full">
             <EvalBar centipawns={evalData[currentMoveIndex]?.cp || 0} mateIn={evalData[currentMoveIndex]?.mate || null} orientation="white" />
           </div>
-          <div className="flex-1">
-            <Board 
-              position={historyFens[currentMoveIndex + 1] || position} 
-              onPieceDrop={handlePieceDrop} 
-              customSquareStyles={customSquareStyles}
-            />
+          <div className="flex-1 flex flex-col justify-between">
+            {/* Top Player (Black by default if board is white-oriented) */}
+            <div className="flex items-center gap-3 px-2 py-2 mb-1 bg-[#141416] rounded-t-lg border border-[#2a2a30] border-b-0">
+              <div className="w-8 h-8 rounded-md bg-[#2a2a30] flex items-center justify-center text-sm font-bold text-white shadow-inner">{blackPlayer.charAt(0)}</div>
+              <div className="flex flex-col">
+                <span className="font-bold text-white text-sm leading-tight">{blackPlayer}</span>
+                {blackElo && <span className="text-[#a0a0a8] text-xs font-mono">{blackElo}</span>}
+              </div>
+            </div>
+
+            <div className="flex-1 rounded-sm overflow-hidden border-x border-[#2a2a30]">
+              <Board 
+                position={historyFens[currentMoveIndex + 1] || position} 
+                onPieceDrop={handlePieceDrop} 
+                customSquareStyles={customSquareStyles}
+              />
+            </div>
+
+            {/* Bottom Player (White by default) */}
+            <div className="flex items-center gap-3 px-2 py-2 mt-1 bg-[#141416] rounded-b-lg border border-[#2a2a30] border-t-0">
+              <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center text-sm font-bold text-[#0a0a0b] shadow-inner">{whitePlayer.charAt(0)}</div>
+              <div className="flex flex-col">
+                <span className="font-bold text-white text-sm leading-tight">{whitePlayer}</span>
+                {whiteElo && <span className="text-[#a0a0a8] text-xs font-mono">{whiteElo}</span>}
+              </div>
+            </div>
           </div>
         </div>
       </div>

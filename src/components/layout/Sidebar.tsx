@@ -10,6 +10,7 @@ interface NavItem {
   label: string;
   href: string;
   icon: React.ReactNode;
+  comingSoon?: boolean;
 }
 
 interface SidebarProps {
@@ -17,22 +18,13 @@ interface SidebarProps {
   isAdmin?: boolean;
 }
 
-const mainNavItems: NavItem[] = [
+const playNavItems: NavItem[] = [
   {
     label: 'Dashboard',
     href: '/dashboard',
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-      </svg>
-    ),
-  },
-  {
-    label: 'Analysis',
-    href: '/analysis',
-    icon: (
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
       </svg>
     ),
   },
@@ -55,6 +47,28 @@ const mainNavItems: NavItem[] = [
     ),
   },
   {
+    label: 'Tournaments',
+    href: '#tournaments',
+    comingSoon: true,
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
+      </svg>
+    ),
+  },
+];
+
+const learnNavItems: NavItem[] = [
+  {
+    label: 'Analysis',
+    href: '/analysis',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+      </svg>
+    ),
+  },
+  {
     label: 'Courses',
     href: '/courses',
     icon: (
@@ -63,6 +77,32 @@ const mainNavItems: NavItem[] = [
       </svg>
     ),
   },
+];
+
+const communityNavItems: NavItem[] = [
+  {
+    label: 'Leaderboards',
+    href: '#leaderboards',
+    comingSoon: true,
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+      </svg>
+    ),
+  },
+  {
+    label: 'Clubs',
+    href: '#clubs',
+    comingSoon: true,
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+      </svg>
+    ),
+  },
+];
+
+const settingsNavItems: NavItem[] = [
   {
     label: 'Statistics',
     href: '/statistics',
@@ -154,39 +194,67 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
         </div>
       )}
 
-      {/* Main nav */}
+      {/* Nav List Helper Function */}
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {mainNavItems.map((item) => {
-          const isActive = pathname === item.href;
+        {(() => {
+          const renderItem = (item: NavItem) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={`
+                  group relative flex items-center gap-3 rounded-xl px-3 py-2.5
+                  text-sm font-medium transition-all duration-200
+                  ${isCollapsed ? 'justify-center' : ''}
+                  ${item.comingSoon ? 'opacity-70 hover:opacity-100 cursor-default pointer-events-none' : ''}
+                  ${
+                    isActive && !item.comingSoon
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
+                  }
+                `}
+              >
+                {isActive && !item.comingSoon && (
+                  <motion.div
+                    layoutId="sidebar-active"
+                    className="absolute inset-0 rounded-xl bg-accent/10 border border-accent/20"
+                    transition={{ type: 'spring', stiffness: 350, damping: 25 }}
+                  />
+                )}
+                <span className="relative z-10 shrink-0">{item.icon}</span>
+                {!isCollapsed && (
+                  <div className="relative z-10 flex flex-1 items-center justify-between">
+                    <span>{item.label}</span>
+                    {item.comingSoon && (
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-accent bg-accent/10 px-1.5 py-0.5 rounded">
+                        Soon
+                      </span>
+                    )}
+                  </div>
+                )}
+              </Link>
+            );
+          };
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`
-                group relative flex items-center gap-3 rounded-xl px-3 py-2.5
-                text-sm font-medium transition-all duration-200
-                ${isCollapsed ? 'justify-center' : ''}
-                ${
-                  isActive
-                    ? 'bg-accent/10 text-accent'
-                    : 'text-text-secondary hover:bg-white/5 hover:text-text-primary'
-                }
-              `}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="sidebar-active"
-                  className="absolute inset-0 rounded-xl bg-accent/10 border border-accent/20"
-                  transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-                />
-              )}
-              <span className="relative z-10 shrink-0">{item.icon}</span>
-              {!isCollapsed && (
-                <span className="relative z-10">{item.label}</span>
-              )}
-            </Link>
+            <>
+              {playNavItems.map(renderItem)}
+              
+              <div className="my-3 h-px bg-border/50" />
+              {!isCollapsed && <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">Learn</p>}
+              {learnNavItems.map(renderItem)}
+
+              <div className="my-3 h-px bg-border/50" />
+              {!isCollapsed && <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">Community</p>}
+              {communityNavItems.map(renderItem)}
+
+              <div className="my-3 h-px bg-border/50" />
+              {!isCollapsed && <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-widest text-text-muted">Account</p>}
+              {settingsNavItems.map(renderItem)}
+            </>
           );
-        })}
+        })()}
 
         {/* Admin section */}
         {isAdmin && (
@@ -227,7 +295,14 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
 
       {/* Ad slot for sidebar */}
       {!isCollapsed && (
-        <div className="p-3 border-t border-border">
+        <div className="p-3 border-t border-border bg-gradient-to-t from-bg-tertiary to-transparent">
+          <div className="rounded-xl border border-accent/20 bg-accent/5 p-4 mb-4 text-center">
+            <h4 className="text-sm font-bold text-white mb-1">Chessium Pro</h4>
+            <p className="text-xs text-text-secondary mb-3">Unlock unlimited engine depth and game reviews.</p>
+            <button className="w-full rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-white hover:bg-accent-hover transition-colors">
+              Upgrade Now
+            </button>
+          </div>
           <AdSlot slot="sidebar-bottom" />
         </div>
       )}
