@@ -102,6 +102,16 @@ export default function DashboardPage() {
           .then(({ data }) => {
             if (data) setGames(data);
           });
+      } else {
+        // Fallback to localStorage if not authenticated
+        const savedChesscom = localStorage.getItem("chessium_chesscom_user");
+        const savedLichess = localStorage.getItem("chessium_lichess_user");
+        if (savedChesscom) setChesscomUsername(savedChesscom);
+        if (savedLichess) setLichessUsername(savedLichess);
+        
+        if (savedChesscom || savedLichess) {
+          fetchExternalRatings(savedChesscom || "", savedLichess || "");
+        }
       }
     });
 
@@ -132,15 +142,20 @@ export default function DashboardPage() {
 
   const saveAccounts = async () => {
     setIsSavingAccounts(true);
+    
+    // Always save to localStorage as a fallback
+    if (chesscomUsername) localStorage.setItem("chessium_chesscom_user", chesscomUsername);
+    if (lichessUsername) localStorage.setItem("chessium_lichess_user", lichessUsername);
+    
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase.from("profiles").update({
         chess_com_username: chesscomUsername,
         lichess_username: lichessUsername
       }).eq("id", user.id);
-      
-      await fetchExternalRatings(chesscomUsername, lichessUsername);
     }
+    
+    await fetchExternalRatings(chesscomUsername, lichessUsername);
     setIsSavingAccounts(false);
   };
 

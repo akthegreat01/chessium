@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { Chessboard } from "react-chessboard";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "@/contexts/SettingsContext";
 import AdSlot from "@/components/ui/AdSlot";
@@ -88,17 +87,37 @@ export default function VisionTrainerPage() {
             flashColor === "red" ? "border-red-500 shadow-red-500/20" : 
             "border-[#2a2a30]"
           }`}>
-            <Chessboard 
-              id="vision-board"
-              position="8/8/8/8/8/8/8/8 w - - 0 1"
-              boardOrientation={orientation}
-              customDarkSquareStyle={{ backgroundColor: settings.boardTheme === 'green' ? '#739552' : settings.boardTheme === 'blue' ? '#4A739C' : '#8A785D' }}
-              customLightSquareStyle={{ backgroundColor: settings.boardTheme === 'green' ? '#EBECD0' : settings.boardTheme === 'blue' ? '#EAE9D2' : '#E8E5DF' }}
-              onSquareClick={onSquareClick}
-              showBoardNotation={showCoordinates}
-              animationDuration={0}
-              arePiecesDraggable={false}
-            />
+            <div className="w-full aspect-square grid grid-cols-8 grid-rows-8">
+              {(orientation === "white" ? ["8","7","6","5","4","3","2","1"] : ["1","2","3","4","5","6","7","8"]).map((r, rowIndex) => 
+                (orientation === "white" ? ["a","b","c","d","e","f","g","h"] : ["h","g","f","e","d","c","b","a"]).map((f, colIndex) => {
+                  const square = `${f}${r}`;
+                  const isDark = (rowIndex + colIndex) % 2 === 1;
+                  const lightColor = settings.boardTheme === 'green' ? '#EBECD0' : settings.boardTheme === 'blue' ? '#EAE9D2' : '#E8E5DF';
+                  const darkColor = settings.boardTheme === 'green' ? '#739552' : settings.boardTheme === 'blue' ? '#4A739C' : '#8A785D';
+                  const bg = isDark ? darkColor : lightColor;
+                  
+                  return (
+                    <div 
+                      key={square}
+                      onClick={() => onSquareClick(square)}
+                      className="relative w-full h-full cursor-pointer hover:opacity-80 transition-opacity"
+                      style={{ backgroundColor: bg }}
+                    >
+                      {showCoordinates && (colIndex === 0) && (
+                        <span className={`absolute top-1 left-1 text-[10px] font-bold ${isDark ? 'text-white/80' : 'text-black/50'}`}>
+                          {r}
+                        </span>
+                      )}
+                      {showCoordinates && (rowIndex === 7) && (
+                        <span className={`absolute bottom-0 right-1 text-[10px] font-bold ${isDark ? 'text-white/80' : 'text-black/50'}`}>
+                          {f}
+                        </span>
+                      )}
+                    </div>
+                  )
+                })
+              )}
+            </div>
           </div>
           
           {/* Controls */}
