@@ -71,40 +71,43 @@ export default function Hero() {
       {/* Radial glow */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[600px] rounded-full bg-[#81b64c] opacity-[0.04] blur-[120px]" />
 
+      {/* Huge Leaning Rook on the Left */}
+      <div className="absolute left-[-15%] top-1/2 -translate-y-1/2 w-[60vw] max-w-[800px] aspect-square pointer-events-none z-0 perspective-[1200px] hidden md:block">
+        <motion.div
+          initial={{ opacity: 0, x: -100, rotateY: 35, rotateZ: 20 }}
+          animate={{ 
+            opacity: 1, 
+            x: 0,
+            rotateY: [35, 25, 35],
+            rotateZ: [20, 15, 20],
+            y: [0, -30, 0]
+          }}
+          transition={{ 
+            opacity: { duration: 1.2 },
+            x: { duration: 1.2, ease: "easeOut" },
+            rotateY: { duration: 8, repeat: Infinity, ease: "easeInOut" },
+            rotateZ: { duration: 10, repeat: Infinity, ease: "easeInOut" },
+            y: { duration: 7, repeat: Infinity, ease: "easeInOut" }
+          }}
+          style={{ transformStyle: "preserve-3d" }}
+          className="relative w-full h-full"
+        >
+          {/* Deep shadow for the realistic effect */}
+          <div className="absolute inset-0 bg-black blur-[60px] opacity-80 translate-y-32 translate-x-16 rounded-full" style={{ transform: "translateZ(-150px)" }} />
+          {/* Subtle glow */}
+          <div className="absolute inset-0 bg-[#81b64c] blur-[120px] opacity-20 rounded-full" style={{ transform: "translateZ(-50px)" }} />
+          
+          <img 
+            src="/logo.png" 
+            alt="Chessium Giant Rook" 
+            className="w-full h-full object-contain drop-shadow-[30px_30px_40px_rgba(0,0,0,0.9)]"
+            style={{ transform: "translateZ(50px)" }}
+          />
+        </motion.div>
+      </div>
+
       {/* Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-        {/* Logo */}
-        <div className="flex justify-center mb-10 perspective-[1000px]">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotateX: 20, rotateY: -20 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              rotateX: [10, -10, 10],
-              rotateY: [-10, 10, -10],
-              y: [0, -15, 0]
-            }}
-            transition={{ 
-              opacity: { duration: 0.8 },
-              scale: { duration: 0.8 },
-              rotateX: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-              rotateY: { duration: 8, repeat: Infinity, ease: "easeInOut" },
-              y: { duration: 5, repeat: Infinity, ease: "easeInOut" }
-            }}
-            style={{ transformStyle: "preserve-3d" }}
-            className="relative"
-          >
-            {/* Glow behind the logo */}
-            <div className="absolute inset-0 bg-[#81b64c] blur-[60px] opacity-40 rounded-full scale-150 animate-pulse-glow" style={{ transform: "translateZ(-50px)" }} />
-            
-            <img 
-              src="/logo.png" 
-              alt="Chessium Logo" 
-              className="relative z-10 w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-[0_20px_30px_rgba(129,182,76,0.3)]"
-              style={{ transform: "translateZ(20px)" }}
-            />
-          </motion.div>
-        </div>
+      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center pt-20">
 
         {/* Badge */}
         <motion.div
