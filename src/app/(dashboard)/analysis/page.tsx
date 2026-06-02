@@ -601,8 +601,8 @@ export default function AnalysisPage() {
                       <div key={key} className="flex items-center p-2 bg-[#1a1a1f] rounded-lg">
                         <div className="flex-1 font-semibold" style={{ color }}>{label}</div>
                         <div className="flex gap-4 w-24 justify-end pr-2">
-                          <span className="w-8 text-center text-white font-medium bg-white/5 rounded py-0.5">{gameAnalysis.whiteSummary[key as MoveClassification]}</span>
-                          <span className="w-8 text-center text-[#a0a0a8] font-medium bg-black/50 rounded border border-[#2a2a30] py-0.5">{gameAnalysis.blackSummary[key as MoveClassification]}</span>
+                          <span className="w-8 text-center text-white font-medium bg-white/5 rounded py-0.5">{(gameAnalysis.whiteSummary as any)[key]}</span>
+                          <span className="w-8 text-center text-[#a0a0a8] font-medium bg-black/50 rounded border border-[#2a2a30] py-0.5">{(gameAnalysis.blackSummary as any)[key]}</span>
                         </div>
                       </div>
                     ))}

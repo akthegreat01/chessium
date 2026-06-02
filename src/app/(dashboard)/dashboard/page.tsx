@@ -19,6 +19,7 @@ export default function DashboardPage() {
   const [chesscomUsername, setChesscomUsername] = useState("");
   const [lichessUsername, setLichessUsername] = useState("");
   const [isSavingAccounts, setIsSavingAccounts] = useState(false);
+  const [dailyPuzzle, setDailyPuzzle] = useState<{fen: string, rating: number, turn: string} | null>(null);
 
   const supabase = createClient();
 

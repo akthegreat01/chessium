@@ -3,46 +3,8 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import AdSlot from "@/components/ui/AdSlot";
+import { COURSES_DB } from "@/lib/chess/courses-db";
 import { useCourseProgress } from "@/hooks/useCourseProgress";
-
-const COURSES = [
-  {
-    id: "beginner-basics",
-    title: "Chess Fundamentals",
-    description: "Learn how the pieces move, basic rules, and how to checkmate.",
-    level: "Beginner",
-    lessons: 12,
-    progress: 100,
-    color: "#81b64c",
-  },
-  {
-    id: "tactics-101",
-    title: "Tactics 101: Pins, Forks & Skewers",
-    description: "Master the most common tactical motifs to win material immediately.",
-    level: "Intermediate",
-    lessons: 24,
-    progress: 45,
-    color: "#f7c631",
-  },
-  {
-    id: "endgame-mastery",
-    title: "Endgame Mastery",
-    description: "From King and Pawn vs King to complex Rook endgames.",
-    level: "Advanced",
-    lessons: 30,
-    progress: 0,
-    color: "#5c8bb0",
-  },
-  {
-    id: "ruy-lopez",
-    title: "The Ruy Lopez",
-    description: "A complete repertoire for White in the Spanish Game.",
-    level: "Intermediate",
-    lessons: 15,
-    progress: 0,
-    color: "#1baca6",
-  },
-];
 
 export default function CoursesPage() {
   const { isCompleted } = useCourseProgress();
@@ -50,26 +12,35 @@ export default function CoursesPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">
-          Courses
-        </h1>
-        <p className="text-[#a0a0a8]">Learn from interactive lessons and improve your understanding.</p>
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#141416] to-[#1a1a1f] border border-[#2a2a30] p-8 md:p-12 shadow-2xl">
+        <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#81b64c]/10 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+        
+        <div className="relative z-10 max-w-2xl">
+          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-white tracking-tight">
+            Interactive <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#81b64c] to-[#9fcc6b]">Courses</span>
+          </h1>
+          <p className="text-[#a0a0a8] text-lg mb-8 leading-relaxed">
+            Learn step-by-step from interactive lessons. Understand the theory, practice the moves, and apply them in your games.
+          </p>
+        </div>
       </div>
 
       {/* Courses Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {COURSES.map((course, i) => {
+        {COURSES_DB.map((course, i) => {
           const completed = isCompleted(course.id);
-          const currentProgress = completed ? 100 : course.progress;
+          // For now, if not completed, we assume 0% progress unless we fetch it from the DB. 
+          // We can just show 0 or 100 for MVP based on isCompleted, or calculate from local storage.
+          const currentProgress = completed ? 100 : 0; 
           
           return (
-            <Link key={course.id} href={`/courses/${course.id}`}>
+            <Link key={course.id} href={`/courses/${course.id}`} className="block group">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="flex flex-col h-full bg-[#141416] border border-[#2a2a30] rounded-2xl overflow-hidden hover:border-[#3a3a42] hover:bg-[#1a1a1f] transition-all group cursor-pointer relative"
+                className="flex flex-col h-full bg-[#141416] border border-[#2a2a30] rounded-2xl overflow-hidden hover:border-[#81b64c]/50 transition-all shadow-elevated group-hover:-translate-y-1 relative"
               >
                 {completed && (
                   <div className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-[#81b64c] text-white flex items-center justify-center shadow-lg">
@@ -87,7 +58,7 @@ export default function CoursesPage() {
                   }}
                 >
                   <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold"
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-white font-bold text-2xl shadow-xl border border-white/10"
                     style={{ backgroundColor: course.color }}
                   >
                     {course.title[0]}
@@ -101,11 +72,11 @@ export default function CoursesPage() {
                       {course.level}
                     </span>
                     <span className="text-xs text-[#6b6b75]">
-                      {course.lessons} lessons
+                      {course.lessons.length} lessons
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-bold text-white mb-2 group-hover:text-[#81b64c] transition-colors line-clamp-1">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#81b64c] transition-colors line-clamp-1">
                     {course.title}
                   </h3>
                   

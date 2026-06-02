@@ -2,6 +2,7 @@
 
 import { Chessboard } from "react-chessboard";
 import { CSSProperties } from "react";
+import { useSettings } from "@/contexts/SettingsContext";
 
 interface BoardProps {
   position: string;
@@ -13,7 +14,7 @@ interface BoardProps {
   animationDuration?: number;
   areArrowsAllowed?: boolean;
   arePiecesDraggable?: boolean;
-  theme?: "classic" | "green" | "blue" | "purple" | "neon";
+  theme?: string;
 }
 
 const THEME_COLORS = {
@@ -22,6 +23,8 @@ const THEME_COLORS = {
   blue: { light: "#dee3e6", dark: "#8ca2ad" },
   purple: { light: "#e8daf0", dark: "#9370db" },
   neon: { light: "#1a1a2e", dark: "#0f3460" },
+  ocean: { light: "#dee3e6", dark: "#8ca2ad" },
+  walnut: { light: "#e6d5b8", dark: "#855e42" },
 };
 
 export default function Board({
@@ -34,9 +37,15 @@ export default function Board({
   animationDuration = 200,
   areArrowsAllowed = true,
   arePiecesDraggable = true,
-  theme = "green",
+  theme,
 }: BoardProps) {
-  const colors = THEME_COLORS[theme] || THEME_COLORS.green;
+  const { settings } = useSettings();
+  const activeTheme = theme || settings.boardTheme;
+  const colors = THEME_COLORS[activeTheme as keyof typeof THEME_COLORS] || THEME_COLORS.green;
+  
+  // Choose piece set mapping if needed. Currently react-chessboard only supports classic built-in 
+  // without extensive custom piece images, but we can respect moveAnimation.
+  const animDuration = settings.moveAnimation ? animationDuration : 0;
 
   return (
     <div className="w-full max-w-full aspect-square rounded-xl overflow-hidden shadow-card border border-[#2a2a30]">
@@ -64,7 +73,7 @@ export default function Board({
           darkSquareStyle: { backgroundColor: colors.dark },
           lightSquareStyle: { backgroundColor: colors.light },
           dropSquareStyle: { boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" },
-          animationDurationInMs: animationDuration,
+          animationDurationInMs: animDuration,
           allowDrawingArrows: areArrowsAllowed,
           allowDragging: arePiecesDraggable,
         }}
