@@ -90,7 +90,7 @@ export default function PlayVsAI() {
     workerRef.current = worker;
     
     worker.onmessage = (event) => {
-      const msg = event.data;
+      const msg = typeof event.data === 'string' ? event.data.trim() : "";
       if (msg === "uciok") {
         setEngineReady(true);
       }
@@ -334,7 +334,6 @@ export default function PlayVsAI() {
               boardOrientation={isFlipped ? "black" : "white"}
               customDarkSquareStyle={boardTheme.darkSquareStyle}
               customLightSquareStyle={boardTheme.lightSquareStyle}
-              animationDuration={0}
             />
         </div>
 

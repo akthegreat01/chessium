@@ -684,7 +684,6 @@ export default function Analyzer() {
                 customDarkSquareStyle={boardTheme.darkSquareStyle}
                 customLightSquareStyle={boardTheme.lightSquareStyle}
                 boardOrientation={boardOrientation}
-                animationDuration={0}
                 customSquareStyles={{
                   ...(moveFrom ? { [moveFrom]: { background: 'rgba(255, 255, 255, 0.2)' } } : {}),
                   ...(currentIndex >= 0 && history[currentIndex] ? {
