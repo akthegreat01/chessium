@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function DailyPuzzlePage() {
   const [puzzle, setPuzzle] = useState<any>(null);
-  const [position, setPosition] = useState<string>("8/8/8/8/8/8/8/8 w - - 0 1");
+  const [position, setPosition] = useState<string>("empty");
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [status, setStatus] = useState<"loading" | "playing" | "solved" | "failed">("loading");
   const [moveIndex, setMoveIndex] = useState(0);

@@ -24,7 +24,7 @@ export default function AnalysisPage() {
   const [isImporting, setIsImporting] = useState(false);
   
   const { game, position, history, historyFens, makeMove, loadPgn, turn } = useChessGame();
-  const { settings, updateSettings } = useSettings();
+  const { settings, updateSetting } = useSettings();
   
   const { evaluatePosition, isReady, sendCommand, onMessage } = useStockfish();
 
@@ -456,7 +456,7 @@ export default function AnalysisPage() {
           <div className="flex items-center justify-end gap-2 px-2 mb-2">
             <select 
               value={settings.boardTheme}
-              onChange={(e) => updateSettings({ boardTheme: e.target.value as any })}
+              onChange={(e) => updateSetting('boardTheme', e.target.value as any)}
               className="bg-[#141416] border border-[#2a2a30] text-[#a0a0a8] text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#81b64c]"
             >
               <option value="green">Green</option>
