@@ -44,7 +44,7 @@ export function useStockfish() {
     (fen: string, depth: number = 15): Promise<{ score: number; mate: number | null; pv: string[] }> => {
       return new Promise((resolve) => {
         let bestScore = 0;
-        let mateIn = null;
+        let mateIn: number | null = null;
         let bestPv: string[] = [];
 
         const cleanup = onMessage("eval-" + Date.now(), (line) => {

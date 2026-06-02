@@ -195,10 +195,14 @@ export async function analyzeGame(
   const { headers, moves: moveSans } = parsePGN(pgn);
 
   // Set up chess instance
+  const tempChess = new Chess();
+  tempChess.loadPgn(pgn);
+  const moveSansArray = tempChess.history();
+  
   const chess = new Chess();
 
   // Detect opening
-  const opening = detectOpening(moveSans);
+  const opening = detectOpening(moveSansArray);
 
   // Analyze initial position
   const initialFen = chess.fen();
@@ -210,8 +214,8 @@ export async function analyzeGame(
   // Track opening book moves
   const openingMoveCount = opening ? opening.moves.split(/\s+/).filter((m) => !m.includes('.')).length : 0;
 
-  for (let i = 0; i < moveSans.length; i++) {
-    const san = moveSans[i];
+  for (let i = 0; i < moveSansArray.length; i++) {
+    const san = moveSansArray[i];
     const color: 'w' | 'b' = chess.turn();
     const fenBefore = chess.fen();
     const moveNumber = Math.floor(i / 2) + 1;

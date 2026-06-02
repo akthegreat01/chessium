@@ -28,7 +28,9 @@ export default function AdSlot({
   useEffect(() => {
     if (clientId && isAdSenseLoaded) {
       try {
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        const adsbygoogle = (window as any).adsbygoogle || [];
+        adsbygoogle.push({});
+        (window as any).adsbygoogle = adsbygoogle;
       } catch {
         // AdSense may throw if ad was already pushed
       }

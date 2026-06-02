@@ -21,6 +21,8 @@ export async function fetchChessComGames(username: string, maxMonths: number = 6
       
       const { games } = await res.json();
       allGames.push(...games.map((g: any) => ({
+        id: g.url || Math.random().toString(36).substring(7),
+        headers: {},
         pgn: g.pgn,
         white: g.white.username,
         black: g.black.username,
@@ -58,11 +60,13 @@ export async function fetchLichessGames(username: string, max: number = 50): Pro
     const games = text.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
     
     return games.map((g: any) => ({
+      id: g.id || Math.random().toString(36).substring(7),
+      headers: {},
       pgn: g.pgn || "",
-      white: g.players.white.user?.name || "Anonymous",
-      black: g.players.black.user?.name || "Anonymous",
+      white: g.players?.white?.user?.name || "Anonymous",
+      black: g.players?.black?.user?.name || "Anonymous",
       result: g.status === "draw" ? "1/2-1/2" : g.winner === "white" ? "1-0" : "0-1",
-      date: new Date(g.createdAt).toISOString(),
+      date: g.createdAt ? new Date(g.createdAt).toISOString() : new Date().toISOString(),
       timeControl: `${g.clock?.initial / 60 || 0}+${g.clock?.increment || 0}`,
       source: "lichess"
     }));

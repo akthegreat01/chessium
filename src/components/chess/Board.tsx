@@ -39,18 +39,28 @@ export default function Board({
   return (
     <div className="w-full max-w-full aspect-square rounded-lg overflow-hidden shadow-card border border-[#2a2a30]">
       <Chessboard
-        id="chessium-board"
-        position={position}
-        onPieceDrop={onPieceDrop}
-        boardOrientation={boardOrientation}
-        customArrows={customArrows}
-        customSquareStyles={customSquareStyles}
-        animationDuration={animationDuration}
-        areArrowsAllowed={areArrowsAllowed}
-        arePiecesDraggable={arePiecesDraggable}
-        customDarkSquareStyle={{ backgroundColor: colors.dark }}
-        customLightSquareStyle={{ backgroundColor: colors.light }}
-        customDropSquareStyle={{ boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" }}
+        options={{
+          position: position,
+          onPieceDrop: onPieceDrop 
+            ? ({ sourceSquare, targetSquare, piece }) => {
+                if (!sourceSquare || !targetSquare || !piece) return false;
+                return onPieceDrop(sourceSquare, targetSquare, piece.pieceType || "");
+              }
+            : undefined,
+          boardOrientation: boardOrientation,
+          arrows: customArrows.map(arrow => ({ 
+            startSquare: arrow[0], 
+            endSquare: arrow[1], 
+            color: arrow[2] || "rgba(0, 0, 0, 0.2)" 
+          })),
+          squareStyles: customSquareStyles,
+          darkSquareStyle: { backgroundColor: colors.dark },
+          lightSquareStyle: { backgroundColor: colors.light },
+          dropSquareStyle: { boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" },
+          animationDurationInMs: animationDuration,
+          allowDrawingArrows: areArrowsAllowed,
+          allowDragging: arePiecesDraggable,
+        }}
       />
     </div>
   );
