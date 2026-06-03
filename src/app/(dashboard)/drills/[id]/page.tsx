@@ -11,11 +11,25 @@ import { useRouter } from "next/navigation";
 import { Move } from "chess.js";
 
 const DRILLS = {
-  bullet: {
-    title: "Bullet Scramble",
+  "bullet-kq": {
+    title: "Bullet Scramble: Queen",
     initialFen: "8/8/8/8/3Q4/4K3/8/7k w - - 0 1", // K+Q vs K
     playerColor: "white" as const,
     seconds: 10,
+    botRating: 2000,
+  },
+  "bullet-kr": {
+    title: "Bullet Scramble: Rook",
+    initialFen: "8/8/8/8/8/3R4/3K4/7k w - - 0 1", // K+R vs K
+    playerColor: "white" as const,
+    seconds: 15,
+    botRating: 2000,
+  },
+  "bullet-pawn": {
+    title: "Bullet Scramble: Promotion",
+    initialFen: "8/8/8/8/3P4/3K4/8/3k4 w - - 0 1", // King and Pawn vs King
+    playerColor: "white" as const,
+    seconds: 15,
     botRating: 2000,
   }
 };
@@ -89,7 +103,7 @@ export default function DrillPage({ params }: { params: Promise<{ id: string }> 
         } finally {
           setPremove(null);
         }
-      }, 50);
+      }, 10); // Reduced to 10ms for ultimate smoothness
       return () => clearTimeout(timer);
     }
   }, [turn, drill.playerColor, premove, drillStatus, makeMove, consumePremoveTime]);
@@ -107,8 +121,8 @@ export default function DrillPage({ params }: { params: Promise<{ id: string }> 
       // Fast depth for bullet bot
       const depth = 5;
       
-      // Minimal artificial delay for bullet
-      const thinkTime = Math.random() * 200 + 100;
+      // Minimal artificial delay for bullet (extreme smoothness)
+      const thinkTime = Math.random() * 30 + 10;
       
       setTimeout(() => {
         getBestMove(position, depth)
@@ -203,7 +217,7 @@ export default function DrillPage({ params }: { params: Promise<{ id: string }> 
           boardOrientation={drill.playerColor}
           premove={premove}
           arePiecesDraggable={drillStatus === "playing" || !hasStarted}
-          animationDuration={100} // Fast animations for bullet
+          animationDuration={30} // Super fast animations for bullet
         />
 
         {/* Overlays */}

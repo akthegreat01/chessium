@@ -5,30 +5,28 @@ import { motion } from "motion/react";
 
 const drills = [
   {
-    id: "bullet",
-    title: "Bullet Scramble",
-    description: "Start from a crushing +5 position against a strong bot. You have exactly 10 seconds. Checkmate or flag. Premoves are essential.",
+    id: "bullet-kq",
+    title: "Bullet Scramble: Queen",
+    description: "Start from a crushing K+Q vs K position against a strong bot. You have exactly 10 seconds. Premoves are essential.",
     icon: "⚡️",
     difficulty: "Hard",
     color: "from-amber-500 to-orange-600"
   },
   {
-    id: "endgame",
-    title: "Endgame Speedrun",
-    description: "King and Queen vs King. Checkmate the bot as fast as humanly possible. Time limit: 15 seconds.",
-    icon: "🎯",
-    difficulty: "Medium",
-    color: "from-blue-500 to-indigo-600",
-    comingSoon: true
+    id: "bullet-kr",
+    title: "Bullet Scramble: Rook",
+    description: "Start from a K+R vs K position. The bot plays fast. You have 15 seconds. Checkmate or flag.",
+    icon: "🏰",
+    difficulty: "Expert",
+    color: "from-blue-500 to-indigo-600"
   },
   {
-    id: "tactics",
-    title: "Tactics Rush",
-    description: "Solve as many tactics as possible in 3 minutes. One strike and you're out.",
-    icon: "🔥",
-    difficulty: "Hard",
-    color: "from-rose-500 to-red-600",
-    comingSoon: true
+    id: "bullet-pawn",
+    title: "Bullet Scramble: Promotion",
+    description: "King and Pawn vs King in a winning position. Promote and mate in 15 seconds.",
+    icon: "♟️",
+    difficulty: "Medium",
+    color: "from-rose-500 to-red-600"
   }
 ];
 
