@@ -162,7 +162,7 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
 
   if (playerMoves.length === 0) return 100;
 
-  let totalLossSquared = 0;
+  let totalAccuracy = 0;
   let count = 0;
 
   for (const move of playerMoves) {
@@ -170,28 +170,19 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
 
     const wpBefore = move.winProbBefore;
     const wpAfter = move.winProbAfter;
-
-    if (wpAfter < wpBefore) {
-      const loss = wpBefore - wpAfter;
-      totalLossSquared += (loss * loss);
-    }
+    const loss = Math.max(0, wpBefore - wpAfter);
     
+    // Per-move accuracy curve based on win probability loss (scaled to 100)
+    let moveAcc = 103.1668 * Math.exp(-0.04354 * (loss * 100)) - 3.1669;
+    moveAcc = Math.max(0, Math.min(100, moveAcc));
+
+    totalAccuracy += moveAcc;
     count++;
   }
 
   if (count === 0) return 100;
 
-  // Root Mean Square (RMS) of win probability loss.
-  // This heavily penalizes large blunders compared to many small inaccuracies.
-  const rmsLoss = Math.sqrt(totalLossSquared / count);
-  
-  // Standard accuracy curve based on win probability loss (scaled to 100)
-  let gameAccuracy = 103.1668 * Math.exp(-0.04354 * (rmsLoss * 100)) - 3.1669;
-  
-  // Clamp between 0 and 100
-  gameAccuracy = Math.max(0, Math.min(100, gameAccuracy));
-
-  return Math.round(gameAccuracy * 10) / 10;
+  return Math.round((totalAccuracy / count) * 10) / 10;
 }
 
 // ─── Full Game Analysis ─────────────────────────────────────────────────────

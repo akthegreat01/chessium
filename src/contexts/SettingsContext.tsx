@@ -12,6 +12,7 @@ interface Settings {
   soundEnabled: boolean;
   analysisDepth: number;
   multiPv: number;
+  showBestMoveArrow: boolean;
 }
 
 const defaultSettings: Settings = {
@@ -21,6 +22,7 @@ const defaultSettings: Settings = {
   soundEnabled: true,
   analysisDepth: 14,
   multiPv: 1,
+  showBestMoveArrow: true,
 };
 
 interface SettingsContextType {

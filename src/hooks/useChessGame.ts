@@ -64,6 +64,39 @@ export function useChessGame(initialPgn?: string) {
     return null;
   }, [game, triggerUpdate, captureAudio, moveAudio]);
 
+  const branchMove = useCallback((move: string | { from: string; to: string; promotion?: string }, index: number) => {
+    try {
+      const g = new Chess();
+      const initialFen = game.history().length > 0 ? (game.header()?.FEN || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") : game.fen();
+      try {
+        g.load(initialFen);
+      } catch {}
+
+      const moves = game.history();
+      for (let i = 0; i <= index; i++) {
+        if (moves[i]) g.move(moves[i]);
+      }
+      
+      const result = g.move(move);
+      if (result) {
+        if (settings.soundEnabled) {
+          if (result.captured && captureAudio) {
+            captureAudio.currentTime = 0;
+            captureAudio.play().catch(e => console.log("Audio play failed:", e));
+          } else if (moveAudio) {
+            moveAudio.currentTime = 0;
+            moveAudio.play().catch(e => console.log("Audio play failed:", e));
+          }
+        }
+        triggerUpdate(g);
+        return result;
+      }
+    } catch (e) {
+      return null;
+    }
+    return null;
+  }, [game, triggerUpdate, captureAudio, moveAudio, settings.soundEnabled]);
+
   const undoMove = useCallback(() => {
     const g = new Chess();
     g.loadPgn(game.pgn());
@@ -135,6 +168,7 @@ export function useChessGame(initialPgn?: string) {
     history,
     historyFens,
     makeMove,
+    branchMove,
     undoMove,
     resetGame,
     loadPgn,

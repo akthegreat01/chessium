@@ -21,12 +21,12 @@ export default function DailyPuzzlePage() {
       .then(data => {
         const chess = new Chess();
         
-        // Load the PGN from the API response
-        if (data.game && data.game.pgn) {
+        // The Lichess API provides the exact starting FEN for the puzzle
+        if (data.puzzle && data.puzzle.fen) {
           try {
-            chess.loadPgn(data.game.pgn);
+            chess.load(data.puzzle.fen);
           } catch(e) {
-            console.error("Failed to load puzzle PGN", e);
+            console.error("Failed to load puzzle FEN", e);
           }
         }
         
@@ -48,25 +48,8 @@ export default function DailyPuzzlePage() {
     promotion: uci[4] ? uci[4] : undefined
   });
 
-  // When puzzle starts, the opponent plays the first move of the solution
-  useEffect(() => {
-    if (puzzle && status === "playing" && moveIndex === 0) {
-      const firstMove = puzzle.solution[0];
-      const chess = chessRef.current;
-      setTimeout(() => {
-        try {
-          chess.move(uciToObj(firstMove));
-          setPosition(chess.fen());
-          setMoveIndex(1);
-        } catch (err) {
-          console.error("Failed to play puzzle's first move:", err);
-        }
-      }, 500);
-    }
-  }, [puzzle, status, moveIndex]);
-
   const handlePieceDrop = (source: string, target: string, piece: string) => {
-    if (status !== "playing" || moveIndex % 2 === 0) return false;
+    if (status !== "playing" || moveIndex % 2 !== 0) return false;
 
     const chess = chessRef.current;
     

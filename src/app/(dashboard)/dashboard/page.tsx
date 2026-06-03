@@ -211,10 +211,11 @@ export default function DashboardPage() {
     
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from("profiles").update({
+      await supabase.from("profiles").upsert({
+        id: user.id,
         chess_com_username: chesscomUsername,
         lichess_username: lichessUsername
-      }).eq("id", user.id);
+      });
     }
     
     await fetchExternalRatings(chesscomUsername, lichessUsername);

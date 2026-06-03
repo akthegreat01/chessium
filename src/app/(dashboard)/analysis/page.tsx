@@ -23,7 +23,7 @@ export default function AnalysisPage() {
   const [usernameInput, setUsernameInput] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   
-  const { game, position, history, historyFens, makeMove, loadPgn, turn } = useChessGame();
+  const { game, position, history, historyFens, makeMove, branchMove, loadPgn, turn } = useChessGame();
   const { settings, updateSetting } = useSettings();
   
   const { evaluatePosition, isReady, sendCommand, onMessage } = useStockfish();
@@ -325,14 +325,18 @@ export default function AnalysisPage() {
     const isBackRank = target[1] === "8" || target[1] === "1";
     const promotion = (isPawn && isBackRank) ? "q" : undefined;
 
-    const move = makeMove({
+    const moveParams = {
       from: source,
       to: target,
       promotion: promotion,
-    });
+    };
+
+    const move = currentMoveIndex === history.length - 1 
+      ? makeMove(moveParams)
+      : branchMove(moveParams, currentMoveIndex);
     
     if (move) {
-      setCurrentMoveIndex(history.length); // will update after effect
+      setCurrentMoveIndex(prev => prev + 1);
       setGameAnalysis(null); // clear full analysis since line changed
       return true;
     }
@@ -342,17 +346,30 @@ export default function AnalysisPage() {
   const onSquareClick = (square: string) => {
     if (isAnalyzingGame) return;
 
+    const currentChess = currentMoveIndex === history.length - 1 
+      ? game 
+      : (() => {
+          const temp = new (game.constructor as any)();
+          const initialFen = history.length > 0 ? (game.header()?.FEN || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") : game.fen();
+          try { temp.load(initialFen); } catch {}
+          for (let i = 0; i <= currentMoveIndex; i++) {
+            if (history[i]) temp.move(history[i]);
+          }
+          return temp;
+        })();
+
     if (!moveFrom) {
-      const piece = game.get(square as any);
-      if (piece && piece.color === turn) {
-        const moves = game.moves({ square: square as any, verbose: true });
+      const piece = currentChess.get(square as any);
+      const currentTurn = currentChess.turn();
+      if (piece && piece.color === currentTurn) {
+        const moves = currentChess.moves({ square: square as any, verbose: true });
         if (moves.length === 0) return;
 
         setMoveFrom(square);
         
         const newOptionSquares: Record<string, any> = {};
-        moves.forEach((m) => {
-          const targetPiece = game.get(m.to as any);
+        moves.forEach((m: any) => {
+          const targetPiece = currentChess.get(m.to as any);
           newOptionSquares[m.to] = {
             background:
               targetPiece && targetPiece.color !== piece.color
@@ -369,17 +386,34 @@ export default function AnalysisPage() {
       return;
     }
 
-    const moves = game.moves({ square: moveFrom as any, verbose: true });
-    const foundMove = moves.find((m) => m.to === square);
+    const moves = currentMoveIndex === history.length - 1 
+      ? game.moves({ square: moveFrom as any, verbose: true })
+      : (() => {
+          // Temporarily load the history up to currentMoveIndex to get valid moves
+          const tempChess = new (game.constructor as any)();
+          const initialFen = history.length > 0 ? (game.header()?.FEN || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1") : game.fen();
+          try { tempChess.load(initialFen); } catch {}
+          for (let i = 0; i <= currentMoveIndex; i++) {
+            if (history[i]) tempChess.move(history[i]);
+          }
+          return tempChess.moves({ square: moveFrom as any, verbose: true });
+        })();
+
+    const foundMove = moves.find((m: any) => m.to === square);
 
     if (foundMove) {
-      const move = makeMove({
+      const moveParams = {
         from: moveFrom,
         to: square,
         promotion: foundMove.promotion,
-      });
+      };
+
+      const move = currentMoveIndex === history.length - 1 
+        ? makeMove(moveParams)
+        : branchMove(moveParams, currentMoveIndex);
+
       if (move) {
-        setCurrentMoveIndex(history.length);
+        setCurrentMoveIndex(prev => prev + 1);
         setGameAnalysis(null);
       }
       setMoveFrom(null);
