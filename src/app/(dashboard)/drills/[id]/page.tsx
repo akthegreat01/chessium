@@ -26,10 +26,6 @@ export default function DrillPage({ params }: { params: Promise<{ id: string }> 
   const drill = DRILLS[drillId];
   const router = useRouter();
 
-  if (!drill) {
-    return <div className="text-white p-8">Drill not found.</div>;
-  }
-
   const { game, position, history, makeMove, isGameOver, turn, loadFen } = useChessGame();
   const { isReady, getBestMove } = useStockfish();
   
@@ -39,10 +35,14 @@ export default function DrillPage({ params }: { params: Promise<{ id: string }> 
   const [isBotThinking, setIsBotThinking] = useState(false);
 
   // Initialize timer
-  const { timeLeftMs, start: startTimer, pause: pauseTimer, consumePremoveTime, formattedTime } = useBulletTimer(drill.seconds, () => {
+  const { timeLeftMs, start: startTimer, pause: pauseTimer, consumePremoveTime, formattedTime } = useBulletTimer(drill?.seconds || 10, () => {
     // Timeout
     setDrillStatus("lost");
   });
+
+  if (!drill) {
+    return <div className="text-white p-8">Drill not found.</div>;
+  }
 
   // Load initial position
   useEffect(() => {

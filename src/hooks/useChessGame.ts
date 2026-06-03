@@ -123,6 +123,16 @@ export function useChessGame(initialPgn?: string) {
     }
   }, [triggerUpdate]);
 
+  const loadFen = useCallback((fen: string) => {
+    try {
+      const g = new Chess(fen);
+      triggerUpdate(g);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }, [triggerUpdate]);
+
   const isCheck = useMemo(() => game.isCheck(), [position]);
   const isCheckmate = useMemo(() => game.isCheckmate(), [position]);
   const isDraw = useMemo(() => game.isDraw(), [position]);
@@ -172,6 +182,7 @@ export function useChessGame(initialPgn?: string) {
     undoMove,
     resetGame,
     loadPgn,
+    loadFen,
     isCheck,
     isCheckmate,
     isDraw,
