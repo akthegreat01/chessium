@@ -8,9 +8,11 @@ interface BoardProps {
   position: string;
   onPieceDrop?: (sourceSquare: string, targetSquare: string, piece: string) => boolean;
   onSquareClick?: (square: string) => void;
+  onSquareRightClick?: (square: string) => void;
   boardOrientation?: "white" | "black";
   customArrows?: string[][];
   customSquareStyles?: Record<string, CSSProperties>;
+  premove?: { from: string; to: string } | null;
   animationDuration?: number;
   areArrowsAllowed?: boolean;
   arePiecesDraggable?: boolean;
@@ -31,9 +33,11 @@ export default function Board({
   position,
   onPieceDrop,
   onSquareClick,
+  onSquareRightClick,
   boardOrientation = "white",
   customArrows = [],
   customSquareStyles = {},
+  premove = null,
   animationDuration = 200,
   areArrowsAllowed = true,
   arePiecesDraggable = true,
@@ -58,6 +62,18 @@ export default function Board({
 
   // Merge the generated board styles with any custom styles provided via props
   const mergedSquareStyles = { ...boardSquareStyles, ...customSquareStyles };
+  
+  if (premove) {
+    mergedSquareStyles[premove.from] = { 
+      ...mergedSquareStyles[premove.from], 
+      backgroundColor: "rgba(220, 38, 38, 0.5)" // Red-ish for premove
+    };
+    mergedSquareStyles[premove.to] = { 
+      ...mergedSquareStyles[premove.to], 
+      backgroundColor: "rgba(220, 38, 38, 0.5)",
+      boxShadow: "inset 0 0 0 2px rgba(220, 38, 38, 1)"
+    };
+  }
 
   const boardOptions = useMemo(() => ({
     position: position,
@@ -73,6 +89,11 @@ export default function Board({
           onSquareClick(square);
         }
       : undefined,
+    onSquareRightClick: onSquareRightClick
+      ? ({ square }: any) => {
+          onSquareRightClick(square);
+        }
+      : undefined,
     boardOrientation: boardOrientation,
     arrows: customArrows.map(arrow => ({ startSquare: arrow[0], endSquare: arrow[1], color: arrow[2] || "rgba(0, 0, 0, 0.2)" })),
     squareStyles: mergedSquareStyles,
@@ -82,7 +103,7 @@ export default function Board({
     animationDurationInMs: animDuration,
     allowDrawingArrows: areArrowsAllowed,
     allowDragging: arePiecesDraggable
-  }), [position, onPieceDrop, onSquareClick, boardOrientation, customArrows, mergedSquareStyles, animDuration, areArrowsAllowed, arePiecesDraggable, colors]);
+  }), [position, onPieceDrop, onSquareClick, onSquareRightClick, boardOrientation, customArrows, mergedSquareStyles, animDuration, areArrowsAllowed, arePiecesDraggable, colors]);
 
   return (
     <div className="w-full relative touch-none select-none" style={{ aspectRatio: "1 / 1" }}>
