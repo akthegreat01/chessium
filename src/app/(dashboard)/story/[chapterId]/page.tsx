@@ -16,6 +16,8 @@ interface PageProps {
   params: Promise<{ chapterId: string }>;
 }
 
+type DialogueNode = "intro_greeting" | "choice_question" | "choice_threat" | "final_confrontation";
+
 export default function StoryGamePage({ params }: PageProps) {
   const { chapterId } = use(params);
   const router = useRouter();
@@ -47,30 +49,20 @@ export default function StoryGamePage({ params }: PageProps) {
   const [moveFrom, setMoveFrom] = useState<string | null>(null);
   const [optionSquares, setOptionSquares] = useState<Record<string, any>>({});
 
-  // Track the history length to trigger dialogue lines based on move count
-  const prevHistoryLengthRef = useRef(0);
-
-  // Speech synthesis voices and narration controls
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-  const lastSpokenTextRef = useRef("");
-
-  // Deep mysterious voice controls
-  const [narratorPitch, setNarratorPitch] = useState<number>(0.6);
-  const [narratorRate, setNarratorRate] = useState<number>(0.75);
-  const [showNarratorControls, setShowNarratorControls] = useState(false);
-
-  // Typewriter states
+  // Typewriter and Visual Novel State
   const [displayedDialogue, setDisplayedDialogue] = useState("");
-
-  // Game reactions
+  const [dialogueNode, setDialogueNode] = useState<DialogueNode>("intro_greeting");
+  const [showNarratorControls, setShowNarratorControls] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
 
-  const triggerBlunderShake = () => {
-    setIsShaking(true);
-    setTimeout(() => setIsShaking(false), 500);
-  };
+  // Deep mysterious voice parameters
+  const [narratorPitch, setNarratorPitch] = useState<number>(0.6);
+  const [narratorRate, setNarratorRate] = useState<number>(0.75);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const lastSpokenTextRef = useRef("");
+  const prevHistoryLengthRef = useRef(0);
 
-  // Load custom pitch/rate on mount
+  // Load narrator custom speed/pitch on mount
   useEffect(() => {
     const storedPitch = localStorage.getItem("chessium_narrator_pitch");
     const storedRate = localStorage.getItem("chessium_narrator_rate");
@@ -88,23 +80,33 @@ export default function StoryGamePage({ params }: PageProps) {
     localStorage.setItem("chessium_narrator_rate", val.toString());
   };
 
-  // Typewriter effect handler
+  const triggerBlunderShake = () => {
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 500);
+  };
+
+  // Configure starting FEN and initial color on mount
   useEffect(() => {
-    setDisplayedDialogue("");
-    if (!dialogueText) return;
-
-    let index = 0;
-    const interval = setInterval(() => {
-      setDisplayedDialogue((prev) => prev + dialogueText.charAt(index));
-      index++;
-      if (index >= dialogueText.length) {
-        clearInterval(interval);
+    resetGame();
+    if (chapter.startingFen && chapter.startingFen !== "start") {
+      try {
+        game.load(chapter.startingFen);
+      } catch (e) {
+        console.error("Failed to load starting FEN", e);
       }
-    }, 20); // 20ms per character typewriter pace
+    }
+    
+    const opponentColor = chapter.opponentColor;
+    const playerCol = opponentColor === "white" ? "black" : "white";
+    setPlayerColor(playerCol);
 
-    return () => clearInterval(interval);
-  }, [dialogueText]);
+    // Initial Dialogue Node Setup
+    setDialogueNode("intro_greeting");
+    const loadLine = chapter.dialogue.find((d) => d.trigger === "onLoad");
+    setDialogueText(loadLine ? loadLine.text : "Let's play.");
+  }, [chapterId]);
 
+  // Voice synthesis listing
   useEffect(() => {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
 
@@ -123,61 +125,53 @@ export default function StoryGamePage({ params }: PageProps) {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
 
     window.speechSynthesis.cancel();
-    if (!settings.narrationEnabled || status === "intro") return;
+    // Do not speak during intro choice nodes if sound isn't fully ready
+    if (!settings.narrationEnabled) return;
 
     const utterance = new SpeechSynthesisUtterance(text);
-
-    // Deep mysterious override
     utterance.pitch = narratorPitch;
     utterance.rate = narratorRate;
 
     const englishVoices = voices.filter((v) => v.lang.startsWith("en"));
     if (englishVoices.length > 0) {
-      // Score voices to prioritize high-quality natural/enhanced/online/siri voices, especially with a UK accent for Whitechapel
-      const scoredVoices = englishVoices.map((v) => {
-        let score = 0;
-        const nameLower = v.name.toLowerCase();
-        const langLower = v.lang.toLowerCase();
+      const ukVoices = englishVoices.filter(
+        (v) =>
+          v.lang.includes("GB") ||
+          v.name.toLowerCase().includes("uk") ||
+          v.name.toLowerCase().includes("great britain")
+      );
 
-        const isPremium =
-          nameLower.includes("natural") ||
-          nameLower.includes("enhanced") ||
-          nameLower.includes("siri") ||
-          nameLower.includes("google") ||
-          nameLower.includes("neural") ||
-          nameLower.includes("online");
+      const maleKeywords = [
+        "male",
+        "david",
+        "george",
+        "daniel",
+        "rishi",
+        "google uk english male",
+        "arthur",
+        "microsoft david",
+        "steve",
+        "oliver",
+      ];
 
-        const isUK =
-          langLower.includes("gb") ||
-          nameLower.includes("uk") ||
-          nameLower.includes("great britain") ||
-          nameLower.includes("british");
+      const candidateVoices = ukVoices.length > 0 ? ukVoices : englishVoices;
+      const matchedVoice = candidateVoices.find((v) =>
+        maleKeywords.some((kw) => v.name.toLowerCase().includes(kw))
+      );
 
-        if (isPremium && isUK) {
-          score = 10;
-        } else if (isPremium) {
-          score = 5;
-        } else if (isUK) {
-          score = 3;
-        } else {
-          score = 1;
-        }
-
-        return { voice: v, score };
-      });
-
-      scoredVoices.sort((a, b) => b.score - a.score);
-
-      if (scoredVoices[0]) {
-        utterance.voice = scoredVoices[0].voice;
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      } else if (candidateVoices.length > 0) {
+        utterance.voice = candidateVoices[0];
       }
     }
 
     window.speechSynthesis.speak(utterance);
   };
 
+  // Narration triggers on text updates
   useEffect(() => {
-    if (status === "intro" || !dialogueText) return;
+    if (!dialogueText) return;
 
     if (settings.narrationEnabled) {
       speakDialogueText(dialogueText);
@@ -188,8 +182,9 @@ export default function StoryGamePage({ params }: PageProps) {
       }
       lastSpokenTextRef.current = "";
     }
-  }, [dialogueText, status, settings.narrationEnabled, narratorPitch, narratorRate, voices.length > 0]);
+  }, [dialogueText, settings.narrationEnabled, narratorPitch, narratorRate, voices.length > 0]);
 
+  // Clean voices on exit
   useEffect(() => {
     return () => {
       if (typeof window !== "undefined" && window.speechSynthesis) {
@@ -198,26 +193,22 @@ export default function StoryGamePage({ params }: PageProps) {
     };
   }, []);
 
-  // Configure starting FEN and initial color on mount
+  // Typewriter animation hook
   useEffect(() => {
-    resetGame();
-    // Load custom FEN if defined (like Chapter 4)
-    if (chapter.startingFen && chapter.startingFen !== "start") {
-      try {
-        game.load(chapter.startingFen);
-      } catch (e) {
-        console.error("Failed to load starting FEN", e);
-      }
-    }
-    
-    const opponentColor = chapter.opponentColor;
-    const playerCol = opponentColor === "white" ? "black" : "white";
-    setPlayerColor(playerCol);
+    setDisplayedDialogue("");
+    if (!dialogueText) return;
 
-    // Initial dialogue
-    const loadLine = chapter.dialogue.find((d) => d.trigger === "onLoad");
-    setDialogueText(loadLine ? loadLine.text : "Let's play.");
-  }, [chapterId]);
+    let index = 0;
+    const interval = setInterval(() => {
+      setDisplayedDialogue((prev) => prev + dialogueText.charAt(index));
+      index++;
+      if (index >= dialogueText.length) {
+        clearInterval(interval);
+      }
+    }, 20); // 20ms typewriter spacing
+
+    return () => clearInterval(interval);
+  }, [dialogueText]);
 
   // Configure Stockfish limits based on ELO when engine is ready
   useEffect(() => {
@@ -243,7 +234,6 @@ export default function StoryGamePage({ params }: PageProps) {
     if (!isBotTurn) return;
 
     setIsBotThinking(true);
-    // Short artificial delay to make it feel natural
     setTimeout(async () => {
       try {
         const bestMove = await getBestMove(game.fen(), 8);
@@ -266,18 +256,15 @@ export default function StoryGamePage({ params }: PageProps) {
   useEffect(() => {
     if (status !== "playing") return;
 
-    // Check dialogue triggers based on move counts
     if (history.length !== prevHistoryLengthRef.current) {
       prevHistoryLengthRef.current = history.length;
       
       const isBotMove = (playerColor === "white" && turn === "w") || (playerColor === "black" && turn === "b");
 
-      // Bot trash talk / dialogue updates
       const dialogueLine = chapter.dialogue.find((d) => d.moveNumber === history.length);
       if (dialogueLine) {
         setDialogueText(dialogueLine.text);
       } else if (history.length > 0 && isBotMove) {
-        // Trigger blunder dialog if the bot just captured a piece
         const lastMove = history[history.length - 1];
         if (lastMove && lastMove.san.includes("x")) {
           const blunderLine = chapter.dialogue.find((d) => d.trigger === "onBlunder");
@@ -300,13 +287,11 @@ export default function StoryGamePage({ params }: PageProps) {
         setStatus("solved");
         const winLine = chapter.dialogue.find((d) => d.trigger === "onWin");
         setDialogueText(winLine ? winLine.text : "You won.");
-        // Save progress to local storage
         localStorage.setItem(`chessium_story_completed_${chapter.id}`, "true");
       } else if (isDraw) {
         setStatus("failed");
         setDialogueText("The game ended in a draw. The mystery requires a decisive victory.");
       } else {
-        // User lost
         setStatus("failed");
         const lossLine = chapter.dialogue.find((d) => d.trigger === "onLoss");
         setDialogueText(lossLine ? lossLine.text : "You were defeated.");
@@ -318,7 +303,6 @@ export default function StoryGamePage({ params }: PageProps) {
   const handlePieceDrop = (source: string, target: string, piece: string) => {
     if (status !== "playing" || isBotThinking || isGameOver) return false;
 
-    // Turn control check
     const isWhiteTurn = turn === "w";
     if ((playerColor === "white" && !isWhiteTurn) || (playerColor === "black" && isWhiteTurn)) {
       return false;
@@ -326,7 +310,6 @@ export default function StoryGamePage({ params }: PageProps) {
 
     const targetPiece = game.get(target as any);
 
-    // Poisoned Queen check (Chapter 4)
     if (chapter.id === "chapter-4" && targetPiece && targetPiece.type === "q" && targetPiece.color === "b") {
       setIsPoisoned(true);
       triggerBlunderShake();
@@ -399,7 +382,6 @@ export default function StoryGamePage({ params }: PageProps) {
     if (foundMove) {
       const targetPiece = game.get(square as any);
       
-      // Poisoned Queen check (Chapter 4 click-to-move)
       if (chapter.id === "chapter-4" && targetPiece && targetPiece.type === "q" && targetPiece.color === "b") {
         setIsPoisoned(true);
         triggerBlunderShake();
@@ -450,10 +432,11 @@ export default function StoryGamePage({ params }: PageProps) {
 
   const handleStartMatch = () => {
     setStatus("playing");
-    // Trigger onFirstMove if defined
     const firstMoveLine = chapter.dialogue.find((d) => d.trigger === "onFirstMove");
     if (firstMoveLine) {
       setDialogueText(firstMoveLine.text);
+    } else {
+      setDialogueText("Let the chess confrontation begin.");
     }
   };
 
@@ -465,187 +448,87 @@ export default function StoryGamePage({ params }: PageProps) {
         game.load(chapter.startingFen);
       } catch {}
     }
-    setStatus("playing");
+    setDialogueNode("intro_greeting");
+    setStatus("intro");
     const loadLine = chapter.dialogue.find((d) => d.trigger === "onLoad");
     setDialogueText(loadLine ? loadLine.text : "Let's begin again.");
   };
 
+  // Dialogue Node choice handlers
+  const handleChoice = (node: DialogueNode, responseText: string) => {
+    setDialogueNode(node);
+    setDialogueText(responseText);
+  };
+
   return (
-    <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8 relative">
-      {/* Left side: Chess Board */}
-      <div className="flex-1 flex flex-col gap-4 min-w-[300px] items-center justify-center">
-        {/* Navigation back link */}
-        <div className="w-full flex justify-between items-center px-2">
-          <Link href="/story" className="text-[#81b64c] hover:underline text-sm font-semibold">
-            ← Suspect Dossiers
-          </Link>
-          <div className="text-white text-xs font-medium uppercase tracking-widest bg-[#141416] px-3 py-1.5 rounded-full border border-[#2a2a30]">
-            {chapter.title}
-          </div>
-        </div>
-
-        {/* Board Container with horror shake and blood effects */}
-        <div className={`w-full relative shadow-elevated rounded-2xl overflow-hidden border border-[#2a2a30] max-w-[550px] aspect-square bg-[#0a0a0b] ${isShaking ? "animate-story-shake" : ""}`}>
-          <Board
-            position={position}
-            boardOrientation={playerColor}
-            onPieceDrop={handlePieceDrop}
-            onSquareClick={onSquareClick}
-            customSquareStyles={optionSquares}
-            arePiecesDraggable={status === "playing" && !isBotThinking && !isGameOver}
-            theme={settings.boardTheme}
-          />
-
-          {/* Dripping blood horror overlay */}
-          {isPoisoned && (
-            <div className="absolute inset-0 bg-[#600302]/40 pointer-events-none z-10 transition-opacity duration-1000">
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-[#ca3431]/30 animate-pulse pointer-events-none" />
-              <div className="absolute inset-x-0 top-0 bg-[#ca3431] opacity-70 pointer-events-none" style={{ height: "6px" }} />
-              <div className="absolute top-0 left-[20%] w-[2px] h-[60px] bg-[#600302] rounded-full animate-story-drip" style={{ animationDelay: "0.2s" }} />
-              <div className="absolute top-0 left-[45%] w-[3px] h-[90px] bg-[#ca3431] rounded-full animate-story-drip" style={{ animationDelay: "0.5s" }} />
-              <div className="absolute top-0 left-[75%] w-[2px] h-[40px] bg-[#600302] rounded-full animate-story-drip" style={{ animationDelay: "0.9s" }} />
-            </div>
-          )}
-
-          {/* Intro Screen Overlay */}
-          {status === "intro" && (
-            <div className="absolute inset-0 bg-[#0a0a0b]/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
-              <img 
-                src={chapter.imagePath} 
-                alt={chapter.suspectName}
-                className="w-28 h-28 rounded-2xl object-cover border-2 border-[#ca3431]/40 mb-4 shadow-elevated"
-              />
-              <h2 className="text-2xl font-black text-white mb-2">{chapter.suspectName}</h2>
-              <p className="text-[#a0a0a8] text-sm max-w-sm mb-6 leading-relaxed">
-                {chapter.description}
-              </p>
-              <button
-                onClick={handleStartMatch}
-                className="bg-[#ca3431] hover:bg-[#e24e4a] text-white font-bold px-8 py-3 rounded-xl transition-all shadow-elevated"
-              >
-                Begin Confrontation
-              </button>
-            </div>
-          )}
-
-          {/* Solver Win Overlay */}
-          {status === "solved" && (
-            <div className="absolute inset-0 bg-[#0a0a0b]/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
-              <div className="text-6xl mb-4 select-none">🔑</div>
-              <h2 className="text-3xl font-black text-[#81b64c] mb-2">Lead Solved!</h2>
-              <p className="text-white font-bold text-sm mb-1 uppercase tracking-wider">{chapter.clueTitle}</p>
-              <p className="text-[#a0a0a8] text-xs max-w-sm mb-6 leading-relaxed">
-                {chapter.clueDescription}
-              </p>
-              <div className="flex gap-4 w-full max-w-xs">
-                <Link
-                  href="/story"
-                  className="flex-1 bg-[#2a2a30] hover:bg-[#3a3a42] text-white py-3 rounded-xl text-sm font-bold border border-[#2a2a30] text-center"
-                >
-                  Notebook
-                </Link>
-                {chapterId !== "chapter-4" ? (
-                  <button
-                    onClick={() => {
-                      const nextIndex = STORY_CHAPTERS.findIndex(c => c.id === chapterId) + 1;
-                      if (nextIndex < STORY_CHAPTERS.length) {
-                        router.push(`/story/${STORY_CHAPTERS[nextIndex].id}`);
-                      }
-                    }}
-                    className="flex-1 bg-[#81b64c] hover:bg-[#9fcc6b] text-white py-3 rounded-xl text-sm font-bold text-center"
-                  >
-                    Next Lead
-                  </button>
-                ) : (
-                  <div className="flex-1 bg-[#81b64c]/20 text-[#81b64c] py-3 rounded-xl text-xs font-black flex items-center justify-center border border-[#81b64c]/30">
-                    MYSTERY SOLVED
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Failed Overlay (Includes custom poison twist screen) */}
-          {status === "failed" && (
-            <div className="absolute inset-0 bg-[#0a0a0b]/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
-              {isPoisoned ? (
-                <>
-                  <div className="text-6xl mb-4 select-none animate-bounce">💀</div>
-                  <h2 className="text-3xl font-black text-[#ca3431] mb-2 uppercase tracking-wide">Contact Poisoned!</h2>
-                  <p className="text-white text-sm max-w-xs mb-6 leading-relaxed">
-                    You captured the ebony Black Queen. Toxin absorbs through your fingertips. You collapse into darkness...
-                  </p>
-                </>
-              ) : (
-                <>
-                  <div className="text-6xl mb-4 select-none">❌</div>
-                  <h2 className="text-2xl font-black text-[#ca3431] mb-2">Confrontation Failed</h2>
-                  <p className="text-[#a0a0a8] text-sm max-w-xs mb-6 leading-relaxed">
-                    You were defeated by the suspect. To extract the truth, you must checkmate them.
-                  </p>
-                </>
-              )}
-              <div className="flex gap-4 w-full max-w-xs">
-                <Link
-                  href="/story"
-                  className="flex-1 bg-[#2a2a30] hover:bg-[#3a3a42] text-white py-3 rounded-xl text-sm font-bold border border-[#2a2a30] text-center"
-                >
-                  Withdraw
-                </Link>
-                <button
-                  onClick={handleRetryMatch}
-                  className="flex-1 bg-[#ca3431] hover:bg-[#e24e4a] text-white py-3 rounded-xl text-sm font-bold"
-                >
-                  Retry Lead
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Right side: Dialogue Chat Panel & Moves */}
-      <div className="w-full lg:w-[360px] flex flex-col gap-4 min-h-0">
+    <div className="max-w-5xl mx-auto p-4 md:p-6 lg:p-8">
+      {/* Visual Novel viewport (16:9 cinematic frame) */}
+      <div className="w-full relative aspect-video bg-black rounded-3xl border border-[#2a2a30] overflow-hidden shadow-elevated flex flex-col md:flex-row">
         
-        {/* Dialogue Chat Box */}
-        <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-5 shadow-elevated flex flex-col flex-1 min-h-[200px]">
-          <div className="flex items-center gap-3 border-b border-[#2a2a30] pb-3 mb-4">
-            <img 
-              src={chapter.imagePath} 
-              alt={chapter.suspectName}
-              className="w-10 h-10 rounded-xl object-cover border border-[#2a2a30] shadow-inner select-none"
-            />
-            <div>
-              <h3 className="font-bold text-white text-sm">{chapter.suspectName}</h3>
-              <span className="text-[10px] text-[#ca3431] font-black uppercase tracking-wider">
-                {isBotThinking ? "Typing..." : "Confronting"}
-              </span>
-            </div>
-            
-            <div className="ml-auto flex items-center gap-1">
+        {/* Widescreen Location Backdrop Scene */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
+          style={{ backgroundImage: `url(${chapter.sceneBgPath})` }}
+        >
+          {/* Dark atmospheric overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30 pointer-events-none" />
+        </div>
+
+        {/* Noir UI Floating Headers */}
+        <Link 
+          href="/story" 
+          className="absolute top-4 left-4 z-30 bg-[#0c0c0e]/80 hover:bg-black text-[#ca3431] border border-[#ca3431]/20 hover:border-[#ca3431] px-4 py-2 rounded-xl text-xs font-black transition-all backdrop-blur-sm shadow-md"
+        >
+          ← Abort Case
+        </Link>
+        <div className="absolute top-4 right-4 z-30 bg-[#0c0c0e]/80 border border-[#2a2a30] text-[#a0a0a8] text-[9px] md:text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-sm shadow-md">
+          {chapter.title}
+        </div>
+
+        {/* 2D Character Suspect Sprite Layer */}
+        <div className="absolute inset-y-0 left-0 w-full md:w-[45%] flex items-end justify-center pointer-events-none z-10">
+          <img
+            src={chapter.imagePath}
+            alt={chapter.suspectName}
+            className={`w-[240px] md:w-[320px] h-[340px] md:h-[450px] object-cover object-top transition-all duration-500 rounded-t-3xl border-t border-x border-[#ca3431]/20 shadow-elevated ${
+              isBotThinking ? "brightness-75 scale-95" : "brightness-100 scale-100"
+            } ${isShaking ? "animate-story-shake border-t-[#ca3431]" : ""}`}
+          />
+        </div>
+
+        {/* Interactive Bottom Dialogue Deck */}
+        <div className="absolute bottom-4 inset-x-4 h-[180px] bg-[#0c0c0e]/95 border border-[#2a2a30] rounded-2xl p-4 md:p-5 z-20 flex flex-col justify-between backdrop-blur-md shadow-elevated">
+          
+          {/* Deck Header */}
+          <div className="flex justify-between items-center pb-2 border-b border-[#2a2a30]">
+            <span className="bg-[#ca3431] text-white font-black text-[10px] md:text-xs uppercase px-2.5 py-1 rounded-md tracking-wider">
+              {chapter.suspectName}
+            </span>
+            <div className="flex items-center gap-2">
+              {/* Pitch/Speed Settings Cog */}
               <button
                 onClick={() => setShowNarratorControls(!showNarratorControls)}
-                className={`p-2 rounded-lg transition-colors ${showNarratorControls ? "text-[#ca3431] bg-white/5" : "text-[#a0a0a8] hover:text-white hover:bg-white/5"}`}
-                title="Narration Pitch & Speed Settings"
+                className={`p-1.5 rounded-lg transition-colors ${showNarratorControls ? "text-[#ca3431] bg-white/5" : "text-[#a0a0a8] hover:text-white hover:bg-white/5"}`}
+                title="Narration Tuning Settings"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </button>
 
+              {/* Mute Narration Speaker */}
               <button
                 onClick={() => updateSetting("narrationEnabled", !settings.narrationEnabled)}
-                className="p-2 rounded-lg text-[#a0a0a8] hover:text-white hover:bg-white/5 transition-colors"
+                className="p-1.5 rounded-lg text-[#a0a0a8] hover:text-white hover:bg-white/5 transition-colors"
                 title={settings.narrationEnabled ? "Mute Narration" : "Unmute Narration"}
-                aria-label={settings.narrationEnabled ? "Mute Narration" : "Unmute Narration"}
               >
                 {settings.narrationEnabled ? (
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                   </svg>
                 ) : (
-                  <svg className="w-5 h-5 text-[#ca3431]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <svg className="w-4 h-4 md:w-5 md:h-5 text-[#ca3431]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
                   </svg>
@@ -654,9 +537,9 @@ export default function StoryGamePage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* Narrator customized control panel drawer */}
+          {/* Collapsible Sliders */}
           {showNarratorControls && (
-            <div className="bg-[#0a0a0b] border border-[#2a2a30] rounded-xl p-3 mb-4 space-y-3 text-xs text-left">
+            <div className="absolute bottom-[185px] right-5 w-60 bg-[#0c0c0e]/95 border border-[#2a2a30] rounded-xl p-3 space-y-3 text-[10px] md:text-xs z-30 backdrop-blur-md shadow-elevated">
               <div className="flex justify-between items-center text-[#a0a0a8] font-bold">
                 <span>Narrator Tuning</span>
                 <button 
@@ -664,7 +547,7 @@ export default function StoryGamePage({ params }: PageProps) {
                     updateNarratorPitch(0.6);
                     updateNarratorRate(0.75);
                   }}
-                  className="text-[10px] text-[#ca3431] hover:underline"
+                  className="text-[9px] text-[#ca3431] hover:underline"
                 >
                   Reset Deep
                 </button>
@@ -672,7 +555,7 @@ export default function StoryGamePage({ params }: PageProps) {
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-[#a0a0a8]">Pitch: {narratorPitch.toFixed(2)}</span>
-                  <span className="text-[10px] text-[#6b6b75]">{narratorPitch < 0.8 ? "Deep Voice" : "Standard"}</span>
+                  <span className="text-[9px] text-[#6b6b75]">{narratorPitch < 0.8 ? "Deep" : "Standard"}</span>
                 </div>
                 <input
                   type="range"
@@ -687,7 +570,7 @@ export default function StoryGamePage({ params }: PageProps) {
               <div className="space-y-1">
                 <div className="flex justify-between">
                   <span className="text-[#a0a0a8]">Speed: {narratorRate.toFixed(2)}x</span>
-                  <span className="text-[10px] text-[#6b6b75]">{narratorRate < 0.9 ? "Ominous & Slow" : "Fast"}</span>
+                  <span className="text-[9px] text-[#6b6b75]">{narratorRate < 0.9 ? "Ominous" : "Fast"}</span>
                 </div>
                 <input
                   type="range"
@@ -702,45 +585,234 @@ export default function StoryGamePage({ params }: PageProps) {
             </div>
           )}
 
-          {/* Chat text box */}
-          <div className="flex-1 flex flex-col justify-center text-center p-3 bg-[#0a0a0b] border border-[#2a2a30] rounded-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 text-3xl opacity-10 text-[#ca3431] p-2 select-none">“</div>
-            <p className="text-sm font-medium text-white italic leading-relaxed z-10 px-2 min-h-[60px] font-mono">
+          {/* Dialogue Text Box */}
+          <div className="flex-1 flex flex-col justify-center py-1">
+            <p className="text-[12px] md:text-sm font-semibold text-white italic leading-relaxed font-mono pl-3 border-l-2 border-[#ca3431]/40">
               {displayedDialogue}
             </p>
-            <div className="absolute bottom-0 right-0 text-3xl opacity-10 text-[#ca3431] p-2 rotate-180 select-none">“</div>
+          </div>
+
+          {/* Interactive Dialogue Choices / Action panel */}
+          <div className="flex gap-2 justify-end items-center mt-1">
+            {status === "intro" && (
+              <>
+                {dialogueNode === "intro_greeting" && (
+                  <div className="flex flex-col sm:flex-row gap-2 w-full justify-end">
+                    <button
+                      onClick={() => handleChoice(
+                        "choice_threat", 
+                        chapter.id === "chapter-1" 
+                          ? "I am Aaron Kosminski! You think you are Abberline of the Yard, but here you are nothing but meat for the grinder. Play chess or I'll slice you!"
+                          : chapter.id === "chapter-2"
+                          ? "Insolence, Inspector. We clean the royal crown with surgical precision. Play, or I will excise you from the script."
+                          : chapter.id === "chapter-3"
+                          ? "Hahaha! Accuses? Paint splatters are the drawings of the shadow itself! He whispers, I paint. Do you want to be my next canvas?"
+                          : "I am Jack the Ripper. The Whispering King of the slums. I have set the coordinate traps. Take my Queen, Abberline. Take it!"
+                      )}
+                      className="bg-[#2a2a30] hover:bg-red-950 text-white font-bold text-[10px] md:text-xs py-2 px-4 rounded-xl border border-[#2a2a30] hover:border-[#ca3431]/40 transition-all text-left"
+                    >
+                      [Accuse them of the killings]
+                    </button>
+                    <button
+                      onClick={() => handleChoice(
+                        "choice_question",
+                        chapter.id === "chapter-1"
+                          ? "The physician Gull... Sir William Gull... he walks with a black bag, dissecting. He thinks I'm crazy, but he is the Ripper's designer."
+                          : chapter.id === "chapter-2"
+                          ? "Walter Sickert, the paint-smeared canvas drawer... he paints Mary Kelly's cell hours before we clean her. His drawings are maps."
+                          : chapter.id === "chapter-3"
+                          ? "The coordinate is 'Nf7'. Smothered mate in Mitre Square cellar. The Ripper awaits you there to finish the Canonical play."
+                          : "The final coordinate Nf7 unlocks my lockbox. Solve the chessboard to catch me, if you survive the poisoned Queen e5."
+                      )}
+                      className="bg-[#2a2a30] hover:bg-red-950 text-white font-bold text-[10px] md:text-xs py-2 px-4 rounded-xl border border-[#2a2a30] hover:border-[#ca3431]/40 transition-all text-left"
+                    >
+                      [Deduce evidence & demand clues]
+                    </button>
+                  </div>
+                )}
+
+                {dialogueNode === "choice_threat" && (
+                  <button
+                    onClick={handleStartMatch}
+                    className="bg-[#ca3431] hover:bg-[#e24e4a] text-white font-bold text-[10px] md:text-xs py-2 px-5 rounded-xl transition-all"
+                  >
+                    [Draw board and play chess]
+                  </button>
+                )}
+
+                {dialogueNode === "choice_question" && (
+                  <button
+                    onClick={handleStartMatch}
+                    className="bg-[#ca3431] hover:bg-[#e24e4a] text-white font-bold text-[10px] md:text-xs py-2 px-5 rounded-xl transition-all"
+                  >
+                    [Challenge their Chess Alibi]
+                  </button>
+                )}
+              </>
+            )}
+
+            {status === "playing" && (
+              <span className="text-[10px] text-[#ca3431] uppercase tracking-widest font-black animate-pulse">
+                Confrontation In Progress...
+              </span>
+            )}
+
+            {(status === "solved" || status === "failed") && (
+              <span className="text-[10px] text-[#a0a0a8] uppercase tracking-widest font-bold">
+                Confrontation Complete
+              </span>
+            )}
           </div>
         </div>
 
-        {/* Global style overrides for custom animations */}
-        <style>{`
-          @keyframes story-shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-          }
-          .animate-story-shake {
-            animation: story-shake 0.4s ease-in-out;
-          }
-          @keyframes story-drip {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(500%); opacity: 0; }
-          }
-          .animate-story-drip {
-            animation: story-drip 2.2s infinite linear;
-          }
-        `}</style>
+        {/* Sliding Chess Board Confrontation Drawer */}
+        <div 
+          className={`absolute top-0 right-0 w-full md:w-[55%] h-full bg-[#0a0a0b]/98 border-l border-[#2a2a30] z-20 transition-transform duration-700 flex flex-col md:flex-row backdrop-blur-md ${
+            status === "playing" || status === "solved" || status === "failed" 
+              ? "translate-x-0" 
+              : "translate-x-full"
+          }`}
+        >
+          {/* Chess Board Frame */}
+          <div className="flex-1 flex flex-col items-center justify-center p-3 gap-2 relative">
+            
+            {/* Poison blood overlay */}
+            {isPoisoned && (
+              <div className="absolute inset-0 bg-[#600302]/45 pointer-events-none z-10 transition-opacity duration-1000">
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-[#ca3431]/30 animate-pulse pointer-events-none" />
+                <div className="absolute inset-x-0 top-0 bg-[#ca3431] opacity-80 pointer-events-none" style={{ height: "6px" }} />
+                <div className="absolute top-0 left-[20%] w-[2px] h-[70px] bg-[#600302] rounded-full animate-story-drip" style={{ animationDelay: "0.2s" }} />
+                <div className="absolute top-0 left-[45%] w-[3px] h-[100px] bg-[#ca3431] rounded-full animate-story-drip" style={{ animationDelay: "0.5s" }} />
+                <div className="absolute top-0 left-[75%] w-[2px] h-[50px] bg-[#600302] rounded-full animate-story-drip" style={{ animationDelay: "0.9s" }} />
+              </div>
+            )}
 
-        {/* Moves Logger */}
-        <div className="h-[220px] flex flex-col shrink-0">
-          <div className="text-xs text-[#a0a0a8] font-bold uppercase tracking-wider mb-2 px-1">Game History</div>
-          <MoveList
-            moves={history.map((m) => ({ san: m.san }))}
-            currentMoveIndex={history.length - 1}
-            onMoveClick={() => {}}
-          />
+            <div className={`w-full aspect-square max-w-[340px] shadow-elevated border border-[#2a2a30] rounded-xl overflow-hidden ${isShaking ? "animate-story-shake" : ""}`}>
+              <Board
+                position={position}
+                boardOrientation={playerColor}
+                onPieceDrop={handlePieceDrop}
+                onSquareClick={onSquareClick}
+                customSquareStyles={optionSquares}
+                arePiecesDraggable={status === "playing" && !isBotThinking && !isGameOver}
+                theme={settings.boardTheme}
+              />
+            </div>
+
+            {/* Solver Win Overlay */}
+            {status === "solved" && (
+              <div className="absolute inset-0 bg-[#0a0a0b]/95 flex flex-col items-center justify-center p-6 text-center z-20">
+                <div className="text-4xl mb-2">🔑</div>
+                <h2 className="text-xl font-black text-[#ca3431] mb-1">Evidence Secured</h2>
+                <p className="text-white font-bold text-xs mb-1 uppercase tracking-wider">{chapter.clueTitle}</p>
+                <p className="text-[#a0a0a8] text-[10px] max-w-sm mb-4 leading-relaxed">
+                  {chapter.clueDescription}
+                </p>
+                <div className="flex gap-3 w-full max-w-xs justify-center">
+                  <Link
+                    href="/story"
+                    className="bg-[#2a2a30] hover:bg-[#3a3a42] text-white py-2 px-5 rounded-xl text-xs font-bold border border-[#2a2a30]"
+                  >
+                    Return to Notebook
+                  </Link>
+                  {chapterId !== "chapter-4" && (
+                    <button
+                      onClick={() => {
+                        const nextIndex = STORY_CHAPTERS.findIndex(c => c.id === chapterId) + 1;
+                        if (nextIndex < STORY_CHAPTERS.length) {
+                          router.push(`/story/${STORY_CHAPTERS[nextIndex].id}`);
+                        }
+                      }}
+                      className="bg-[#ca3431] hover:bg-[#e24e4a] text-white py-2 px-5 rounded-xl text-xs font-bold"
+                    >
+                      Next Suspect
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Solver Fail Overlay */}
+            {status === "failed" && (
+              <div className="absolute inset-0 bg-[#0a0a0b]/95 flex flex-col items-center justify-center p-6 text-center z-20">
+                {isPoisoned ? (
+                  <>
+                    <div className="text-4xl mb-2 animate-bounce">💀</div>
+                    <h2 className="text-xl font-black text-[#ca3431] mb-1 uppercase tracking-wider">Blade Poisoned!</h2>
+                    <p className="text-white text-[11px] max-w-xs mb-4 leading-relaxed">
+                      You captured the poisoned Queen on e5. Toxin absorbs immediately. You collapse onto the bloody floor...
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-4xl mb-2">❌</div>
+                    <h2 className="text-xl font-black text-[#ca3431] mb-1">Mutilated in London</h2>
+                    <p className="text-[#a0a0a8] text-[11px] max-w-xs mb-4 leading-relaxed">
+                      The suspect has defeated you on the board. Abberline, you must checkmate them to break their alibi.
+                    </p>
+                  </>
+                )}
+                <div className="flex gap-3 w-full max-w-xs justify-center">
+                  <Link
+                    href="/story"
+                    className="bg-[#2a2a30] hover:bg-[#3a3a42] text-white py-2 px-5 rounded-xl text-xs font-bold border border-[#2a2a30]"
+                  >
+                    Withdraw
+                  </Link>
+                  <button
+                    onClick={handleRetryMatch}
+                    className="bg-[#ca3431] hover:bg-[#e24e4a] text-white py-2 px-5 rounded-xl text-xs font-bold"
+                  >
+                    Retry Case
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Moves list side column */}
+          <div className="w-full md:w-[150px] bg-[#0c0c0e] border-t md:border-t-0 md:border-l border-[#2a2a30] p-3 flex flex-col h-[140px] md:h-full justify-between">
+            <div className="text-[10px] text-[#a0a0a8] font-black uppercase tracking-wider pb-2 border-b border-[#2a2a30]">
+              Match Log
+            </div>
+            <div className="flex-1 overflow-y-auto py-2">
+              <MoveList
+                moves={history.map((m) => ({ san: m.san }))}
+                currentMoveIndex={history.length - 1}
+                onMoveClick={() => {}}
+              />
+            </div>
+            {status === "playing" && (
+              <button
+                onClick={handleRetryMatch}
+                className="bg-[#ca3431]/10 text-[#ca3431] hover:bg-[#ca3431]/25 border border-[#ca3431]/30 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center transition-colors w-full shrink-0"
+              >
+                Restart Board
+              </button>
+            )}
+          </div>
         </div>
+
       </div>
+
+      {/* Global CSS styles block for visual novel animation keyframes */}
+      <style>{`
+        @keyframes story-shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .animate-story-shake {
+          animation: story-shake 0.4s ease-in-out;
+        }
+        @keyframes story-drip {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(400%); opacity: 0; }
+        }
+        .animate-story-drip {
+          animation: story-drip 2.0s infinite linear;
+        }
+      `}</style>
     </div>
   );
 }

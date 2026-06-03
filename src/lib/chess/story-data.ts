@@ -11,6 +11,7 @@ export interface StoryChapter {
   rating: number;
   avatar: string;
   imagePath: string;
+  sceneBgPath: string;
   description: string;
   startingFen: string;
   opponentColor: "white" | "black";
@@ -27,6 +28,7 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     rating: 1100,
     avatar: "🪒",
     imagePath: "/story/kosminski.png",
+    sceneBgPath: "/story/bg_barber.png",
     description: "Kosminski paces nervously in his dingy, blood-spattered barber shop. His hands shake as he wipes a straight razor, whispering about the voices that command him. Play him to break his manic silences and extract a clue.",
     startingFen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     opponentColor: "black",
@@ -70,6 +72,7 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     rating: 1400,
     avatar: "🎩",
     imagePath: "/story/gull.png",
+    sceneBgPath: "/story/bg_study.png",
     description: "Sir William Gull sits in a dimly lit study surrounded by anatomical charts and leather-bound journals. He regards you with a chilling, surgical calm. He challenges you to a duel of intellect.",
     startingFen: "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
     opponentColor: "black",
@@ -113,6 +116,7 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     rating: 1650,
     avatar: "🎨",
     imagePath: "/story/sickert.png",
+    sceneBgPath: "/story/bg_studio.png",
     description: "In his gloomy studio, Walter Sickert stands before an easel covered in dark crimson paintings. He laughs hysterically as you examine the canvases portraying the murder scenes. He plays with chaotic, artistic frenzy.",
     startingFen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     opponentColor: "black",
@@ -156,6 +160,7 @@ export const STORY_CHAPTERS: StoryChapter[] = [
     rating: 1900,
     avatar: "👤",
     imagePath: "/story/ripper.png",
+    sceneBgPath: "/story/bg_cellar.png",
     description: "A shadowy figure in a long black overcoat and top hat stands in the foggy butcher's cellar. His face is completely hidden in darkness except for two glowing white eyes. A blood-stained chessboard sits between you.",
     startingFen: "r1b2r1k/pp4pp/2n5/4q1N1/2B5/8/PPP2PPP/R2QR1K1 w - - 0 1",
     opponentColor: "black",
