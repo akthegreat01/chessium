@@ -140,7 +140,7 @@ export default function DashboardPage() {
           .single()
           .then(({ data }) => {
             if (data) {
-              setUsername(data.display_name);
+              setUsername(data.display_name || data.username || "Player");
               setChesscomUsername(data.chess_com_username || "");
               setLichessUsername(data.lichess_username || "");
               
@@ -205,17 +205,28 @@ export default function DashboardPage() {
   const saveAccounts = async () => {
     setIsSavingAccounts(true);
     
-    // Always save to localStorage as a fallback
-    if (chesscomUsername) localStorage.setItem("chessium_chesscom_user", chesscomUsername);
-    if (lichessUsername) localStorage.setItem("chessium_lichess_user", lichessUsername);
+    // Sync with localStorage
+    if (chesscomUsername) {
+      localStorage.setItem("chessium_chesscom_user", chesscomUsername);
+    } else {
+      localStorage.removeItem("chessium_chesscom_user");
+    }
+    if (lichessUsername) {
+      localStorage.setItem("chessium_lichess_user", lichessUsername);
+    } else {
+      localStorage.removeItem("chessium_lichess_user");
+    }
     
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from("profiles").upsert({
-        id: user.id,
-        chess_com_username: chesscomUsername,
-        lichess_username: lichessUsername
-      });
+      await supabase
+        .from("profiles")
+        .update({
+          chess_com_username: chesscomUsername || null,
+          lichess_username: lichessUsername || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", user.id);
     }
     
     await fetchExternalRatings(chesscomUsername, lichessUsername);

@@ -7,6 +7,7 @@ interface Member {
   id: string;
   username: string;
   chessComUsername: string | null;
+  lichessUsername?: string | null;
   role: string;
 }
 
@@ -14,6 +15,7 @@ interface LeaderboardEntry extends Member {
   rating: number;
   mode: "rapid" | "blitz" | "bullet" | "unrated";
   isLoading: boolean;
+  ratingSource?: "chesscom" | "lichess" | "";
 }
 
 export default function LiveLeaderboard({ members }: { members: Member[] }) {
@@ -26,30 +28,63 @@ export default function LiveLeaderboard({ members }: { members: Member[] }) {
       ...m,
       rating: 0,
       mode: selectedMode,
-      isLoading: true
+      isLoading: true,
+      ratingSource: "" as const
     }));
     setLeaderboard(initial);
 
-    // Fetch stats for each member with a chess.com username
+    // Fetch stats for each member with a chess.com or lichess username
     const fetchStats = async () => {
       const updated = await Promise.all(
         initial.map(async (entry) => {
-          if (!entry.chessComUsername) {
-            return { ...entry, isLoading: false, rating: 0, mode: "unrated" as const };
+          let rating = 0;
+          let ratingSource: "chesscom" | "lichess" | "" = "";
+
+          // Try Chess.com first if connected
+          if (entry.chessComUsername) {
+            try {
+              const res = await fetch(`https://api.chess.com/pub/player/${entry.chessComUsername}/stats`);
+              if (res.ok) {
+                const data = await res.json();
+                const modeKey = `chess_${selectedMode}`;
+                const r = data[modeKey]?.last?.rating;
+                if (r) {
+                  rating = r;
+                  ratingSource = "chesscom";
+                }
+              }
+            } catch (e) {
+              console.error("Chess.com rating fetch failed for", entry.chessComUsername, e);
+            }
           }
-          try {
-            const res = await fetch(`https://api.chess.com/pub/player/${entry.chessComUsername}/stats`);
-            if (!res.ok) throw new Error("Failed to fetch");
-            const data = await res.json();
-            
-            // Extract the requested rating
-            const modeKey = `chess_${selectedMode}`;
-            const rating = data[modeKey]?.last?.rating || 0;
-            
-            return { ...entry, isLoading: false, rating };
-          } catch (e) {
-            return { ...entry, isLoading: false, rating: 0, mode: "unrated" as const };
+
+          // Fall back to Lichess if Chess.com rating is not found and Lichess is connected
+          if (rating === 0 && entry.lichessUsername) {
+            try {
+              const res = await fetch(`/api/lichess/user/${entry.lichessUsername}`);
+              if (res.ok) {
+                const data = await res.json();
+                const modeKey = selectedMode === "rapid" ? "rapid" : "blitz";
+                const r = data.perfs?.[modeKey]?.rating;
+                if (r) {
+                  rating = r;
+                  ratingSource = "lichess";
+                }
+              }
+            } catch (e) {
+              console.error("Lichess rating fetch failed for", entry.lichessUsername, e);
+            }
           }
+
+          const resolvedMode = ratingSource !== "" ? (rating > 0 ? selectedMode : "unrated" as const) : "unrated" as const;
+
+          return {
+            ...entry,
+            isLoading: false,
+            rating,
+            mode: resolvedMode,
+            ratingSource
+          };
         })
       );
       
@@ -69,7 +104,7 @@ export default function LiveLeaderboard({ members }: { members: Member[] }) {
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
             Live Leaderboard
           </h2>
-          <p className="text-sm text-[#a0a0a8]">Syncs directly with Chess.com</p>
+          <p className="text-sm text-[#a0a0a8]">Syncs with Chess.com & Lichess</p>
         </div>
         
         <div className="flex bg-[#0a0a0b] border border-[#2a2a30] rounded-lg p-1">
@@ -106,17 +141,25 @@ export default function LiveLeaderboard({ members }: { members: Member[] }) {
               {idx + 1}
             </div>
             
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <span className={`font-bold ${idx === 0 ? 'text-yellow-500' : 'text-white'}`}>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center flex-wrap gap-2">
+                <span className={`font-bold ${idx === 0 ? 'text-yellow-500' : 'text-white'} truncate`}>
                   {entry.username}
                 </span>
                 {entry.role === 'owner' && (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#81b64c]/20 text-[#81b64c]">OWNER</span>
                 )}
+                {entry.ratingSource === "chesscom" && (
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/25">Chess.com</span>
+                )}
+                {entry.ratingSource === "lichess" && (
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#a855f7]/10 text-[#c084fc] border border-[#a855f7]/25">Lichess</span>
+                )}
               </div>
-              <div className="text-xs text-[#6b6b75]">
-                {entry.chessComUsername ? `@${entry.chessComUsername}` : 'No linked account'}
+              <div className="text-xs text-[#6b6b75] flex flex-wrap gap-x-2 gap-y-1 mt-0.5">
+                {entry.chessComUsername && <span>♟️ Chess.com: @{entry.chessComUsername}</span>}
+                {entry.lichessUsername && <span>🐴 Lichess: @{entry.lichessUsername}</span>}
+                {!entry.chessComUsername && !entry.lichessUsername && <span>No linked account</span>}
               </div>
             </div>
 
@@ -128,7 +171,7 @@ export default function LiveLeaderboard({ members }: { members: Member[] }) {
                   {entry.rating}
                 </div>
               ) : (
-                <div className="text-sm font-bold text-[#6b6b75] uppercase">
+                <div className="text-xs font-bold text-[#6b6b75] uppercase">
                   Unrated
                 </div>
               )}

@@ -55,7 +55,7 @@ export async function getClubBySlug(slug: string): Promise<Club | null> {
 export async function getClubMembers(clubId: string) {
   const supabase = await createClient();
   
-  // We need to fetch club members and join with profiles to get chess_com_username
+  // We need to fetch club members and join with profiles to get chess_com_username and lichess_username
   const { data, error } = await supabase
     .from("club_members")
     .select(`
@@ -64,7 +64,8 @@ export async function getClubMembers(clubId: string) {
       role,
       profiles (
         username,
-        chess_com_username
+        chess_com_username,
+        lichess_username
       )
     `)
     .eq("club_id", clubId);
@@ -79,6 +80,7 @@ export async function getClubMembers(clubId: string) {
     user_id: m.user_id,
     role: m.role,
     username: m.profiles?.username || `User_${m.user_id.substring(0, 8)}`,
-    chessComUsername: m.profiles?.chess_com_username || null
+    chessComUsername: m.profiles?.chess_com_username || null,
+    lichessUsername: m.profiles?.lichess_username || null
   }));
 }
