@@ -97,14 +97,7 @@ export function classifyMove(
     }
   }
 
-  // ─── Great ────────────────────────────────────────────────────────────
-  // Best move in a complex position (many legal moves, position is tense)
-  if (isTopEngine && epLoss <= 0.001) {
-    const legalMoves = chess.moves().length;
-    if (legalMoves >= 30 && Math.abs(cpBeforeSide) < 200) {
-      return 'great';
-    }
-  }
+  // ─── Removed Great heuristic as it was too aggressive ────────────────
 
   // ─── Standard classifications by EP loss ──────────────────────────────
   if (epLoss <= 0.001) return 'best';
@@ -172,8 +165,9 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
     const wpAfter = move.winProbAfter;
     const loss = Math.max(0, wpBefore - wpAfter);
     
-    // Per-move accuracy curve based on win probability loss (scaled to 100)
-    let moveAcc = 103.1668 * Math.exp(-0.04354 * (loss * 100)) - 3.1669;
+    // Per-move accuracy curve based directly on win probability loss
+    // Using a softer decay to closely match modern accuracy inflation (e.g. Chess.com/Lichess)
+    let moveAcc = 103.1668 * Math.exp(-loss * 1.5) - 3.1669;
     moveAcc = Math.max(0, Math.min(100, moveAcc));
 
     totalAccuracy += moveAcc;
