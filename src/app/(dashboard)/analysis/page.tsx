@@ -45,11 +45,21 @@ export default function AnalysisPage() {
             if (data) {
               if (data.chess_com_username) localStorage.setItem("chessium_chesscom_user", data.chess_com_username);
               if (data.lichess_username) localStorage.setItem("chessium_lichess_user", data.lichess_username);
+              
+              // Prefill input if it matches the current tab
+              if (importTab === "chesscom" && data.chess_com_username) setUsernameInput(data.chess_com_username);
+              if (importTab === "lichess" && data.lichess_username) setUsernameInput(data.lichess_username);
             }
           });
       }
     });
-  }, []);
+    
+    // Always try to load from local storage immediately for the current tab
+    const localUser = localStorage.getItem(`chessium_${importTab}_user`);
+    if (localUser) {
+      setUsernameInput(localUser);
+    }
+  }, [importTab]);
 
   // Full Game Analysis State
   const [gameAnalysis, setGameAnalysis] = useState<GameAnalysis | null>(null);

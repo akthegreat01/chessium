@@ -21,12 +21,12 @@ export default function DailyPuzzlePage() {
       .then(data => {
         const chess = new Chess();
         
-        // Use the FEN provided by the puzzle API instead of replaying PGN
-        if (data.puzzle && data.puzzle.fen) {
+        // Load the PGN from the API response
+        if (data.game && data.game.pgn) {
           try {
-            chess.load(data.puzzle.fen);
+            chess.loadPgn(data.game.pgn);
           } catch(e) {
-            console.error("Failed to load puzzle FEN", data.puzzle.fen, e);
+            console.error("Failed to load puzzle PGN", e);
           }
         }
         
