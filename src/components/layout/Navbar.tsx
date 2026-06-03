@@ -9,6 +9,7 @@ const navLinks = [
   { label: 'Play', href: '/play' },
   { label: 'Puzzles', href: '/puzzles' },
   { label: 'Courses', href: '/courses' },
+  { label: 'Story Mode', href: '/story' },
   { label: 'Blog', href: '/blog' },
 ];
 

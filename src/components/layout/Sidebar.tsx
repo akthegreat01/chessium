@@ -85,6 +85,18 @@ const playNavItems: NavItem[] = [
   },
 ];
 
+const adventureNavItems: NavItem[] = [
+  {
+    label: 'Story Mode',
+    href: '/story',
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.637 10.637z" />
+      </svg>
+    ),
+  }
+];
+
 const learnNavItems: NavItem[] = [
   {
     label: 'Analysis',
@@ -264,6 +276,10 @@ export default function Sidebar({ user, isAdmin = false }: SidebarProps) {
             <>
               {playNavItems.map(renderItem)}
               
+              <div className="my-6 h-px w-full bg-gradient-to-r from-transparent via-[#2a2a30] to-transparent" />
+              {!isCollapsed && <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[#505058]">Adventure</p>}
+              {adventureNavItems.map(renderItem)}
+
               <div className="my-6 h-px w-full bg-gradient-to-r from-transparent via-[#2a2a30] to-transparent" />
               {!isCollapsed && <p className="mb-3 px-3 text-[11px] font-bold uppercase tracking-[0.15em] text-[#505058]">Learn</p>}
               {learnNavItems.map(renderItem)}
