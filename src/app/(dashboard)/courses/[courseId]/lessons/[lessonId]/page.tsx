@@ -112,7 +112,7 @@ export default function LessonPage({ params }: { params: Promise<{ courseId: str
     setStepIndex(prev => prev + 1);
   };
 
-  const isBlackPOV = lesson.steps[stepIndex]?.fen.split(" ")[1] === "b";
+  const isBlackPOV = lesson.steps[stepIndex]?.fen?.split(" ")[1] === "b";
 
   return (
     <div className="max-w-6xl mx-auto flex flex-col h-[calc(100vh-8rem)]">

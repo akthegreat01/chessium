@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const STORAGE_KEY = 'chessium_course_progress';
 
@@ -23,7 +23,7 @@ export function useCourseProgress(courseId: string) {
     }
   }, [courseId]);
 
-  const completeLesson = (lessonId: string) => {
+  const completeLesson = useCallback((lessonId: string) => {
     setCompletedLessons(prev => {
       if (prev.includes(lessonId)) return prev;
       
@@ -40,7 +40,7 @@ export function useCourseProgress(courseId: string) {
       
       return newProgress;
     });
-  };
+  }, [courseId]);
 
   const isCompleted = (lessonId: string) => {
     return completedLessons.includes(lessonId);
