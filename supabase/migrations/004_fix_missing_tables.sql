@@ -55,6 +55,29 @@ CREATE INDEX IF NOT EXISTS idx_comments_blog ON public.comments(blog_id);
 CREATE INDEX IF NOT EXISTS idx_comments_user ON public.comments(user_id);
 
 -- ============================================================
+-- CREATE PUZZLES TABLE
+-- ============================================================
+CREATE TABLE IF NOT EXISTS public.puzzles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  fen TEXT NOT NULL,
+  moves TEXT NOT NULL, -- Solution moves in UCI format, comma-separated
+  rating INTEGER DEFAULT 1200,
+  rating_deviation INTEGER DEFAULT 100,
+  themes TEXT[] DEFAULT '{}',
+  opening_tags TEXT[] DEFAULT '{}',
+  is_daily BOOLEAN DEFAULT FALSE,
+  daily_date DATE,
+  plays INTEGER DEFAULT 0,
+  pass_rate NUMERIC(5,2) DEFAULT 50.0,
+  source TEXT DEFAULT 'custom',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_puzzles_rating ON public.puzzles(rating);
+CREATE INDEX IF NOT EXISTS idx_puzzles_themes ON public.puzzles USING GIN(themes);
+CREATE INDEX IF NOT EXISTS idx_puzzles_daily ON public.puzzles(daily_date) WHERE is_daily = TRUE;
+
+-- ============================================================
 -- CREATE PUZZLE ATTEMPTS TABLE
 -- ============================================================
 CREATE TABLE IF NOT EXISTS public.puzzle_attempts (
@@ -77,6 +100,7 @@ CREATE INDEX IF NOT EXISTS idx_puzzle_attempts_puzzle ON public.puzzle_attempts(
 -- ============================================================
 ALTER TABLE public.blogs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.puzzles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.puzzle_attempts ENABLE ROW LEVEL SECURITY;
 
 -- Blogs Policies
@@ -111,6 +135,18 @@ DROP POLICY IF EXISTS "Users can delete own comments" ON public.comments;
 CREATE POLICY "Users can delete own comments"
   ON public.comments FOR DELETE
   USING (user_id = auth.uid());
+
+-- Puzzles Policies
+DROP POLICY IF EXISTS "Puzzles are viewable by everyone" ON public.puzzles;
+CREATE POLICY "Puzzles are viewable by everyone"
+  ON public.puzzles FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Admins can manage puzzles" ON public.puzzles;
+CREATE POLICY "Admins can manage puzzles"
+  ON public.puzzles FOR ALL
+  USING (EXISTS (
+    SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin'
+  ));
 
 -- Puzzle Attempts Policies
 DROP POLICY IF EXISTS "Users can view own attempts" ON public.puzzle_attempts;
