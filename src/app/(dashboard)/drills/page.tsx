@@ -3,7 +3,17 @@
 import Link from "next/link";
 import { motion } from "motion/react";
 
-const drills = [
+interface DrillItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  difficulty: string;
+  color: string;
+  comingSoon?: boolean;
+}
+
+const drills: DrillItem[] = [
   {
     id: "bullet-kq",
     title: "Bullet Scramble: Queen",

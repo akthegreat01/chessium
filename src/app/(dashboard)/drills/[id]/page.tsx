@@ -10,25 +10,33 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { Move } from "chess.js";
 
-const DRILLS = {
+interface DrillConfig {
+  title: string;
+  initialFen: string;
+  playerColor: "white" | "black";
+  seconds: number;
+  botRating: number;
+}
+
+const DRILLS: Record<string, DrillConfig> = {
   "bullet-kq": {
     title: "Bullet Scramble: Queen",
     initialFen: "8/8/8/8/3Q4/4K3/8/7k w - - 0 1", // K+Q vs K
-    playerColor: "white" as const,
+    playerColor: "white",
     seconds: 10,
     botRating: 2000,
   },
   "bullet-kr": {
     title: "Bullet Scramble: Rook",
     initialFen: "8/8/8/8/8/3R4/3K4/7k w - - 0 1", // K+R vs K
-    playerColor: "white" as const,
+    playerColor: "white",
     seconds: 15,
     botRating: 2000,
   },
   "bullet-pawn": {
     title: "Bullet Scramble: Promotion",
     initialFen: "8/8/8/8/3P4/3K4/8/3k4 w - - 0 1", // King and Pawn vs King
-    playerColor: "white" as const,
+    playerColor: "white",
     seconds: 15,
     botRating: 2000,
   }

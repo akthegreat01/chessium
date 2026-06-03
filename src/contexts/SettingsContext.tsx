@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-type BoardTheme = "green" | "walnut" | "ocean";
+type BoardTheme = "classic" | "green" | "blue" | "purple" | "neon" | "ocean" | "walnut";
 type PieceSet = "classic" | "modern";
 
 interface Settings {

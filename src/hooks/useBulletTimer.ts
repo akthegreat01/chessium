@@ -4,8 +4,8 @@ export function useBulletTimer(initialSeconds: number, onExpire?: () => void) {
   const [timeLeftMs, setTimeLeftMs] = useState(initialSeconds * 1000);
   const [isRunning, setIsRunning] = useState(false);
   
-  const requestRef = useRef<number>();
-  const lastTimeRef = useRef<number>();
+  const requestRef = useRef<number | undefined>(undefined);
+  const lastTimeRef = useRef<number | undefined>(undefined);
   const isExpired = useRef(false);
 
   const animate = useCallback((time: number) => {

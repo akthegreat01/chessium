@@ -1,13 +1,24 @@
 "use client";
 
+import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import AdSlot from "@/components/ui/AdSlot";
 import { COURSES_DB } from "@/lib/chess/courses-db";
-import { useCourseProgress } from "@/hooks/useCourseProgress";
 
 export default function CoursesPage() {
-  const { isCompleted } = useCourseProgress();
+  const [progressData, setProgressData] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("chessium_course_progress");
+      if (stored) {
+        setProgressData(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.error("Failed to load course progress", e);
+    }
+  }, []);
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -29,10 +40,11 @@ export default function CoursesPage() {
       {/* Courses Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {COURSES_DB.map((course, i) => {
-          const completed = isCompleted(course.id);
-          // For now, if not completed, we assume 0% progress unless we fetch it from the DB. 
-          // We can just show 0 or 100 for MVP based on isCompleted, or calculate from local storage.
-          const currentProgress = completed ? 100 : 0; 
+          const completedLessonIds = progressData[course.id] || [];
+          const completed = course.lessons.length > 0 && course.lessons.every(l => completedLessonIds.includes(l.id));
+          const currentProgress = course.lessons.length > 0 
+            ? Math.round((completedLessonIds.length / course.lessons.length) * 100) 
+            : 0; 
           
           return (
             <Link key={course.id} href={`/courses/${course.id}`} className="block group">

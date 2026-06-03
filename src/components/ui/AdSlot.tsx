@@ -3,8 +3,8 @@
 import React, { useEffect, useRef } from 'react';
 
 interface AdSlotProps {
-  slot: string;
-  format?: 'auto' | 'rectangle' | 'horizontal' | 'vertical';
+  slot?: string;
+  format?: 'auto' | 'rectangle' | 'horizontal' | 'vertical' | 'square';
   className?: string;
   responsive?: boolean;
 }
@@ -16,7 +16,7 @@ declare global {
 }
 
 export default function AdSlot({
-  slot,
+  slot = 'default',
   format = 'auto',
   className = '',
   responsive = true,
@@ -24,6 +24,8 @@ export default function AdSlot({
   const adRef = useRef<HTMLModElement>(null);
   const isAdSenseLoaded = typeof window !== 'undefined' && window.adsbygoogle;
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+
+  const mappedFormat = format === 'square' ? 'rectangle' : format;
 
   useEffect(() => {
     if (clientId && isAdSenseLoaded) {
@@ -67,7 +69,7 @@ export default function AdSlot({
         style={{ display: 'block' }}
         data-ad-client={clientId}
         data-ad-slot={slot}
-        data-ad-format={format}
+        data-ad-format={mappedFormat}
         data-full-width-responsive={responsive ? 'true' : 'false'}
       />
     </div>
