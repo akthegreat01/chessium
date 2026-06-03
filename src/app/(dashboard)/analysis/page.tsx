@@ -503,7 +503,7 @@ export default function AnalysisPage() {
   const currentEval = computedEvalData.find(d => d.moveNumber === currentMoveIndex);
 
   return (
-    <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
+    <div className="h-auto lg:h-[calc(100vh-4rem)] max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
       {/* Left Column: Board & Graph */}
       <div className="flex-1 flex flex-col gap-4 min-w-[300px] min-h-0 items-center justify-center">
         {/* Board Area - Responsive width constrained by viewport height to prevent scrolling */}
@@ -590,11 +590,35 @@ export default function AnalysisPage() {
             </div>
           </div>
 
+          {/* Mobile Controls */}
+          <div className="lg:hidden flex justify-center gap-2 mt-4 bg-[#141416] border border-[#2a2a30] rounded-xl p-2 shrink-0">
+            <button onClick={() => setCurrentMoveIndex(-1)} className="p-2.5 rounded-lg hover:bg-[#2a2a30] text-[#a0a0a8] transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <button onClick={() => setCurrentMoveIndex(prev => Math.max(-1, prev - 1))} className="p-2.5 rounded-lg hover:bg-[#2a2a30] text-[#a0a0a8] transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <button onClick={() => setCurrentMoveIndex(prev => Math.min(history.length - 1, prev + 1))} className="p-2.5 rounded-lg hover:bg-[#2a2a30] text-[#a0a0a8] transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+            <button onClick={() => setCurrentMoveIndex(history.length - 1)} className="p-2.5 rounded-lg hover:bg-[#2a2a30] text-[#a0a0a8] transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 4.5l7.5 7.5-7.5 7.5m6-15l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
+          </div>
+
         </div>
       </div>
 
       {/* Right Column: Controls, Moves, Engine */}
-      <div className="w-full lg:w-[380px] xl:w-[420px] flex flex-col gap-4 h-full">
+      <div className="w-full lg:w-[380px] xl:w-[420px] flex flex-col gap-4 lg:h-full h-auto min-h-0">
         {/* Sidebar Tabs */}
         <div className="flex gap-4 border-b border-[#2a2a30] shrink-0">
           <button 
@@ -670,11 +694,13 @@ export default function AnalysisPage() {
             </div>
 
             {/* Move List */}
-            <MoveList 
-              moves={history.map(m => ({ san: m.san }))} 
-              currentMoveIndex={currentMoveIndex}
-              onMoveClick={setCurrentMoveIndex}
-            />
+            <div className="flex-1 min-h-[150px] max-h-[300px] lg:max-h-none flex flex-col">
+              <MoveList 
+                moves={history.map(m => ({ san: m.san }))} 
+                currentMoveIndex={currentMoveIndex}
+                onMoveClick={setCurrentMoveIndex}
+              />
+            </div>
           </>
         ) : (
           <div className="flex flex-col gap-4 h-full overflow-y-auto">
@@ -786,8 +812,8 @@ export default function AnalysisPage() {
           </div>
         )}
 
-        {/* Controls */}
-        <div className="bg-[#141416] border border-[#2a2a30] rounded-xl p-2 shrink-0 flex justify-center gap-2">
+        {/* Desktop Controls */}
+        <div className="hidden lg:flex bg-[#141416] border border-[#2a2a30] rounded-xl p-2 shrink-0 justify-center gap-2">
           <button onClick={() => setCurrentMoveIndex(-1)} className="p-2.5 rounded-lg hover:bg-[#2a2a30] text-[#a0a0a8] transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
