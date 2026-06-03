@@ -59,36 +59,34 @@ export default function Board({
   // Merge the generated board styles with any custom styles provided via props
   const mergedSquareStyles = { ...boardSquareStyles, ...customSquareStyles };
 
+  const boardOptions = useMemo(() => ({
+    position: position,
+    onPieceDrop: onPieceDrop 
+      ? ({ piece, sourceSquare, targetSquare }: any) => {
+          if (!sourceSquare || !targetSquare) return false;
+          const pieceStr = piece?.pieceType || piece?.position || "wP";
+          return onPieceDrop(sourceSquare, targetSquare, pieceStr);
+        }
+      : undefined,
+    onSquareClick: onSquareClick
+      ? ({ square }: any) => {
+          onSquareClick(square);
+        }
+      : undefined,
+    boardOrientation: boardOrientation,
+    arrows: customArrows.map(arrow => ({ startSquare: arrow[0], endSquare: arrow[1], color: arrow[2] || "rgba(0, 0, 0, 0.2)" })),
+    squareStyles: mergedSquareStyles,
+    darkSquareStyle: { backgroundColor: colors.dark },
+    lightSquareStyle: { backgroundColor: colors.light },
+    dropSquareStyle: { boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" },
+    animationDurationInMs: animDuration,
+    allowDrawingArrows: areArrowsAllowed,
+    allowDragging: arePiecesDraggable
+  }), [position, onPieceDrop, onSquareClick, boardOrientation, customArrows, mergedSquareStyles, animDuration, areArrowsAllowed, arePiecesDraggable, colors]);
+
   return (
-    <div className="w-full max-w-full aspect-square rounded-xl overflow-hidden shadow-card border border-[#2a2a30]">
-      <Chessboard
-        key={activeTheme}
-        options={{
-          position: position,
-          onPieceDrop: onPieceDrop 
-            ? ({ piece, sourceSquare, targetSquare }: any) => {
-                if (!sourceSquare || !targetSquare) return false;
-                // v5 piece is { isSparePiece, position, pieceType } where pieceType is like "wP"
-                const pieceStr = piece?.pieceType || piece?.position || "wP";
-                return onPieceDrop(sourceSquare, targetSquare, pieceStr);
-              }
-            : undefined,
-          onSquareClick: onSquareClick
-            ? ({ square }: any) => {
-                onSquareClick(square);
-              }
-            : undefined,
-          boardOrientation: boardOrientation,
-          arrows: customArrows.map(arrow => ({ startSquare: arrow[0], endSquare: arrow[1], color: arrow[2] || "rgba(0, 0, 0, 0.2)" })),
-          squareStyles: mergedSquareStyles,
-          darkSquareStyle: { backgroundColor: colors.dark },
-          lightSquareStyle: { backgroundColor: colors.light },
-          dropSquareStyle: { boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" },
-          animationDurationInMs: animDuration,
-          allowDrawingArrows: areArrowsAllowed,
-          allowDragging: arePiecesDraggable
-        }}
-      />
+    <div className="w-full relative touch-none select-none" style={{ aspectRatio: "1 / 1" }}>
+      <Chessboard key={activeTheme} options={boardOptions} />
     </div>
   );
 }

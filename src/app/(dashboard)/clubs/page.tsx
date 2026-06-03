@@ -33,7 +33,7 @@ export default async function ClubsDirectoryPage() {
         {clubs.map((club, i) => (
           <Link href={`/clubs/${club.slug}`} key={club.id} className="group block">
             <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 h-full shadow-elevated transition-transform group-hover:-translate-y-1 group-hover:border-[#81b64c]/50 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
                 <svg className="w-24 h-24 text-[#81b64c]" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2L9.5 8.5 3 9l5 4.5L6.5 20 12 16.5 17.5 20 16 13.5l5-4.5-6.5-.5L12 2z"/>
                 </svg>
