@@ -1,28 +1,10 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import { BLOG_POSTS } from "./data";
 
 export default function BlogPage() {
-  const posts = [
-    {
-      title: "How to use Stockfish to Improve Your Game",
-      excerpt: "Learn how to effectively analyze your games using the engine without falling into common traps.",
-      date: "June 2, 2026",
-      category: "Improvement",
-    },
-    {
-      title: "Mastering the Caro-Kann Defense",
-      excerpt: "A deep dive into one of the most solid responses to 1.e4. Learn the key ideas and variations.",
-      date: "May 28, 2026",
-      category: "Openings",
-    },
-    {
-      title: "Chessium Platform Updates - June 2026",
-      excerpt: "We've added 3D board pieces, a new sleek dark mode, and faster engine evaluation.",
-      date: "May 15, 2026",
-      category: "Updates",
-    }
-  ];
+  const posts = BLOG_POSTS;
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white flex flex-col">
@@ -57,7 +39,7 @@ export default function BlogPage() {
                 </span>
               </div>
               {/* Full click target */}
-              <Link href="#" className="absolute inset-0 z-10">
+              <Link href={`/blog/${post.slug}`} className="absolute inset-0 z-10">
                 <span className="sr-only">Read {post.title}</span>
               </Link>
             </div>

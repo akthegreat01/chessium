@@ -9,6 +9,14 @@ export async function joinClubAction(clubId: string) {
 
   if (!user) return { error: "Not logged in" };
 
+  // Ensure user profile exists (fallback if trigger failed)
+  const username = user.user_metadata?.username || user.email?.split('@')[0] || `user_${Math.floor(Math.random() * 100000)}`;
+  await supabase.from("profiles").upsert({
+    id: user.id,
+    username: username,
+    display_name: username
+  }).then();
+
   const { error } = await supabase
     .from("club_members")
     .insert({

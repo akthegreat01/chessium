@@ -20,6 +20,14 @@ export async function createClubAction(formData: FormData) {
     return { error: "Name and description are required." };
   }
 
+  // Ensure user profile exists (fallback if trigger failed)
+  const username = user.user_metadata?.username || user.email?.split('@')[0] || `user_${Math.floor(Math.random() * 100000)}`;
+  await supabase.from("profiles").upsert({
+    id: user.id,
+    username: username,
+    display_name: username
+  }).then();
+
   // Insert club
   const { data: club, error: clubError } = await supabase
     .from("clubs")

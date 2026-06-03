@@ -16,7 +16,10 @@ export default function ClubActions({ clubId, clubSlug, isMember, isOwner = fals
 
   const handleJoin = async () => {
     setIsJoining(true);
-    await joinClubAction(clubId);
+    const res = await joinClubAction(clubId);
+    if (res?.error) {
+      alert(res.error);
+    }
     setIsJoining(false);
   };
 
