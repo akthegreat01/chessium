@@ -90,6 +90,30 @@ export const PUZZLES_DB: Record<string, PuzzleData[]> = {
       rating: 1600,
       themes: ["Mate in 3", "Pin"]
     }
+    ,
+    {
+      id: "endgame_2",
+      fen: "8/8/8/8/8/k7/p7/K7 w - - 0 1",
+      solution: ["a1a2", "a3b4", "a2b2"],
+      rating: 1100,
+      themes: ["Endgame"]
+    }
+  ],
+  "Tactics": [
+    {
+      id: "tactic_1",
+      fen: "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 4 5",
+      solution: ["c3d5", "f6e4", "d1e2"],
+      rating: 1300,
+      themes: ["Tactics"]
+    },
+    {
+      id: "tactic_2",
+      fen: "3r2k1/p4ppp/1p2p3/2b5/2P1n3/1P3N2/PB3PPP/5RK1 b - - 1 20",
+      solution: ["d8d2", "f3d2", "e4d2"],
+      rating: 1750,
+      themes: ["Tactics", "Fork"]
+    }
   ]
 };
 

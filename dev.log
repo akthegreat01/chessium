@@ -3,15 +3,15 @@
 > next dev
 
 ▲ Next.js 16.2.7 (Turbopack)
-- Local:         http://localhost:3005
-- Network:       http://192.168.1.2:3005
+- Local:         http://localhost:3011
+- Network:       http://192.168.1.2:3011
 - Environments: .env.local
-✓ Ready in 540ms
+✓ Ready in 415ms
 ⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
 ⚠ Invalid next.config.ts options detected: 
 ⚠     Unrecognized key(s) in object: 'eslint'
 ⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
 
-○ Compiling / ...
- GET / 200 in 10.2s (next.js: 10.0s, application-code: 246ms)
+○ Compiling /puzzles/theme/[theme] ...
+ GET /puzzles/theme/Mate%20in%201 200 in 10.5s (next.js: 10.2s, application-code: 295ms)
 [?25h

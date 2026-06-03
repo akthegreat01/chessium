@@ -19,6 +19,7 @@ export default function PuzzleSurvivalPage() {
   const [moveIndex, setMoveIndex] = useState(0);
   const [status, setStatus] = useState<"playing" | "success" | "failed" | "gameover">("playing");
   const [orientation, setOrientation] = useState<"white" | "black">("white");
+  const [moveFrom, setMoveFrom] = useState<string | null>(null);
 
   // Load a new puzzle
   const loadNextPuzzle = () => {
@@ -30,6 +31,7 @@ export default function PuzzleSurvivalPage() {
       setMoveIndex(0);
       setStatus("playing");
       setOrientation(chess.turn() === 'w' ? 'white' : 'black');
+      setMoveFrom(null);
     }
   };
 
@@ -42,6 +44,34 @@ export default function PuzzleSurvivalPage() {
     setLives(3);
     setStreak(0);
     loadNextPuzzle();
+  };
+
+  const handleSquareClick = (square: string) => {
+    if (status !== "playing" || !puzzle) return;
+
+    if (!moveFrom) {
+      const piece = chess.get(square as any);
+      if (piece && piece.color === chess.turn()) {
+        setMoveFrom(square);
+      }
+      return;
+    }
+
+    const piece = chess.get(moveFrom as any);
+    if (!piece) {
+      setMoveFrom(null);
+      return;
+    }
+    const pieceStr = piece.color + piece.type.toUpperCase();
+    
+    // Check if clicked square is same as moveFrom, then deselect
+    if (square === moveFrom) {
+      setMoveFrom(null);
+      return;
+    }
+    
+    handlePieceDrop(moveFrom, square, pieceStr);
+    setMoveFrom(null);
   };
 
   const handlePieceDrop = (source: string, target: string, piece: string) => {
@@ -152,8 +182,14 @@ export default function PuzzleSurvivalPage() {
           <Board 
             position={position}
             onPieceDrop={handlePieceDrop}
+            onSquareClick={handleSquareClick}
             boardOrientation={orientation}
             arePiecesDraggable={status === 'playing'}
+            customSquareStyles={
+              moveFrom 
+                ? { [moveFrom]: { backgroundColor: "rgba(129, 182, 76, 0.5)" } }
+                : {}
+            }
           />
           
           <AnimatePresence>

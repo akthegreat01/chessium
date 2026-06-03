@@ -61,40 +61,35 @@ export default function PuzzlesPage() {
           </div>
         </Link>
 
-        {/* Puzzle Themes */}
-        <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-6 flex flex-col shadow-elevated lg:col-span-2">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-white">Thematic Training</h2>
-              <p className="text-[#a0a0a8] text-sm mt-1">Focus on specific tactical motifs</p>
+        {/* Ranked Puzzles */}
+        <Link href="/puzzles/ranked" className="block group lg:col-span-2">
+          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl overflow-hidden hover:border-[#81b64c]/50 transition-all duration-300 h-full flex flex-col shadow-elevated relative group-hover:-translate-y-1">
+            <div className="absolute inset-0 bg-gradient-to-bl from-[#81b64c]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div className="p-6 pb-0 flex items-center justify-between mb-6 relative z-10">
+              <div>
+                <h2 className="text-2xl font-bold text-white group-hover:text-[#81b64c] transition-colors">Ranked Puzzles</h2>
+                <div className="text-sm text-[#a0a0a8] mt-1">Solve random puzzles to increase your Elo</div>
+              </div>
+              <div className="w-12 h-12 rounded-xl bg-[#1a1a1f] flex items-center justify-center text-2xl border border-[#2a2a30] group-hover:scale-110 transition-transform">
+                📈
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-full bg-[#1a1a1f] flex items-center justify-center border border-[#2a2a30]">
-              🎯
+            
+            <div className="px-6 pb-6 flex-1 relative z-10 flex items-center justify-center">
+               <p className="text-center text-[#a0a0a8] max-w-sm">
+                 Face puzzles scaled to your skill level. Correct answers boost your rating, while mistakes will cost you points. Are you ready?
+               </p>
+            </div>
+            
+            <div className="p-4 bg-[#1a1a1f] border-t border-[#2a2a30] flex justify-between items-center relative z-10">
+              <span className="text-white font-medium text-sm">Start Training</span>
+              <svg className="w-5 h-5 text-[#81b64c] group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </div>
           </div>
-          
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 flex-1">
-            {[
-              { name: "Mate in 1", icon: "1️⃣" },
-              { name: "Mate in 2", icon: "2️⃣" },
-              { name: "Mate in 3", icon: "3️⃣" },
-              { name: "Fork", icon: "🍴" },
-              { name: "Pin", icon: "📌" },
-              { name: "Skewer", icon: "🍢" },
-              { name: "Endgame", icon: "🏁" }
-            ].map((theme) => (
-              <Link 
-                href={`/puzzles/theme/${encodeURIComponent(theme.name)}`}
-                key={theme.name} 
-                className="group bg-[#1a1a1f] border border-[#2a2a30] rounded-xl p-4 flex flex-col gap-3 hover:border-[#81b64c]/50 hover:bg-[#1f1f25] transition-all hover:-translate-y-0.5"
-              >
-                <div className="text-2xl group-hover:scale-110 transition-transform origin-left">{theme.icon}</div>
-                <div className="font-semibold text-white group-hover:text-[#81b64c] transition-colors">{theme.name}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
+        </Link>
       </div>
       
       <div className="mt-8">
