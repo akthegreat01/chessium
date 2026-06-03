@@ -81,12 +81,23 @@ export const PUZZLES_DB: Record<string, PuzzleData[]> = {
       rating: 1500,
       themes: ["Endgame"]
     }
+  ],
+  "Mate in 3": [
+    {
+      id: "mate_3_1",
+      fen: "r5k1/pp3p1p/2p3p1/8/2P1b2q/1P2P2P/PQ3PP1/3R1R1K b - - 0 1",
+      solution: ["h4h3", "h1g1", "h3g2"],
+      rating: 1600,
+      themes: ["Mate in 3", "Pin"]
+    }
   ]
 };
 
 // Helper to pick a random puzzle from a theme
 export function getRandomPuzzle(theme: string): PuzzleData | null {
-  const puzzles = PUZZLES_DB[theme];
+  const category = Object.keys(PUZZLES_DB).find(k => k.toLowerCase() === theme.toLowerCase());
+  if (!category) return null;
+  const puzzles = PUZZLES_DB[category];
   if (!puzzles || puzzles.length === 0) return null;
   const randomIndex = Math.floor(Math.random() * puzzles.length);
   return puzzles[randomIndex];

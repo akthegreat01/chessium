@@ -83,4 +83,14 @@ In a basic King and Pawn vs. King endgame, if the attacking king can get in fron
 Conversely, if the defending king can take the opposition (standing directly in front of the attacking king while it's the attacker's turn), the defender can hold a draw. The attacker won't be able to outflank, and the pawn will eventually be forced forward prematurely, resulting in a stalemate.`,
     history: "The concept of opposition has been understood for centuries, dating back to early endgame studies in the 16th and 17th centuries. It is the first endgame principle taught to beginners, as almost all complex endgames eventually simplify into a basic opposition scenario."
   }
+  , {
+    id: "rook-vs-pawn",
+    title: "Rook vs Pawn",
+    category: "Rook Endgames",
+    fen: "8/8/8/8/8/R7/4p3/4K3 w - - 0 1",
+    difficulty: "Advanced",
+    description: "Learn how to stop an advanced pawn with a rook.",
+    solution: ["a3e3", "e2e1", "e3e1"],
+    ideas: ["Get the rook behind the pawn", "Use the king to assist"]
+  }
 ];

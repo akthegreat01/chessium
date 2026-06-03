@@ -173,6 +173,32 @@ You will master the art of the 'Fork', where a single piece simultaneously attac
       }
     ]
   }
+  , {
+    id: "advanced-tactics",
+    title: "Advanced Tactics",
+    description: "Master complex tactical motifs like clearance sacrifices and windmills.",
+    level: "Advanced",
+    color: "#ca3431",
+    longDescription: "Take your tactical vision to the next level. This course covers advanced combinational themes that often occur in master-level play.",
+    whatYouWillLearn: ["Clearance sacrifices", "Windmills", "Interference"],
+    lessons: [
+      {
+        id: "clearance-sacrifice",
+        title: "The Clearance Sacrifice",
+        description: "Sacrifice a piece to clear a crucial square or file.",
+        steps: [
+          {
+            fen: "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQ1RK1 w kq - 0 1",
+            instruction: "Play d4 to challenge the center.",
+            expectedMove: "d2d4",
+            successMessage: "Great job!",
+            failMessage: "Try d4",
+            opponentReply: "e5d4"
+          }
+        ]
+      }
+    ]
+  }
 ];
 
 export function getCourse(id: string): Course | undefined {

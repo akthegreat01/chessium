@@ -77,6 +77,7 @@ export default function PuzzlesPage() {
             {[
               { name: "Mate in 1", icon: "1️⃣" },
               { name: "Mate in 2", icon: "2️⃣" },
+              { name: "Mate in 3", icon: "3️⃣" },
               { name: "Fork", icon: "🍴" },
               { name: "Pin", icon: "📌" },
               { name: "Skewer", icon: "🍢" },

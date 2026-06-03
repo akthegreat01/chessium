@@ -1,23 +1,37 @@
 const { Chess } = require("chess.js");
-const fens = [
-"r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 4",
-"4k3/R7/4K3/8/8/8/8/8 w - - 0 1",
-"rnbqkbnr/ppppp2p/8/5pp1/4P2P/8/PPPP1PP1/RNBQKBNR w KQkq - 0 3",
-"r1bq2r1/b4pk1/p1pp1p2/1p2pP2/1P2P1PB/3P4/1PPQ2P1/R3K2R w - - 0 1",
-"5rk1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1",
-"rnbq1rk1/pppp1ppp/8/4P3/2B1n3/8/PPP2PPP/RNBQK2R w KQ - 1 7",
-"r1bqk2r/pppp1ppp/2n2n2/4p3/1b2P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 4 5",
-"8/8/8/8/8/1k6/1r6/R2K4 w - - 0 1",
-"8/8/8/8/4k3/4p3/8/4K3 w - - 0 1"
-];
-let errors = 0;
-for (const fen of fens) {
-  try {
-    const chess = new Chess();
-    chess.load(fen);
-  } catch(e) {
-    console.error("Failed to load FEN:", fen, e.message);
-    errors++;
+
+const db = {
+  "Mate in 1": [
+    { fen: "r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 0 4", solution: ["f3f7"] },
+    { fen: "4k3/R7/4K3/8/8/8/8/8 w - - 0 1", solution: ["a7a8"] },
+    { fen: "rnbqkbnr/ppppp2p/8/5pp1/4P2P/8/PPPP1PP1/RNBQKBNR w KQkq - 0 3", solution: ["d1h5"] }
+  ],
+  "Mate in 2": [
+    { fen: "r1bq2r1/b4pk1/p1pp1p2/1p2pP2/1P2P1PB/3P4/1PPQ2P1/R3K2R w - - 0 1", solution: ["d2h6", "g7h6", "h4f6"] },
+    { fen: "5rk1/5ppp/8/8/8/8/5PPP/R5K1 w - - 0 1", solution: ["a1a8", "f8a8"] }
+  ],
+  "Fork": [
+    { fen: "rnbq1rk1/pppp1ppp/8/4P3/2B1n3/8/PPP2PPP/RNBQK2R w KQ - 1 7", solution: ["d1d5", "e4g5", "d5a8"] }
+  ],
+  "Pin": [
+    { fen: "r1bqk2r/pppp1ppp/2n2n2/4p3/1b2P3/2N2N2/PPPP1PPP/R1BQKB1R w KQkq - 4 5", solution: ["c3d5", "f6d5", "e4d5"] }
+  ],
+  "Skewer": [
+    { fen: "8/8/8/8/8/1k6/1r6/R2K4 w - - 0 1", solution: ["a1a8", "b2b1", "d1d2"] }
+  ],
+  "Endgame": [
+    { fen: "8/8/8/8/4k3/4p3/8/4K3 w - - 0 1", solution: ["e1e2", "e4d4", "e2e1"] }
+  ]
+};
+
+for (const theme in db) {
+  for (const puzzle of db[theme]) {
+    try {
+      const chess = new Chess();
+      chess.load(puzzle.fen);
+      console.log(`OK: ${puzzle.fen}`);
+    } catch (e) {
+      console.error(`ERROR: ${puzzle.fen} - ${e.message}`);
+    }
   }
 }
-console.log("Total errors:", errors);

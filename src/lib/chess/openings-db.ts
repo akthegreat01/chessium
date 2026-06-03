@@ -116,4 +116,16 @@ The typical development scheme for White involves:
 While historically considered a somewhat passive and drawish opening, the London System has evolved. Modern players, including World Champion Magnus Carlsen, have demonstrated that the London contains hidden attacking potential. If Black plays carelessly, White can launch powerful kingside attacks, often involving bringing a knight to e5 and advancing the h-pawn.`,
     history: "The London System gets its name from the 1922 London tournament, where it was played by several leading masters, including José Raúl Capablanca and Alexander Alekhine. For decades, it was considered a boring, unambitious choice, primarily used to secure a draw. However, in the 21st century, it has experienced a massive surge in popularity at all levels, transformed by modern engines and top grandmasters into a dangerous and flexible weapon."
   }
+  , {
+    eco: "C00",
+    name: "French Defense",
+    category: "e4",
+    moves: "1. e4 e6",
+    fen: "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
+    description: "A solid, counter-attacking opening for Black, fighting for the center with d5.",
+    ideas: ["Challenge e4 with d5", "Attack the white center with c5"],
+    difficulty: "Intermediate",
+    detailedTheory: "The French Defense is a very solid opening where Black allows White a space advantage in exchange for a solid pawn structure.",
+    history: "Played in the 1834 match between London and Paris."
+  }
 ];
