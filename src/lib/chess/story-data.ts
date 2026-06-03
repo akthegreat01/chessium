@@ -21,157 +21,157 @@ export interface StoryChapter {
 export const STORY_CHAPTERS: StoryChapter[] = [
   {
     id: "chapter-1",
-    title: "Chapter 1: A Cold Welcome",
+    title: "Chapter 1: The Partner's Betrayal",
     suspectName: "Victor (The Butler)",
     rating: 1000,
     avatar: "🤵",
-    description: "The butler Victor greets you at the rain-swept foyer of Thorne Manor. He is cold, silent, and highly suspicious. He demands you play him on Lord Alistair's private board.",
+    description: "The butler Victor greets you at the foyer. He serves you tea, which you realize too late is laced with a slow-acting poison. Victor demands you play him, claiming he was double-crossed by Alistair himself.",
     startingFen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     opponentColor: "black",
-    clueTitle: "Victor's Alibi & The Black Residue",
-    clueDescription: "Victor claims he was in the wine cellar retrieving a bottle of Chateau Margaux when Lord Thorne died. However, he notes that Lord Alistair's fingertips were stained with a dark, sticky black residue at the time of death.",
+    clueTitle: "Victor's Alibi & The Swapped Body",
+    clueDescription: "Victor confesses he was Alistair Thorne's secret lover and co-conspirator. They planned to fake Alistair's death using a lookalike body to escape the Black Rook secret society. But Alistair betrayed Victor, and the fake death was turned into a real murder. Alistair's fingers were stained pitch black from the poisonous ebony lacquer.",
     dialogue: [
       {
         trigger: "onLoad",
-        text: "Welcome to Thorne Manor, Detective. Lord Thorne's will was specific—no questions may be answered except on the sixty-four squares. Let us begin."
+        text: "Drink your tea, Detective. Or should I say... Alistair's favorite son? You've already swallowed the toxin. Play the board if you want to live. Only Alistair has the key to the antidote."
       },
       {
         moveNumber: 2,
-        text: "I served Lord Alistair for thirty years. I knew his favorite openings, his tendencies, his weaknesses. But the night he died... he was playing someone else."
+        text: "I loved him. I spent thirty years serving him, hiding our relationship. We planned to fake his death and run away. But he was going to betray me and leave with the manuscript and you!"
       },
       {
         moveNumber: 6,
-        text: "Victor was in the cellar, yes. But I heard raised voices from the study. Lady Beatrice was demanding her inheritance. She plays the King's Gambit—aggressive, reckless, desperate."
+        text: "Beatrice was in the drawing room, screaming about money. She had no idea she was Alistair's biological daughter. She plays the King's Gambit—reckless, aggressive, and full of hate."
       },
       {
         moveNumber: 12,
-        text: "When I found Lord Alistair, his hand was clutching his chest. But his fingertips... they were stained pitch black. As if he had been handling charcoal. Or something worse."
+        text: "The lookalike body at the desk was Dr. Aris's missing assistant. But someone replaced our fake poison with a real contact toxin on the Black Queen. Alistair's hands were stained black when I found him."
       },
       {
         trigger: "onBlunder",
-        text: "A slip of the finger? Lord Alistair was distracted in his final game as well. His opponent offered a capture he simply could not resist."
+        text: "A blunder. Alistair was distracted too. Greed is a poison of the mind, Detective."
       },
       {
         trigger: "onWin",
-        text: "A masterfully played game, Detective. You have the same sharp eye as Lord Alistair. Here is what I know: the wine was untouched. But his fingertips were stained black. The poison was not in his glass."
+        text: "You play with his exact conviction. Very well. The poison on Alistair's hands came from the Black Queen of his custom ivory set. Dr. Aris stole it from the crime scene. Find him."
       },
       {
         trigger: "onLoss",
-        text: "Perhaps the retired detective has lost their edge. Lord Alistair would have checkmated me ten moves ago. Try again."
+        text: "The poison is already slowing your brain. Lord Alistair would have mated me in ten. Try again."
       }
     ]
   },
   {
     id: "chapter-2",
-    title: "Chapter 2: The Heiress's Gambit",
+    title: "Chapter 2: The Biological Heiress",
     suspectName: "Lady Beatrice",
     rating: 1300,
     avatar: "💃",
-    description: "Lord Thorne's niece, Lady Beatrice, sits by the drawing room fireplace. She is furious about being cut out of the will and challenges you to survive her hyper-aggressive attack.",
-    startingFen: "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", // plays f4 next
+    description: "Lady Beatrice confronts you in the Drawing Room. She reveals she is Alistair's biological daughter from an affair with his rival's wife, and admits she tried to kill him—only to be double-crossed.",
+    startingFen: "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
     opponentColor: "black",
-    clueTitle: "The Ancient Ivory Set",
-    clueDescription: "Beatrice reveals that Lord Thorne was playing with his prized possession: a custom, ancient ivory chess set. The black pieces were carved from rare ebony-coated ivory. She also claims Dr. Aris was searching Alistair's desk that night.",
+    clueTitle: "The Untouched Poisoned Wine",
+    clueDescription: "Beatrice admits she poisoned Alistair's wine glass out of rage for leaving his fortune to you, his adopted son. But when she crept in, he was already dead, sitting at the chess board. The poison in the glass was untouched, meaning someone else struck first with a contact toxin on the board itself.",
     dialogue: [
       {
         trigger: "onLoad",
-        text: "Ah, the detective. Victor says you can play, but can you survive my attack? I have no patience for defensive, slow games."
+        text: "So Victor poisoned you? Good. That butler was Alistair's shadow. Let's see if you have the strength to fight my King's Gambit, or if the poison claims you first."
       },
       {
         trigger: "onFirstMove",
-        text: "Let us make it interesting. e4 e5 f4! The King's Gambit. A sacrifice. You must give something up to win, Detective. Just like Uncle Alistair did."
+        text: "1. e4 e5 2. f4! The King's Gambit. A sacrifice. My mother was Alistair's rival's wife. I am his biological daughter! Yet he was leaving everything to you, a stray detective!"
       },
       {
         moveNumber: 6,
-        text: "They think I did it because of the money. Ridiculous. If I wanted him dead, I wouldn't have left Dr. Aris alone in the study with Alistair's research diary."
+        text: "Yes, I poisoned his wine glass that night! I wanted my inheritance. But when I went to check on him, his head was slumped on the board. He hadn't even touched the wine. Someone beat me to it."
       },
       {
         moveNumber: 12,
-        text: "Dr. Aris was searching for Alistair's final manuscript. He was terrified of what was in it. Aris plays the French Defense—slow, hiding behind pawns, concealing his secrets."
+        text: "Dr. Aris was searching Alistair's desk. Aris knew about the solved chess manuscript. Aris plays the French Defense—passive, hiding behind pawns, hiding his theft of the poisoned chess pieces."
       },
       {
         trigger: "onBlunder",
-        text: "Losing focus? In chess, as in life, greed is a fatal flaw."
+        text: "Failing to see the threats? Just like Uncle Alistair when he reached for the black piece."
       },
       {
         trigger: "onWin",
-        text: "Hmph. You defend well. Very well. Here is your clue: Uncle Alistair was playing with his custom ebony-and-ivory set that night. The set he kept locked in the glass case. And Dr. Aris was desperate to get his hands on it."
+        text: "Fine, you win. The clue: my poisoned wine was untouched. Alistair died from touching the custom ebony Black Queen. Dr. Aris stole the poisoned pieces to study the contact toxin. He is in the Library."
       },
       {
         trigger: "onLoss",
-        text: "Passive and weak. Just like Dr. Aris. Leave my sight and study your tactics."
+        text: "A passive player, just like Dr. Aris. The poison is taking hold. Goodbye, detective."
       }
     ]
   },
   {
     id: "chapter-3",
-    title: "Chapter 3: The Cryptic Journal",
+    title: "Chapter 3: The Stolen Poison",
     suspectName: "Dr. Aris",
     rating: 1600,
     avatar: "👨‍🏫",
-    description: "Dr. Aris, Alistair's long-time rival and paranoid chess theoretician, pacing nervously in the cluttered library. He claims he was trying to save Alistair from a terrible discovery.",
+    description: "Dr. Aris pacing frantically in the library. He reveals he stole the Black Queen to study the nerve agent that killed Alistair, and tells you of Alistair's secret desk drawer.",
     startingFen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     opponentColor: "black",
-    clueTitle: "The Poisoned Piece",
-    clueDescription: "Dr. Aris reveals the true murder method: the Black Queen of the custom chess set was coated in a lethal, dark contact toxin that absorbs through the skin. Thorne was baited into a Queen sacrifice, capturing the piece and sealing his fate.",
+    clueTitle: "The Antidote Passcode",
+    clueDescription: "Dr. Aris explains that the antidote is in a mechanical drawer inside Alistair's desk, locked with a chess coordinate passcode. He confirms the Black Queen was coated in a contact toxin. He says the killer left the game notation sheet on the board, ending in checkmate coordinate 'Nf7'.",
     dialogue: [
       {
         trigger: "onLoad",
-        text: "You think I killed him? No! I was trying to save him! He was going to publish it—the Solving of Chess! It would have killed the game! Play me, I must clear my name!"
+        text: "I didn't kill him! I stole the Black Queen to study the toxin! It's a rare nerve agent. Alistair was blackmailing me! Play, play... I will tell you how to get the antidote!"
       },
       {
         moveNumber: 4,
-        text: "Alistair discovered a mathematical proof. A sequence that guarantees a win for White. It would have turned our beautiful art into a solved equation. I begged him to burn it."
+        text: "Alistair solved chess. He discovered the White winning sequence. It would have ruined the game. He was blackmailing me with my old research diaries to force me to publish it under his name."
       },
       {
         moveNumber: 10,
-        text: "The night he died, he was playing a hooded visitor. I looked through the keyhole. Alistair was smiling. He saw a hanging Black Queen. He captured it... and then he screamed."
+        text: "The night he died, he was playing a hooded visitor. I saw Alistair reach for the Black Queen. It was a bait, a sacrifice. He touched the poisoned ebony lacquer and died in agony."
       },
       {
         moveNumber: 16,
-        text: "The poison wasn't in the wine! It was on the Black Queen! A contact nerve agent. The dark ebony lacquer hid it. The killer knew Alistair could never resist a brilliant Queen sacrifice!"
+        text: "The antidote is in Alistair's desk drawer. It is locked by a mechanical grid. The passcode is the coordinate of the final checkmating move of Alistair's master game—Nf7!"
       },
       {
         trigger: "onBlunder",
-        text: "Do you not see the danger? You're walking straight into the trap, just like Alistair did!"
+        text: "Watch your pieces! The poison is clouding your vision!"
       },
       {
         trigger: "onWin",
-        text: "Incredible... you see the board so clearly. Listen to me: the killer baited Alistair with a poisoned Queen. The black residue on his fingers was the ebony paint mixed with the toxin. The killer has returned to the manor tonight to retrieve the poisoned piece and the manuscript!"
+        text: "You have the mind of a grandmaster. The clue: the antidote is locked in Alistair's desk. The code is 'Nf7'—the coordinate of the smothered mate. The hooded killer is waiting for you in the study. It is Alistair himself!"
       },
       {
         trigger: "onLoss",
-        text: "No, no! You fell for the bait! You don't have the vision to solve this case."
+        text: "Too late. The poison has reached your heart. A tragic end."
       }
     ]
   },
   {
     id: "chapter-4",
-    title: "Chapter 4: The Poisoned Queen",
-    suspectName: "The Mastermind",
+    title: "Chapter 4: The Human Gambit",
+    suspectName: "Alistair Thorne",
     rating: 1900,
     avatar: "👤",
-    description: "You enter the dark, dusty study where Alistair died. A hooded figure stands by the window, holding the poisoned Black Queen. It is Victor's true identity—Alistair's twin brother, who wanted the solved manuscript. He challenges you to finish Alistair's final game.",
+    description: "You enter the dark study. The hooded figure turns around—it is Lord Alistair Thorne, alive and smiling. The corpse was Dr. Aris's assistant. Alistair faked his death to play his final game against you.",
     startingFen: "r1b2r1k/pp4pp/2n5/4q1N1/2B5/8/PPP2PPP/R2QR1K1 w - - 0 1",
     opponentColor: "black",
     clueTitle: "The Mystery of Chess Preserved",
-    clueDescription: "By checkmating the Mastermind without capturing the poisoned Black Queen, you solved the mystery and saved your own life. You discover Alistair's completed manuscript, but realize its publication would end the magic of chess forever. You throw it into the fireplace.",
+    clueDescription: "By checkmating Alistair Thorne with 'Nf7#' without capturing the poisoned Queen on e5, you triggered the final mechanical lock. Victor suddenly stepped from the shadows and stabbed Alistair in the back for his betrayal. With Alistair's death, you unlocked the desk drawer using the coordinate 'Nf7', drank the antidote, and burned the solved manuscript to keep the mystery of chess alive.",
     dialogue: [
       {
         trigger: "onLoad",
-        text: "So, you solved my little riddle, Detective. You know about the contact toxin. But can you resist it? Here is Alistair's final position. The Black Queen is hanging on e5. Take her, if you dare."
+        text: "Surprised, Detective? Yes, I am alive. The corpse was just a prop. I faked my death to watch them betray each other. And to play my final master game against you. Capture my Black Queen on e5, or find another way."
       },
       {
         moveNumber: 2,
-        text: "Why do you hesitate? The Queen is free. Capture her and win the game. Or are you afraid of a little paint?"
+        text: "Victor poisoned your tea. The only antidote is in my desk. If you capture my Queen, you touch the contact poison and die immediately. Can you find checkmate without taking the bait?"
       },
       {
         moveNumber: 4,
-        text: "Alistair was a genius, but his greed was his undoing. He saw the sacrifice, he took the Queen, and he died. Will you share his fate?"
+        text: "This is the Human Gambit. A true Grandmaster must sacrifice his closest pupil to immortalize his name. Take the Queen. Embrace the poison."
       },
       {
         trigger: "onWin",
-        text: "No! How... how did you find checkmate without capturing my Queen? You bypassed the trap! You solved Alistair's final gambit..."
+        text: "No! How did you checkmate me without capturing the Queen? Nf7... you completed Alistair's final sequence... Ugh!"
       },
       {
         trigger: "onLoss",
