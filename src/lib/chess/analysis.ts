@@ -166,8 +166,9 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
     const loss = Math.max(0, wpBefore - wpAfter);
     
     // Per-move accuracy curve based directly on win probability loss
-    // Using a softer decay to closely match modern accuracy inflation (e.g. Chess.com/Lichess)
-    let moveAcc = 103.1668 * Math.exp(-loss * 1.5) - 3.1669;
+    // Using a steeper decay to correctly penalize inaccuracies and mistakes
+    // This perfectly balances between the overly generous 1.5 and overly harsh 4.3 curves
+    let moveAcc = 100 * Math.exp(-loss * 3.5);
     moveAcc = Math.max(0, Math.min(100, moveAcc));
 
     totalAccuracy += moveAcc;
