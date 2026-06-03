@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Board from "@/components/chess/Board";
-import { BOT_PERSONALITIES, BotPersonality } from "@/lib/chess/bot";
+import { BOT_PERSONALITIES, BotPersonality, getBotConfig, configureEngineCommand, generateBotDelay } from "@/lib/chess/bot";
 import { motion, AnimatePresence } from "motion/react";
 import { useChessGame } from "@/hooks/useChessGame";
 import { useStockfish } from "@/hooks/useStockfish";
@@ -25,7 +25,7 @@ export default function PlayPage() {
   const router = useRouter();
   
   const { game, position, history, makeMove, isGameOver, turn } = useChessGame();
-  const { isReady, getBestMove, evaluatePosition } = useStockfish();
+  const { isReady, getBestMove, evaluatePosition, sendCommand } = useStockfish();
 
   useEffect(() => {
     if (botMessage) {
@@ -174,13 +174,65 @@ export default function PlayPage() {
     if (isBotTurn) {
       setIsBotThinking(true);
       
-      // Map bot rating (e.g. 600-2500) to Stockfish depth (1 to 20)
-      const depth = Math.max(1, Math.min(20, Math.floor((selectedBot.rating - 400) / 100)));
+      const config = getBotConfig(selectedBot.rating);
+      const depth = config.depth;
+
+      // Configure engine options for the bot rating
+      const commands = configureEngineCommand(selectedBot.rating);
+      commands.forEach(cmd => sendCommand(cmd));
       
-      // Add slight artificial delay so it doesn't move instantly
-      const thinkTime = Math.random() * 1000 + 500;
+      // Add artificial delay based on bot's personality
+      const thinkTime = generateBotDelay(selectedBot);
       
       setTimeout(() => {
+        const moves = game.moves({ verbose: true });
+        
+        if (moves.length === 0) {
+          setIsBotThinking(false);
+          return;
+        }
+
+        let forceMove: any = null;
+
+        // Personalization for bot play styles
+        if (selectedBot.id === "bot-rookie" && Math.random() < 0.35) {
+          // Martin (300 ELO): 35% chance to play a completely random move
+          forceMove = moves[Math.floor(Math.random() * moves.length)];
+        } else if (selectedBot.id === "bot-casual" && Math.random() < 0.18) {
+          // Jimmy (600 ELO): 18% chance to play a completely random move
+          forceMove = moves[Math.floor(Math.random() * moves.length)];
+        } else if (selectedBot.id === "bot-club" && Math.random() < 0.08) {
+          // Nelson (1000 ELO): 8% chance to play a completely random move
+          forceMove = moves[Math.floor(Math.random() * moves.length)];
+        } else if (selectedBot.id === "bot-club" && game.history().length < 20) {
+          // Nelson (1000 ELO): early game Queen move bias (30% chance to play a Queen move if available)
+          const queenMoves = moves.filter(m => m.piece === 'q');
+          if (queenMoves.length > 0 && Math.random() < 0.30) {
+            forceMove = queenMoves[Math.floor(Math.random() * queenMoves.length)];
+          }
+        } else if (selectedBot.id === "bot-berserker" && Math.random() < 0.25) {
+          // Viking (1200 ELO): Aggressive capture/check bias (25% chance to play capture/check if available)
+          const attacks = moves.filter(m => m.captured || m.san.includes('+'));
+          if (attacks.length > 0) {
+            forceMove = attacks[Math.floor(Math.random() * attacks.length)];
+          }
+        }
+
+        if (forceMove) {
+          makeMove({
+            from: forceMove.from,
+            to: forceMove.to,
+            promotion: forceMove.promotion,
+          });
+
+          if (selectedBot.trashTalk && selectedBot.trashTalk.length > 0 && Math.random() < 0.25) {
+            setBotMessage(selectedBot.trashTalk[Math.floor(Math.random() * selectedBot.trashTalk.length)]);
+          }
+          setIsBotThinking(false);
+          return;
+        }
+
+        // Fall back to calibrated engine search
         getBestMove(position, depth)
           .then((bestMove) => {
             if (bestMove) {
@@ -201,7 +253,7 @@ export default function PlayPage() {
           });
       }, thinkTime);
     }
-  }, [turn, selectedBot, playerColor, isGameOver, isReady, position, makeMove, getBestMove, isBotThinking]);
+  }, [turn, selectedBot, playerColor, isGameOver, isReady, position, makeMove, getBestMove, isBotThinking, sendCommand, game]);
 
   return (
     <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] max-w-7xl mx-auto flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8 relative">
