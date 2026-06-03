@@ -133,35 +133,43 @@ export default function StoryGamePage({ params }: PageProps) {
 
     const englishVoices = voices.filter((v) => v.lang.startsWith("en"));
     if (englishVoices.length > 0) {
-      const ukVoices = englishVoices.filter(
-        (v) =>
-          v.lang.includes("GB") ||
-          v.name.toLowerCase().includes("uk") ||
-          v.name.toLowerCase().includes("great britain")
-      );
+      // Score voices to prioritize high-quality natural/enhanced/online/siri voices, especially with a UK accent for Whitechapel
+      const scoredVoices = englishVoices.map((v) => {
+        let score = 0;
+        const nameLower = v.name.toLowerCase();
+        const langLower = v.lang.toLowerCase();
 
-      const maleKeywords = [
-        "male",
-        "david",
-        "george",
-        "daniel",
-        "rishi",
-        "google uk english male",
-        "arthur",
-        "microsoft david",
-        "steve",
-        "oliver",
-      ];
+        const isPremium =
+          nameLower.includes("natural") ||
+          nameLower.includes("enhanced") ||
+          nameLower.includes("siri") ||
+          nameLower.includes("google") ||
+          nameLower.includes("neural") ||
+          nameLower.includes("online");
 
-      const candidateVoices = ukVoices.length > 0 ? ukVoices : englishVoices;
-      const matchedVoice = candidateVoices.find((v) =>
-        maleKeywords.some((kw) => v.name.toLowerCase().includes(kw))
-      );
+        const isUK =
+          langLower.includes("gb") ||
+          nameLower.includes("uk") ||
+          nameLower.includes("great britain") ||
+          nameLower.includes("british");
 
-      if (matchedVoice) {
-        utterance.voice = matchedVoice;
-      } else if (candidateVoices.length > 0) {
-        utterance.voice = candidateVoices[0];
+        if (isPremium && isUK) {
+          score = 10;
+        } else if (isPremium) {
+          score = 5;
+        } else if (isUK) {
+          score = 3;
+        } else {
+          score = 1;
+        }
+
+        return { voice: v, score };
+      });
+
+      scoredVoices.sort((a, b) => b.score - a.score);
+
+      if (scoredVoices[0]) {
+        utterance.voice = scoredVoices[0].voice;
       }
     }
 
