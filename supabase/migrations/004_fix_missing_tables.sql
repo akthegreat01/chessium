@@ -2,8 +2,14 @@
 -- ADD MISSING COLUMNS TO PROFILES
 -- ============================================================
 ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS display_name TEXT,
+ADD COLUMN IF NOT EXISTS bio TEXT,
 ADD COLUMN IF NOT EXISTS chess_com_username TEXT,
-ADD COLUMN IF NOT EXISTS lichess_username TEXT;
+ADD COLUMN IF NOT EXISTS lichess_username TEXT,
+ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin', 'moderator')),
+ADD COLUMN IF NOT EXISTS is_online BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS last_seen TIMESTAMPTZ DEFAULT NOW(),
+ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
 
 -- ============================================================
 -- CREATE BLOGS TABLE
@@ -118,7 +124,7 @@ CREATE POLICY "Users can create attempts"
   WITH CHECK (user_id = auth.uid());
 
 -- ============================================================
--- TRIGGERS
+-- TRIGGERS & FUNCTIONS
 -- ============================================================
 CREATE OR REPLACE FUNCTION public.update_updated_at()
 RETURNS TRIGGER AS $$
@@ -131,4 +137,9 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS update_blogs_updated_at ON public.blogs;
 CREATE TRIGGER update_blogs_updated_at
   BEFORE UPDATE ON public.blogs
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
+
+DROP TRIGGER IF EXISTS update_profiles_updated_at ON public.profiles;
+CREATE TRIGGER update_profiles_updated_at
+  BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at();
