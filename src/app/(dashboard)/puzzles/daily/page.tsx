@@ -21,12 +21,18 @@ export default function DailyPuzzlePage() {
       .then(data => {
         const chess = new Chess();
         
-        // The Lichess API provides the exact starting FEN for the puzzle
+        // The Lichess API provides the exact starting FEN for the puzzle (which is BEFORE the opponent's last move)
         if (data.puzzle && data.puzzle.fen) {
           try {
             chess.load(data.puzzle.fen);
+            
+            // Execute the opponent's first move (index 0 in solution) automatically to initialize the board state
+            if (data.puzzle.solution && data.puzzle.solution.length > 0) {
+              const opponentMove = data.puzzle.solution[0];
+              chess.move(uciToObj(opponentMove));
+            }
           } catch(e) {
-            console.error("Failed to load puzzle FEN", e);
+            console.error("Failed to load puzzle FEN or play opponent move", e);
           }
         }
         
@@ -36,7 +42,7 @@ export default function DailyPuzzlePage() {
         
         setPuzzle(data.puzzle);
         setStatus("playing");
-        setMoveIndex(0);
+        setMoveIndex(1); // The user starts at move index 1 (odd indexes are user moves)
       })
       .catch(console.error);
   }, []);
@@ -49,7 +55,7 @@ export default function DailyPuzzlePage() {
   });
 
   const handlePieceDrop = (source: string, target: string, piece: string) => {
-    if (status !== "playing" || moveIndex % 2 !== 0) return false;
+    if (status !== "playing" || moveIndex % 2 !== 1) return false;
 
     const chess = chessRef.current;
     
@@ -70,21 +76,23 @@ export default function DailyPuzzlePage() {
         console.error("Failed to make correct move:", err);
       }
       setPosition(chess.fen());
-      setMoveIndex(prev => prev + 1);
+      
+      const nextIndex = moveIndex + 1;
+      setMoveIndex(nextIndex);
       
       // Check if puzzle solved
-      if (moveIndex + 1 === puzzle.solution.length) {
+      if (nextIndex === puzzle.solution.length) {
         setStatus("solved");
       } else {
-        // Play opponent's next move
+        // Play opponent's next reply
         setTimeout(() => {
-          const nextMove = puzzle.solution[moveIndex + 1];
+          const opponentMove = puzzle.solution[nextIndex];
           try {
-            chess.move(uciToObj(nextMove));
+            chess.move(uciToObj(opponentMove));
             setPosition(chess.fen());
-            setMoveIndex(prev => prev + 1);
+            setMoveIndex(nextIndex + 1);
             
-            if (moveIndex + 2 === puzzle.solution.length) {
+            if (nextIndex + 1 === puzzle.solution.length) {
               setStatus("solved");
             }
           } catch (err) {
@@ -116,11 +124,6 @@ export default function DailyPuzzlePage() {
 
   const handleRetry = () => {
     if (puzzle) {
-      // Reset position to before first move
-      const chess = new Chess();
-      // We have to reload from PGN, but the PGN has all moves.
-      // Wait, we need to reset the board back to the initial state. 
-      // A quick hack is just reloading the page for now
       window.location.reload();
     }
   };
@@ -141,7 +144,7 @@ export default function DailyPuzzlePage() {
               position={position}
               boardOrientation={orientation}
               onPieceDrop={handlePieceDrop}
-              arePiecesDraggable={status === "playing" && moveIndex % 2 === 0}
+              arePiecesDraggable={status === "playing" && moveIndex % 2 === 1}
             />
           </div>
         </div>
