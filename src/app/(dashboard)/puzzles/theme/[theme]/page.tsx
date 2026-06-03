@@ -56,10 +56,14 @@ export default function ThemePuzzlePage({ params }: { params: Promise<{ theme: s
     if (status !== "playing" || moveIndex % 2 !== 0) return false;
 
     const chess = chessRef.current;
-    const promotion = piece[1].toLowerCase();
     
-    // Try to make the move
-    const moveStr = source + target + (promotion === "p" ? "" : promotion);
+    // Only consider promotion if it's a pawn reaching the back rank
+    const isPawn = piece[1]?.toLowerCase() === "p";
+    const isBackRank = target[1] === "8" || target[1] === "1";
+    const promotion = (isPawn && isBackRank) ? "q" : undefined;
+    
+    // Build UCI string: source + target + optional promotion letter
+    const moveStr = source + target + (promotion || "");
     const expectedMove = puzzle!.solution[moveIndex];
     
     if (moveStr === expectedMove) {
@@ -99,7 +103,7 @@ export default function ThemePuzzlePage({ params }: { params: Promise<{ theme: s
         const testMove = chess.move({
           from: source,
           to: target,
-          promotion: promotion === "p" ? undefined : promotion,
+          promotion: promotion,
         });
         
         if (testMove) {

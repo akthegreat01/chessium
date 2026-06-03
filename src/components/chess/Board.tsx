@@ -43,8 +43,6 @@ export default function Board({
   const activeTheme = theme || settings.boardTheme;
   const colors = THEME_COLORS[activeTheme as keyof typeof THEME_COLORS] || THEME_COLORS.green;
   
-  // Choose piece set mapping if needed. Currently react-chessboard only supports classic built-in 
-  // without extensive custom piece images, but we can respect moveAnimation.
   const animDuration = settings.moveAnimation ? animationDuration : 0;
 
   // Generate custom square styles for all 64 squares based on theme colors
@@ -65,28 +63,31 @@ export default function Board({
     <div className="w-full max-w-full aspect-square rounded-xl overflow-hidden shadow-card border border-[#2a2a30]">
       <Chessboard
         key={activeTheme}
-        position={position}
-        onPieceDrop={onPieceDrop 
-          ? (sourceSquare, targetSquare, piece) => {
-              if (!sourceSquare || !targetSquare || !piece) return false;
-              // react-chessboard passes (source, target, piece) where piece is like "wP"
-              return onPieceDrop(sourceSquare, targetSquare, piece);
-            }
-          : undefined}
-        onSquareClick={onSquareClick}
-        boardOrientation={boardOrientation}
-        arrows={customArrows.map(arrow => ({ startSquare: arrow[0], endSquare: arrow[1], color: arrow[2] || "rgba(0, 0, 0, 0.2)" }))}
-        customArrows={customArrows.map(arrow => [arrow[0], arrow[1], arrow[2] || "rgba(0, 0, 0, 0.2)"] as [string, string, string])}
-        squareStyles={mergedSquareStyles}
-        customSquareStyles={mergedSquareStyles}
-        darkSquareStyle={{ backgroundColor: colors.dark }}
-        lightSquareStyle={{ backgroundColor: colors.light }}
-        customDarkSquareStyle={{ backgroundColor: colors.dark }}
-        customLightSquareStyle={{ backgroundColor: colors.light }}
-        customBoardStyle={{ borderRadius: "12px" }}
-        animationDurationInMs={animDuration}
-        allowDrawingArrows={areArrowsAllowed}
-        allowDragging={arePiecesDraggable}
+        options={{
+          position: position,
+          onPieceDrop: onPieceDrop 
+            ? ({ piece, sourceSquare, targetSquare }: any) => {
+                if (!sourceSquare || !targetSquare) return false;
+                // v5 piece is { isSparePiece, position, pieceType } where pieceType is like "wP"
+                const pieceStr = piece?.pieceType || piece?.position || "wP";
+                return onPieceDrop(sourceSquare, targetSquare, pieceStr);
+              }
+            : undefined,
+          onSquareClick: onSquareClick
+            ? ({ square }: any) => {
+                onSquareClick(square);
+              }
+            : undefined,
+          boardOrientation: boardOrientation,
+          arrows: customArrows.map(arrow => ({ startSquare: arrow[0], endSquare: arrow[1], color: arrow[2] || "rgba(0, 0, 0, 0.2)" })),
+          squareStyles: mergedSquareStyles,
+          darkSquareStyle: { backgroundColor: colors.dark },
+          lightSquareStyle: { backgroundColor: colors.light },
+          dropSquareStyle: { boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" },
+          animationDurationInMs: animDuration,
+          allowDrawingArrows: areArrowsAllowed,
+          allowDragging: arePiecesDraggable
+        }}
       />
     </div>
   );

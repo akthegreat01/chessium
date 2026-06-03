@@ -51,8 +51,10 @@ export default function PuzzleSurvivalPage() {
     const expectedMove = puzzle.solution[moveIndex];
     const moveStr = `${source}${target}`;
     
-    // Also allow promotion format like e7e8q
-    const promotion = piece.length > 1 ? piece[1].toLowerCase() : undefined;
+    // Only consider promotion if it's a pawn reaching the back rank
+    const isPawn = piece[1]?.toLowerCase() === "p";
+    const isBackRank = target[1] === "8" || target[1] === "1";
+    const promotion = (isPawn && isBackRank) ? "q" : undefined;
     const moveStrWithProm = promotion ? `${source}${target}${promotion}` : moveStr;
 
     // We must validate using chess.js
