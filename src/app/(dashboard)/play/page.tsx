@@ -48,11 +48,14 @@ export default function PlayPage() {
       return false;
     }
 
-    const promotion = piece[1].toLowerCase();
+    const isPawn = piece[1]?.toLowerCase() === "p";
+    const isBackRank = target[1] === "8" || target[1] === "1";
+    const promotion = (isPawn && isBackRank) ? "q" : undefined;
+
     const move = makeMove({
       from: source,
       to: target,
-      promotion: promotion === "p" ? undefined : promotion,
+      promotion: promotion,
     });
     
     return move !== null;

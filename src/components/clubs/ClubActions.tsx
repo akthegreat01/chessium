@@ -41,7 +41,7 @@ export default function ClubActions({ clubId, clubSlug, isMember, isOwner = fals
     }
   };
 
-  if (isMember) {
+  if (isMember || isOwner) {
     return (
       <div className="flex flex-col md:flex-row gap-3">
         {isOwner && (

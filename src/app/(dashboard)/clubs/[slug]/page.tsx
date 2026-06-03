@@ -22,6 +22,18 @@ export default async function ClubDashboardPage({ params }: { params: Promise<{ 
   const isMember = user ? members.some(m => m.user_id === user.id) : false;
   const isOwner = user ? club.owner_id === user.id : false;
 
+  // Fallback: If owner is missing from members list (e.g. due to RLS during creation), inject them manually
+  if (isOwner && !isMember && user) {
+    const { data: profile } = await supabase.from('profiles').select('username, chess_com_username').eq('id', user.id).single();
+    members.push({
+      id: 'owner-temp',
+      user_id: user.id,
+      role: 'owner',
+      username: profile?.username || 'Owner',
+      chessComUsername: profile?.chess_com_username || null
+    });
+  }
+
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       <div>

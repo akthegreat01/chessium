@@ -237,17 +237,19 @@ export default function AnalysisPage() {
       const promptRes = window.prompt(`Enter your ${importTab === 'chesscom' ? 'Chess.com' : 'Lichess'} username:`);
       if (!promptRes) return;
       username = promptRes;
-      localStorage.setItem(`chessium_${importTab}_user`, username);
-      
-      // Save to database so they don't have to enter it again on other devices
-      const supabase = createClient();
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        if (user) {
-          const updateData = importTab === 'chesscom' ? { chess_com_username: username } : { lichess_username: username };
-          supabase.from("profiles").update(updateData).eq("id", user.id).then();
-        }
-      });
     }
+    
+    // Always save the username (whether from input or prompt)
+    localStorage.setItem(`chessium_${importTab}_user`, username);
+    
+    // Save to database so they don't have to enter it again on other devices
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        const updateData = importTab === 'chesscom' ? { chess_com_username: username } : { lichess_username: username };
+        supabase.from("profiles").update(updateData).eq("id", user.id).then();
+      }
+    });
 
     setIsImporting(true);
     try {
@@ -302,11 +304,14 @@ export default function AnalysisPage() {
   const handlePieceDrop = (source: string, target: string, piece: string) => {
     if (isAnalyzingGame) return false;
     
-    const promotion = piece[1].toLowerCase();
+    const isPawn = piece[1]?.toLowerCase() === "p";
+    const isBackRank = target[1] === "8" || target[1] === "1";
+    const promotion = (isPawn && isBackRank) ? "q" : undefined;
+
     const move = makeMove({
       from: source,
       to: target,
-      promotion: promotion === "p" ? undefined : promotion,
+      promotion: promotion,
     });
     
     if (move) {
