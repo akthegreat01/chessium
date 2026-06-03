@@ -554,11 +554,24 @@ export default function AnalysisPage() {
                 onPieceDrop={currentMoveIndex === history.length - 1 ? handlePieceDrop : undefined}
                 onSquareClick={currentMoveIndex === history.length - 1 ? onSquareClick : undefined}
                 customSquareStyles={customSquareStyles}
-                customArrows={
-                  settings.showBestMoveArrow && currentLines.length > 0 && currentLines[0].moves.length > 0
-                  ? [[currentLines[0].moves[0].substring(0, 2), currentLines[0].moves[0].substring(2, 4), "rgba(129, 182, 76, 0.7)"]]
-                  : []
-                }
+                customArrows={(() => {
+                  if (!settings.showBestMoveArrow) return [];
+                  
+                  // If we have full game analysis, get the best move for the *current* board state
+                  // The current board state is before move (currentMoveIndex + 1)
+                  if (gameAnalysis && gameAnalysis.moves[currentMoveIndex + 1]?.bestMove) {
+                    const bm = gameAnalysis.moves[currentMoveIndex + 1].bestMove;
+                    return [[bm.substring(0, 2), bm.substring(2, 4), "rgba(129, 182, 76, 0.7)"]];
+                  }
+                  
+                  // Otherwise, if the live engine is running, use its best move
+                  if (currentLines.length > 0 && currentLines[0].moves.length > 0) {
+                    const bm = currentLines[0].moves[0];
+                    return [[bm.substring(0, 2), bm.substring(2, 4), "rgba(129, 182, 76, 0.7)"]];
+                  }
+                  
+                  return [];
+                })()}
                 boardOrientation={visualOrientation}
                 theme={settings.boardTheme}
               />
