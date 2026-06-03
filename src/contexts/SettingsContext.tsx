@@ -13,6 +13,7 @@ interface Settings {
   analysisDepth: number;
   multiPv: number;
   showBestMoveArrow: boolean;
+  blindfoldMode: boolean;
 }
 
 const defaultSettings: Settings = {
@@ -23,6 +24,7 @@ const defaultSettings: Settings = {
   analysisDepth: 14,
   multiPv: 1,
   showBestMoveArrow: true,
+  blindfoldMode: false,
 };
 
 interface SettingsContextType {

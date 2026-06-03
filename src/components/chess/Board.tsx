@@ -49,6 +49,16 @@ export default function Board({
   
   const animDuration = settings.moveAnimation ? animationDuration : 0;
 
+  const blindfoldPieces = useMemo(() => {
+    if (!settings.blindfoldMode) return undefined;
+    const pieces = ["wP", "wN", "wB", "wR", "wQ", "wK", "bP", "bN", "bB", "bR", "bQ", "bK"];
+    const emptyPieces: Record<string, any> = {};
+    pieces.forEach(p => {
+      emptyPieces[p] = () => <div style={{ width: "100%", height: "100%" }} />;
+    });
+    return emptyPieces;
+  }, [settings.blindfoldMode]);
+
   // Generate custom square styles for all 64 squares based on theme colors
   const boardSquareStyles: Record<string, CSSProperties> = {};
   const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -102,8 +112,9 @@ export default function Board({
     dropSquareStyle: { boxShadow: "inset 0 0 1px 4px rgba(255, 255, 255, 0.5)" },
     animationDurationInMs: animDuration,
     allowDrawingArrows: areArrowsAllowed,
-    allowDragging: arePiecesDraggable
-  }), [position, onPieceDrop, onSquareClick, onSquareRightClick, boardOrientation, customArrows, mergedSquareStyles, animDuration, areArrowsAllowed, arePiecesDraggable, colors]);
+    allowDragging: arePiecesDraggable,
+    customPieces: blindfoldPieces
+  }), [position, onPieceDrop, onSquareClick, onSquareRightClick, boardOrientation, customArrows, mergedSquareStyles, animDuration, areArrowsAllowed, arePiecesDraggable, colors, blindfoldPieces]);
 
   return (
     <div className="w-full relative touch-none select-none" style={{ aspectRatio: "1 / 1" }}>

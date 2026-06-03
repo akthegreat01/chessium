@@ -141,7 +141,7 @@ export default function DailyPuzzlePage() {
               position={position}
               boardOrientation={orientation}
               onPieceDrop={handlePieceDrop}
-              arePiecesDraggable={status === "playing" && moveIndex % 2 !== 0}
+              arePiecesDraggable={status === "playing" && moveIndex % 2 === 0}
             />
           </div>
         </div>

@@ -75,7 +75,7 @@ export default function PuzzleSurvivalPage() {
   };
 
   const handlePieceDrop = (source: string, target: string, piece: string) => {
-    if (status !== "playing" || !puzzle) return false;
+    if (status !== "playing" || !puzzle || moveIndex % 2 !== 0) return false;
 
     // Check if the move is the correct one in the sequence
     const expectedMove = puzzle.solution[moveIndex];
@@ -184,7 +184,7 @@ export default function PuzzleSurvivalPage() {
             onPieceDrop={handlePieceDrop}
             onSquareClick={handleSquareClick}
             boardOrientation={orientation}
-            arePiecesDraggable={status === 'playing'}
+            arePiecesDraggable={status === 'playing' && moveIndex % 2 === 0}
             customSquareStyles={
               moveFrom 
                 ? { [moveFrom]: { backgroundColor: "rgba(129, 182, 76, 0.5)" } }

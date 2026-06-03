@@ -67,6 +67,7 @@ export function classifyMove(
   isTopEngine: boolean,
   moveSan: string,
   chess: Chess,
+  secondBestEval?: EvalData,
 ): MoveClassification {
   const cpBefore = effectiveCP(evalBefore);
   const cpAfter = effectiveCP(evalAfter);
@@ -85,19 +86,29 @@ export function classifyMove(
     return 'missed_win';
   }
 
-  // ─── Brilliant ────────────────────────────────────────────────────────
-  // Sacrifice leading to forced advantage: a capture was possible on the
-  // piece that moved, the move is the engine's top choice, and the eval
-  // is significantly better than second line.
+  // Check if it is the only good move in the position (second best move is significantly worse)
+  let isOnlyMove = false;
+  if (secondBestEval && isTopEngine) {
+    const cpSecond = effectiveCP(secondBestEval);
+    const cpSecondSide = cpSecond * sideFactor;
+    const wpSecond = winProbability(cpSecondSide);
+    const wpDiff = wpAfter - wpSecond; // wpAfter represents the played top move win probability
+
+    if (wpDiff >= 0.08 && cpAfterSide > -150) {
+      isOnlyMove = true;
+    }
+  }
+
+  // ─── Brilliant & Great Move ──────────────────────────────────────────
   if (isTopEngine && epLoss <= 0.001) {
-    // Check if the move was a sacrifice (moved piece is attacked)
     const isSacrifice = detectSacrifice(moveSan, chess);
     if (isSacrifice && cpAfterSide > 200) {
       return 'brilliant';
     }
+    if (isOnlyMove) {
+      return 'great';
+    }
   }
-
-  // ─── Removed Great heuristic as it was too aggressive ────────────────
 
   // ─── Standard classifications by EP loss ──────────────────────────────
   if (epLoss <= 0.001) return 'best';
@@ -155,7 +166,8 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
 
   if (playerMoves.length === 0) return 100;
 
-  let totalAccuracy = 0;
+  let totalAccuracyWeighted = 0;
+  let totalWeight = 0;
   let count = 0;
 
   for (const move of playerMoves) {
@@ -166,18 +178,42 @@ export function calculateAccuracy(moves: MoveAnalysis[], color: 'w' | 'b'): numb
     const loss = Math.max(0, wpBefore - wpAfter);
     
     // Per-move accuracy curve based directly on win probability loss
-    // Using a steeper decay to correctly penalize inaccuracies and mistakes
-    // This perfectly balances between the overly generous 1.5 and overly harsh 4.3 curves
     let moveAcc = 100 * Math.exp(-loss * 3.5);
     moveAcc = Math.max(0, Math.min(100, moveAcc));
 
-    totalAccuracy += moveAcc;
+    let weight = 1.0;
+    switch (move.classification) {
+      case 'best':
+      case 'excellent':
+        weight = 1.0;
+        break;
+      case 'good':
+        weight = 1.2;
+        break;
+      case 'inaccuracy':
+        weight = 1.6;
+        break;
+      case 'mistake':
+        weight = 2.5;
+        break;
+      case 'missed_win':
+        weight = 3.0;
+        break;
+      case 'blunder':
+        weight = 4.5;
+        break;
+      default:
+        weight = 1.0;
+    }
+
+    totalAccuracyWeighted += moveAcc * weight;
+    totalWeight += weight;
     count++;
   }
 
   if (count === 0) return 100;
 
-  return Math.round((totalAccuracy / count) * 10) / 10;
+  return Math.round((totalAccuracyWeighted / totalWeight) * 10) / 10;
 }
 
 // ─── Full Game Analysis ─────────────────────────────────────────────────────
@@ -236,8 +272,8 @@ export async function analyzeGame(
     const fenBefore = chess.fen();
     const moveNumber = Math.floor(i / 2) + 1;
 
-    // Get the best move for this position from the engine
-    const bestResultRaw = await engine.analyze({ fen: fenBefore, depth });
+    // Get the best move and second-best move for this position from the engine (Multi-PV = 2)
+    const bestResultRaw = await engine.analyze({ fen: fenBefore, depth, multiPv: 2 });
 
     // Play the actual move
     let move;
@@ -268,10 +304,13 @@ export async function analyzeGame(
     const isBook = i < openingMoveCount;
     const isTopEngine = move.lan === bestResultRaw.bestMove;
 
+    // Extract second best move evaluation if available
+    const secondBestEval = bestResultRaw.lines?.[1];
+
     // Classify
     const classification: MoveClassification = isBook
       ? 'book'
-      : classifyMove(prevEvalWhite, evalAfterWhite, color, isTopEngine, san, chess);
+      : classifyMove(prevEvalWhite, evalAfterWhite, color, isTopEngine, san, chess, secondBestEval);
 
     // Build best move SAN
     let bestMoveSan = bestResultRaw.bestMove;

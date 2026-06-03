@@ -154,6 +154,7 @@ export default function AnalysisPage() {
   useEffect(() => {
     if (!isReady) return;
 
+    setCurrentLines([]); // Clear old lines immediately to prevent stuck arrow!
     setIsThinking(true);
     const fen = historyFens[currentMoveIndex + 1] || "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
@@ -212,7 +213,7 @@ export default function AnalysisPage() {
     try {
       const engine = getEngine();
       const result = await analyzeGame(game.pgn(), engine, {
-        depth: 14, // Reduced depth for faster browser processing
+        depth: 12, // Reduced depth for faster browser processing
         onProgress: (current, total) => {
           setAnalysisProgress(Math.round((current / total) * 100));
         }

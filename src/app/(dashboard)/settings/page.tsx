@@ -85,6 +85,21 @@ export default function SettingsPage() {
                   
                   <hr className="border-[#2a2a30]" />
                   
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-white mb-1">Blindfold Mode</div>
+                      <div className="text-sm text-[#a0a0a8]">Hide pieces completely to train visualization skills.</div>
+                    </div>
+                    <button 
+                      onClick={() => updateSetting('blindfoldMode', !settings.blindfoldMode)}
+                      className={`relative inline-block w-12 h-6 rounded-full transition-colors ${settings.blindfoldMode ? 'bg-[#81b64c]' : 'bg-[#2a2a30]'}`}
+                    >
+                      <div className={`absolute top-1 bg-white w-4 h-4 rounded-full transition-transform ${settings.blindfoldMode ? 'translate-x-7' : 'translate-x-1'}`}></div>
+                    </button>
+                  </div>
+                  
+                  <hr className="border-[#2a2a30]" />
+                  
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                       <div className="font-medium text-white mb-1">Board Theme</div>
