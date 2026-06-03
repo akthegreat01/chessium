@@ -181,7 +181,7 @@ export default function DashboardPage() {
       }
     });
 
-    fetch("https://lichess.org/api/puzzle/daily")
+    fetch("/api/puzzle/daily")
       .then(res => res.json())
       .then(data => {
         const chess = new Chess();

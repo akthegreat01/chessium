@@ -16,23 +16,16 @@ export default function DailyPuzzlePage() {
   const chessRef = useRef(new Chess());
 
   useEffect(() => {
-    fetch("https://lichess.org/api/puzzle/daily")
+    fetch("/api/puzzle/daily")
       .then(res => res.json())
       .then(data => {
         const chess = new Chess();
         
-        // The Lichess API provides the exact starting FEN for the puzzle (which is BEFORE the opponent's last move)
         if (data.puzzle && data.puzzle.fen) {
           try {
             chess.load(data.puzzle.fen);
-            
-            // Execute the opponent's first move (index 0 in solution) automatically to initialize the board state
-            if (data.puzzle.solution && data.puzzle.solution.length > 0) {
-              const opponentMove = data.puzzle.solution[0];
-              chess.move(uciToObj(opponentMove));
-            }
           } catch(e) {
-            console.error("Failed to load puzzle FEN or play opponent move", e);
+            console.error("Failed to load puzzle FEN", e);
           }
         }
         
@@ -42,7 +35,7 @@ export default function DailyPuzzlePage() {
         
         setPuzzle(data.puzzle);
         setStatus("playing");
-        setMoveIndex(1); // The user starts at move index 1 (odd indexes are user moves)
+        setMoveIndex(0); // The user starts at move index 0 (even indexes are user moves)
       })
       .catch(console.error);
   }, []);
@@ -55,7 +48,7 @@ export default function DailyPuzzlePage() {
   });
 
   const handlePieceDrop = (source: string, target: string, piece: string) => {
-    if (status !== "playing" || moveIndex % 2 !== 1) return false;
+    if (status !== "playing" || !puzzle || moveIndex % 2 !== 0) return false;
 
     const chess = chessRef.current;
     
@@ -74,6 +67,7 @@ export default function DailyPuzzlePage() {
         chess.move(uciToObj(expectedMove));
       } catch (err) {
         console.error("Failed to make correct move:", err);
+        return false;
       }
       setPosition(chess.fen());
       
@@ -144,7 +138,7 @@ export default function DailyPuzzlePage() {
               position={position}
               boardOrientation={orientation}
               onPieceDrop={handlePieceDrop}
-              arePiecesDraggable={status === "playing" && moveIndex % 2 === 1}
+              arePiecesDraggable={status === "playing" && moveIndex % 2 === 0}
             />
           </div>
         </div>
@@ -159,7 +153,7 @@ export default function DailyPuzzlePage() {
               <div className="text-center py-4">
                 <div className="text-xl font-bold text-white mb-2">Find the best move</div>
                 <div className="text-[#a0a0a8]">
-                  {orientation === "white" ? "Black" : "White"} just played. Your turn!
+                  {orientation === "white" ? "White" : "Black"} to play. Find the winning continuation!
                 </div>
               </div>
             )}
