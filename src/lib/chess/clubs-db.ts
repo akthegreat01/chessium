@@ -78,7 +78,7 @@ export async function getClubMembers(clubId: string) {
     id: m.id,
     user_id: m.user_id,
     role: m.role,
-    username: m.profiles?.username || "Unknown",
+    username: m.profiles?.username || `User_${m.user_id.substring(0, 8)}`,
     chessComUsername: m.profiles?.chess_com_username || null
   }));
 }

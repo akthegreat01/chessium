@@ -17,11 +17,49 @@ export default async function DashboardLayout({
   }
 
   // Fetch profile
-  const { data: profile } = await supabase
+  let { data: profile } = await supabase
     .from("profiles")
     .select("username, display_name, avatar_url, role")
     .eq("id", user.id)
     .single();
+
+  // Self-healing fallback: If profile is missing, create it dynamically
+  if (!profile) {
+    const rawUsername = user.user_metadata?.username || user.email?.split("@")[0] || "user";
+    let sanitizedUsername = rawUsername.replace(/[^a-zA-Z0-9_]/g, "");
+    if (sanitizedUsername.length < 3) {
+      sanitizedUsername = `user_${user.id.substring(0, 8)}`;
+    }
+    
+    let insertUsername = sanitizedUsername;
+    let attempts = 0;
+    let insertSuccess = false;
+    let newProfile = null;
+    
+    while (!insertSuccess && attempts < 5) {
+      const { data: inserted, error: insertError } = await supabase
+        .from("profiles")
+        .insert({
+          id: user.id,
+          username: insertUsername,
+          display_name: user.user_metadata?.display_name || user.user_metadata?.username || rawUsername,
+        })
+        .select("username, display_name, avatar_url, role")
+        .single();
+        
+      if (!insertError && inserted) {
+        newProfile = inserted;
+        insertSuccess = true;
+      } else {
+        insertUsername = `${sanitizedUsername}_${Math.floor(Math.random() * 10000)}`;
+        attempts++;
+      }
+    }
+    
+    if (newProfile) {
+      profile = newProfile;
+    }
+  }
 
   const userProp = profile
     ? {
