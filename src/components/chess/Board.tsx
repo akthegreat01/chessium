@@ -1,7 +1,7 @@
 "use client";
 
 import { Chessboard } from "react-chessboard";
-import { CSSProperties } from "react";
+import { CSSProperties, useMemo } from "react";
 import { useSettings } from "@/contexts/SettingsContext";
 
 interface BoardProps {
