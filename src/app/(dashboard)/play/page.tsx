@@ -20,11 +20,19 @@ export default function PlayPage() {
   const [moveFrom, setMoveFrom] = useState<string | null>(null);
   const [optionSquares, setOptionSquares] = useState<Record<string, any>>({});
   const [visualOrientation, setVisualOrientation] = useState<"white" | "black">("white");
+  const [botMessage, setBotMessage] = useState<string | null>(null);
   const { settings, updateSettings } = useSettings();
   const router = useRouter();
   
   const { game, position, history, makeMove, isGameOver, turn } = useChessGame();
   const { isReady, getBestMove, evaluatePosition } = useStockfish();
+
+  useEffect(() => {
+    if (botMessage) {
+      const timer = setTimeout(() => setBotMessage(null), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [botMessage]);
 
   const handleStartGame = (bot: BotPersonality, color: "white" | "black" | "random") => {
     setSelectedBot(bot);
@@ -32,6 +40,10 @@ export default function PlayPage() {
     setPlayerColor(chosenColor);
     setVisualOrientation(chosenColor);
     setIsModalOpen(false);
+
+    if (bot.trashTalk && bot.trashTalk.length > 0) {
+      setBotMessage(bot.trashTalk[Math.floor(Math.random() * bot.trashTalk.length)]);
+    }
   };
 
   const handleReviewGame = () => {
@@ -177,6 +189,10 @@ export default function PlayPage() {
               const promotion = bestMove.length > 4 ? bestMove[4] : undefined;
               
               makeMove({ from, to, promotion });
+
+              if (selectedBot.trashTalk && selectedBot.trashTalk.length > 0 && Math.random() < 0.25) {
+                setBotMessage(selectedBot.trashTalk[Math.floor(Math.random() * selectedBot.trashTalk.length)]);
+              }
             }
           })
           .catch(console.error)
@@ -192,7 +208,21 @@ export default function PlayPage() {
       {/* Board Area */}
       <div className="flex-1 flex flex-col gap-4 max-w-[700px] mx-auto w-full">
         {selectedBot && (
-          <div className="flex items-center justify-between px-4 py-3 bg-[#141416] border border-[#2a2a30] rounded-xl">
+          <div className="flex items-center justify-between px-4 py-3 bg-[#141416] border border-[#2a2a30] rounded-xl relative">
+            
+            <AnimatePresence>
+              {botMessage && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="absolute top-[110%] left-12 z-50 max-w-[250px] bg-[#2a2a30] text-white text-sm px-4 py-2 rounded-2xl rounded-tl-sm shadow-[0_8px_30px_rgba(0,0,0,0.5)] border border-[#3a3a42]"
+                >
+                  {botMessage}
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             <div className="flex items-center gap-3">
               <div className="text-3xl bg-[#1a1a1f] w-12 h-12 flex items-center justify-center rounded-lg border border-[#2a2a30]">
                 {selectedBot.avatar}

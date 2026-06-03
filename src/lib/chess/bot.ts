@@ -12,6 +12,7 @@ export interface BotPersonality {
   avatar: string;
   style: "Rookie" | "Aggressive" | "Tactical" | "Positional" | "Endgame Specialist" | "Master";
   delayRange: [number, number]; // [min ms, max ms]
+  trashTalk?: string[];
 }
 
 export const RATING_CONFIGS: Record<number, BotConfig> = {
@@ -35,6 +36,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     avatar: "👶",
     style: "Rookie",
     delayRange: [1000, 3000],
+    trashTalk: [
+      "I think I moved the wrong piece...",
+      "Wait, how does the horsey move again?",
+      "Are you sure that's a legal move?",
+      "I'm just happy to be here!",
+      "Oops, was that your queen? My bad!"
+    ]
   },
   {
     id: "bot-casual",
@@ -44,6 +52,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     avatar: "👦",
     style: "Aggressive",
     delayRange: [800, 2500],
+    trashTalk: [
+      "I'm coming for your king!",
+      "You're going down, just you wait!",
+      "I saw that coming from a mile away.",
+      "Checkmate in... wait, no, I lost count.",
+      "My dad taught me this opening."
+    ]
   },
   {
     id: "bot-club",
@@ -53,6 +68,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     avatar: "👱‍♂️",
     style: "Tactical",
     delayRange: [500, 2000],
+    trashTalk: [
+      "Say hello to my Queen!",
+      "You fell right into my trap.",
+      "Tactics flow from a superior position.",
+      "I hope you know theory.",
+      "That pawn looks tasty."
+    ]
   },
   {
     id: "bot-berserker",
@@ -62,6 +84,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     avatar: "😡",
     style: "Aggressive",
     delayRange: [400, 1800],
+    trashTalk: [
+      "I DON'T NEED ROOKS TO CRUSH YOU!",
+      "TO VALHALLA!",
+      "A piece for an attack is a good trade!",
+      "DEFEND YOUR KING!",
+      "I'm not retreating, I'm just attacking in the other direction!"
+    ]
   },
   {
     id: "bot-strong",
@@ -71,6 +100,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     avatar: "👨",
     style: "Positional",
     delayRange: [400, 1500],
+    trashTalk: [
+      "Solid play is the key to victory.",
+      "I have a slight structural advantage.",
+      "Let's see you try to break my pawn chain.",
+      "Patience. The cracks will show.",
+      "That's a very... interesting move."
+    ]
   },
   {
     id: "bot-wall",
@@ -80,6 +116,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     avatar: "🐢",
     style: "Positional",
     delayRange: [500, 2000],
+    trashTalk: [
+      "Slow and steady wins the race.",
+      "You shall not pass.",
+      "My defenses are impenetrable.",
+      "Go ahead, keep throwing pieces at me.",
+      "A draw is as good as a win for me."
+    ]
   },
   {
     id: "bot-expert",
@@ -89,6 +132,13 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     avatar: "👩",
     style: "Tactical",
     delayRange: [300, 1200],
+    trashTalk: [
+      "Did you calculate the depth of that line?",
+      "I saw mate in 4, did you?",
+      "Your position is crumbling.",
+      "That was your best try?",
+      "The engine gives me +2.5 here."
+    ]
   },
   {
     id: "bot-master",
@@ -98,16 +148,30 @@ export const BOT_PERSONALITIES: BotPersonality[] = [
     avatar: "👴",
     style: "Endgame Specialist",
     delayRange: [200, 1000],
+    trashTalk: [
+      "In the endgame, pawns are queens.",
+      "You play well, but not well enough.",
+      "I've analyzed this endgame a thousand times.",
+      "You are suffocating slowly.",
+      "Resignation is always an option."
+    ]
   },
   {
     id: "bot-gm",
-    name: "Magnus",
+    name: "Stockfish 16.1",
     rating: 2600,
-    description: "Grandmaster strength. Extremely accurate and unforgiving.",
-    avatar: "👑",
+    description: "The engine playing at full strength. Good luck.",
+    avatar: "🤖",
     style: "Master",
     delayRange: [100, 500],
-  },
+    trashTalk: [
+      "01001001 00100000 01010111 01001001 01001100 01001100 00100000 01000011 01010010 01010101 01010011 01001000 00100000 01011001 01001111 01010101",
+      "Evaluating 200 million positions per second.",
+      "Your biological processor is inadequate.",
+      "Mate in 38 detected.",
+      "Resistance is futile."
+    ]
+  }
 ];
 
 export function getBotConfig(rating: number): BotConfig {
