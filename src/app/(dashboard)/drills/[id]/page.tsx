@@ -7,7 +7,7 @@ import { useStockfish } from "@/hooks/useStockfish";
 import { useBulletTimer } from "@/hooks/useBulletTimer";
 import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Move } from "chess.js";
 
 const DRILLS = {
@@ -34,9 +34,9 @@ const DRILLS = {
   }
 };
 
-export default function DrillPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const drillId = resolvedParams.id as keyof typeof DRILLS;
+export default function DrillPage() {
+  const params = useParams();
+  const drillId = params?.id as keyof typeof DRILLS;
   const drill = DRILLS[drillId];
   const router = useRouter();
 

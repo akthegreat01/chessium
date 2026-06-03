@@ -9,8 +9,9 @@ import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
 import AdSlot from "@/components/ui/AdSlot";
 
-export default function OpeningExplorerPage({ params }: { params: Promise<{ eco: string }> }) {
-  const { eco } = React.use(params);
+export default function OpeningExplorerPage() {
+  const params = useParams();
+  const eco = params?.eco as string;
   const { settings } = useSettings();
   
   const [opening, setOpening] = useState<Opening | null>(null);

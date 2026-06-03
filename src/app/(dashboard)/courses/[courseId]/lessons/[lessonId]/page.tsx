@@ -9,9 +9,11 @@ import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useCourseProgress } from "@/hooks/useCourseProgress";
 
-export default function LessonPage({ params }: { params: Promise<{ courseId: string; lessonId: string }> }) {
+export default function LessonPage() {
   const router = useRouter();
-  const { courseId, lessonId } = React.use(params);
+  const params = useParams();
+  const courseId = params?.courseId as string;
+  const lessonId = params?.lessonId as string;
   const { settings } = useSettings();
   
   const course = getCourse(courseId);

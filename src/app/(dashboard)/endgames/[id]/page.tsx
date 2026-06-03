@@ -8,8 +8,11 @@ import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
 import AdSlot from "@/components/ui/AdSlot";
 
-export default function EndgameExplorerPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params);
+import { useParams } from "next/navigation";
+
+export default function EndgameExplorerPage() {
+  const params = useParams();
+  const id = params?.id as string;
   const { settings } = useSettings();
   
   const [endgame, setEndgame] = useState<Endgame | null>(null);

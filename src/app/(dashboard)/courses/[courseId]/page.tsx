@@ -8,8 +8,9 @@ import { motion } from "motion/react";
 import AdSlot from "@/components/ui/AdSlot";
 import { useCourseProgress } from "@/hooks/useCourseProgress";
 
-export default function CourseOverviewPage({ params }: { params: Promise<{ courseId: string }> }) {
-  const { courseId } = React.use(params);
+export default function CourseOverviewPage() {
+  const params = useParams();
+  const courseId = params?.courseId as string;
   const course = getCourse(courseId);
   const { completedLessons, isCompleted, isLoaded } = useCourseProgress(courseId);
 
