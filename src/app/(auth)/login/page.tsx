@@ -18,15 +18,15 @@ function LoginForm() {
       
       <div>
         <label className="block text-sm font-medium text-[#a0a0a8] mb-1.5 ml-1">
-          Username
+          Email Address
         </label>
         <input
-          name="username"
-          type="text"
+          name="email"
+          type="email"
           required
           className="w-full bg-[#1a1a1f] border border-[#2a2a30] rounded-xl px-4 py-3 text-white placeholder-[#4a4a55] focus:outline-none focus:border-[#81b64c] focus:ring-1 focus:ring-[#81b64c] transition-all"
-          placeholder="magnus_c"
-          autoComplete="username"
+          placeholder="magnus@example.com"
+          autoComplete="email"
         />
       </div>
 

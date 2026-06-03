@@ -5,16 +5,15 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function login(prevState: any, formData: FormData) {
-  const username = formData.get("username") as string;
+  const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const redirectTo = formData.get("redirect") as string | null;
 
-  if (!username || !password) {
-    return { error: "Username and password are required" };
+  if (!email || !password) {
+    return { error: "Email and password are required" };
   }
 
   const supabase = await createClient();
-  const email = `${username}@chessium.app`;
 
   const { error } = await supabase.auth.signInWithPassword({
     email,
@@ -22,7 +21,7 @@ export async function login(prevState: any, formData: FormData) {
   });
 
   if (error) {
-    return { error: "Invalid username or password" };
+    return { error: "Invalid email or password" };
   }
 
   revalidatePath("/", "layout");
@@ -34,10 +33,11 @@ export async function login(prevState: any, formData: FormData) {
 
 export async function signup(prevState: any, formData: FormData) {
   const username = formData.get("username") as string;
+  const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  if (!username || !password) {
-    return { error: "Username and password are required" };
+  if (!username || !email || !password) {
+    return { error: "Username, email, and password are required" };
   }
 
   if (username.length < 3) {
@@ -54,7 +54,6 @@ export async function signup(prevState: any, formData: FormData) {
   }
 
   const supabase = await createClient();
-  const email = `${username}@chessium.app`;
 
   // Supabase Auth Signup
   const { error } = await supabase.auth.signUp({
@@ -69,7 +68,7 @@ export async function signup(prevState: any, formData: FormData) {
 
   if (error) {
     if (error.message.includes("User already registered")) {
-      return { error: "Username is already taken" };
+      return { error: "Email address is already taken" };
     }
     return { error: error.message };
   }
