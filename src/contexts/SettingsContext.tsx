@@ -11,6 +11,7 @@ interface Settings {
   pieceSet: PieceSet;
   moveAnimation: boolean;
   soundEnabled: boolean;
+  narrationEnabled: boolean;
   analysisDepth: number;
   multiPv: number;
   showBestMoveArrow: boolean;
@@ -22,6 +23,7 @@ const defaultSettings: Settings = {
   pieceSet: "classic",
   moveAnimation: true,
   soundEnabled: true,
+  narrationEnabled: true,
   analysisDepth: 14,
   multiPv: 1,
   showBestMoveArrow: true,

@@ -10,6 +10,7 @@ export interface StoryChapter {
   suspectName: string;
   rating: number;
   avatar: string;
+  imagePath: string;
   description: string;
   startingFen: string;
   opponentColor: "white" | "black";
@@ -21,161 +22,165 @@ export interface StoryChapter {
 export const STORY_CHAPTERS: StoryChapter[] = [
   {
     id: "chapter-1",
-    title: "Chapter 1: The Partner's Betrayal",
-    suspectName: "Victor (The Butler)",
-    rating: 1000,
-    avatar: "🤵",
-    description: "The butler Victor greets you at the foyer. He serves you tea, which you realize too late is laced with a slow-acting poison. Victor demands you play him, claiming he was double-crossed by Alistair himself.",
+    title: "Chapter 1: The Mad Barber",
+    suspectName: "Aaron Kosminski",
+    rating: 1100,
+    avatar: "🪒",
+    imagePath: "/story/kosminski.png",
+    description: "Kosminski paces nervously in his dingy, blood-spattered barber shop. His hands shake as he wipes a straight razor, whispering about the voices that command him. Play him to break his manic silences and extract a clue.",
     startingFen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     opponentColor: "black",
-    clueTitle: "Victor's Alibi & The Swapped Body",
-    clueDescription: "Victor confesses he was Alistair Thorne's secret lover and co-conspirator. They planned to fake Alistair's death using a lookalike body to escape the Black Rook secret society. But Alistair betrayed Victor, and the fake death was turned into a real murder. Alistair's fingers were stained pitch black from the poisonous ebony lacquer.",
+    clueTitle: "Kosminski's Goulston Street Scrap",
+    clueDescription: "Kosminski collapses in terror, throwing a bloody scrap of paper at you. It is a piece of a letter in red ink matching the 'Dear Boss' writing style. It mentions Goulston Street and points to Queen Victoria's personal physician, Sir William Gull, who Kosminski claims knows the true geometry of the surgical incisions.",
     dialogue: [
       {
         trigger: "onLoad",
-        text: "Drink your tea, Detective. Or should I say... Alistair's favorite son? You've already swallowed the toxin. Play the board if you want to live. Only Alistair has the key to the antidote."
+        text: "Step into my chair, Inspector. The metal is cold... but my blade is warm. Play the board, or I will shave you closer than you have ever been shaved."
       },
       {
         moveNumber: 2,
-        text: "I loved him. I spent thirty years serving him, hiding our relationship. We planned to fake his death and run away. But he was going to betray me and leave with the manuscript and you!"
+        text: "They scream in the night... the streetwalks of Whitechapel. I only wanted to quiet them. The blood on my apron is just sheep's blood, Abberline. I swear it!"
       },
       {
         moveNumber: 6,
-        text: "Beatrice was in the drawing room, screaming about money. She had no idea she was Alistair's biological daughter. She plays the King's Gambit—reckless, aggressive, and full of hate."
+        text: "The physician Gull, he walks the streets with a black bag. He thinks I'm mad, but he is the one who worships the geometric angles of the cuts."
       },
       {
         moveNumber: 12,
-        text: "The lookalike body at the desk was Dr. Aris's missing assistant. But someone replaced our fake poison with a real contact toxin on the Black Queen. Alistair's hands were stained black when I found him."
+        text: "I found the leather apron in the alley. The Ripper... he writes letters 'From Hell'. He leaves them on the chessboards of the dead!"
       },
       {
         trigger: "onBlunder",
-        text: "A blunder. Alistair was distracted too. Greed is a poison of the mind, Detective."
+        text: "A blunder! Your neck is exposed, inspector. I can see the pulse beating in your throat!"
       },
       {
         trigger: "onWin",
-        text: "You play with his exact conviction. Very well. The poison on Alistair's hands came from the Black Queen of his custom ivory set. Dr. Aris stole it from the crime scene. Find him."
+        text: "Ah! The razor slips... Fine! Take it! The scrap of paper... it was Gull! The Queen's physician Gull was in Mitre Square that night. He has the surgical tools. Find him!"
       },
       {
         trigger: "onLoss",
-        text: "The poison is already slowing your brain. Lord Alistair would have mated me in ten. Try again."
+        text: "The blade cuts deep. You shouldn't have snooped around the East End docks, inspector."
       }
     ]
   },
   {
     id: "chapter-2",
-    title: "Chapter 2: The Biological Heiress",
-    suspectName: "Lady Beatrice",
-    rating: 1300,
-    avatar: "💃",
-    description: "Lady Beatrice confronts you in the Drawing Room. She reveals she is Alistair's biological daughter from an affair with his rival's wife, and admits she tried to kill him—only to be double-crossed.",
+    title: "Chapter 2: The Masonic Physician",
+    suspectName: "Sir William Gull",
+    rating: 1400,
+    avatar: "🎩",
+    imagePath: "/story/gull.png",
+    description: "Sir William Gull sits in a dimly lit study surrounded by anatomical charts and leather-bound journals. He regards you with a chilling, surgical calm. He challenges you to a duel of intellect.",
     startingFen: "rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2",
     opponentColor: "black",
-    clueTitle: "The Untouched Poisoned Wine",
-    clueDescription: "Beatrice admits she poisoned Alistair's wine glass out of rage for leaving his fortune to you, his adopted son. But when she crept in, he was already dead, sitting at the chess board. The poison in the glass was untouched, meaning someone else struck first with a contact toxin on the board itself.",
+    clueTitle: "The Masonic Coordinate Map",
+    clueDescription: "Gull confesses that the murders are part of a secret ritual to cleanse royal scandals, but claims he didn't strike the fatal blows. He gives you a map marked with coordinates. He notes that the artist Walter Sickert has painted the exact scenes of the crimes before the bodies were even cold.",
     dialogue: [
       {
         trigger: "onLoad",
-        text: "So Victor poisoned you? Good. That butler was Alistair's shadow. Let's see if you have the strength to fight my King's Gambit, or if the poison claims you first."
+        text: "Ah, Inspector Abberline. You search for a monster, but you fail to see the grand anatomy of this city. Chess, like surgery, requires absolute, cold precision. Let us begin."
       },
       {
         trigger: "onFirstMove",
-        text: "1. e4 e5 2. f4! The King's Gambit. A sacrifice. My mother was Alistair's rival's wife. I am his biological daughter! Yet he was leaving everything to you, a stray detective!"
+        text: "1. e4 e5 2. f4! The King's Gambit. A sacrifice. We do not kill for pleasure, inspector. We perform a Masonic duty. We cleanse the bloodlines of the crown."
       },
       {
         moveNumber: 6,
-        text: "Yes, I poisoned his wine glass that night! I wanted my inheritance. But when I went to check on him, his head was slumped on the board. He hadn't even touched the wine. Someone beat me to it."
+        text: "The cuts on Nichols and Chapman... done with a professional lithotomy knife. Only a surgeon knows how to extract the kidney in absolute darkness."
       },
       {
         moveNumber: 12,
-        text: "Dr. Aris was searching Alistair's desk. Aris knew about the solved chess manuscript. Aris plays the French Defense—passive, hiding behind pawns, hiding his theft of the poisoned chess pieces."
+        text: "Walter Sickert, the painter... he captures the red hues of the streets so vividly. Go look at his canvases. He paints the bodies dripping, before your officers even find them."
       },
       {
         trigger: "onBlunder",
-        text: "Failing to see the threats? Just like Uncle Alistair when he reached for the black piece."
+        text: "A sloppy incision. You have severed your own lines of communication."
       },
       {
         trigger: "onWin",
-        text: "Fine, you win. The clue: my poisoned wine was untouched. Alistair died from touching the custom ebony Black Queen. Dr. Aris stole the poisoned pieces to study the contact toxin. He is in the Library."
+        text: "Surgical checkmate. Very well. I did not strike the final blows—my hands are too old. The artist Sickert is the one who executes the visual canvas of our work. His studio is in Miller's Court."
       },
       {
         trigger: "onLoss",
-        text: "A passive player, just like Dr. Aris. The poison is taking hold. Goodbye, detective."
+        text: "You've bled out on the board, Abberline. The city's secrets remain safe."
       }
     ]
   },
   {
     id: "chapter-3",
-    title: "Chapter 3: The Stolen Poison",
-    suspectName: "Dr. Aris",
-    rating: 1600,
-    avatar: "👨‍🏫",
-    description: "Dr. Aris pacing frantically in the library. He reveals he stole the Black Queen to study the nerve agent that killed Alistair, and tells you of Alistair's secret desk drawer.",
+    title: "Chapter 3: The Studio of Horrors",
+    suspectName: "Walter Sickert",
+    rating: 1650,
+    avatar: "🎨",
+    imagePath: "/story/sickert.png",
+    description: "In his gloomy studio, Walter Sickert stands before an easel covered in dark crimson paintings. He laughs hysterically as you examine the canvases portraying the murder scenes. He plays with chaotic, artistic frenzy.",
     startingFen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     opponentColor: "black",
-    clueTitle: "The Antidote Passcode",
-    clueDescription: "Dr. Aris explains that the antidote is in a mechanical drawer inside Alistair's desk, locked with a chess coordinate passcode. He confirms the Black Queen was coated in a contact toxin. He says the killer left the game notation sheet on the board, ending in checkmate coordinate 'Nf7'.",
+    clueTitle: "The Canvas of Miller's Court",
+    clueDescription: "Sickert breaks down, screaming that the Ripper is a shadow that lives inside his paintings. He points to a canvas of a dark alley ending in checkmate coordinate 'Nf7'. He whispers that the Ripper waits in the foggy Mitre Square cellar, ready to complete the 'Canonical checkmate'.",
     dialogue: [
       {
         trigger: "onLoad",
-        text: "I didn't kill him! I stole the Black Queen to study the toxin! It's a rare nerve agent. Alistair was blackmailing me! Play, play... I will tell you how to get the antidote!"
+        text: "Do you like my art, Inspector? The red paint... it flows so beautifully, doesn't it? The shadow whispers to me, and I paint. Play me, and maybe I will paint your final moments!"
       },
       {
         moveNumber: 4,
-        text: "Alistair solved chess. He discovered the White winning sequence. It would have ruined the game. He was blackmailing me with my old research diaries to force me to publish it under his name."
+        text: "The canvas of Whitechapel is painted in blood. A sacrifice of a pawn is a sacrifice of a soul. I painted Mary Kelly's room days before she was dismembered. The Ripper guided my brush!"
       },
       {
         moveNumber: 10,
-        text: "The night he died, he was playing a hooded visitor. I saw Alistair reach for the Black Queen. It was a bait, a sacrifice. He touched the poisoned ebony lacquer and died in agony."
+        text: "You think you can capture the wind? The shadow walks through walls. He wears a dark cloak and has eyes like burning gaslamps."
       },
       {
         moveNumber: 16,
-        text: "The antidote is in Alistair's desk drawer. It is locked by a mechanical grid. The passcode is the coordinate of the final checkmating move of Alistair's master game—Nf7!"
+        text: "The final painting... it's a chessboard coordinate. The Ripper's ultimate masterpiece. The coordinate is 'Nf7'—the smothered mate in the butcher's cellar!"
       },
       {
         trigger: "onBlunder",
-        text: "Watch your pieces! The poison is clouding your vision!"
+        text: "A terrible stroke! You have ruined the painting of your defense!"
       },
       {
         trigger: "onWin",
-        text: "You have the mind of a grandmaster. The clue: the antidote is locked in Alistair's desk. The code is 'Nf7'—the coordinate of the smothered mate. The hooded killer is waiting for you in the study. It is Alistair himself!"
+        text: "No! The paint is drying! The clue: the Ripper waits in the cellar beneath Mitre Square. The code to open the iron gate is 'Nf7'. He is waiting to play the final game against you!"
       },
       {
         trigger: "onLoss",
-        text: "Too late. The poison has reached your heart. A tragic end."
+        text: "A masterpiece of slaughter. Your blood is the perfect shade of crimson."
       }
     ]
   },
   {
     id: "chapter-4",
-    title: "Chapter 4: The Human Gambit",
-    suspectName: "Alistair Thorne",
+    title: "Chapter 4: The Whitechapel Fiend",
+    suspectName: "Jack the Ripper",
     rating: 1900,
     avatar: "👤",
-    description: "You enter the dark study. The hooded figure turns around—it is Lord Alistair Thorne, alive and smiling. The corpse was Dr. Aris's assistant. Alistair faked his death to play his final game against you.",
+    imagePath: "/story/ripper.png",
+    description: "A shadowy figure in a long black overcoat and top hat stands in the foggy butcher's cellar. His face is completely hidden in darkness except for two glowing white eyes. A blood-stained chessboard sits between you.",
     startingFen: "r1b2r1k/pp4pp/2n5/4q1N1/2B5/8/PPP2PPP/R2QR1K1 w - - 0 1",
     opponentColor: "black",
-    clueTitle: "The Mystery of Chess Preserved",
-    clueDescription: "By checkmating Alistair Thorne with 'Nf7#' without capturing the poisoned Queen on e5, you triggered the final mechanical lock. Victor suddenly stepped from the shadows and stabbed Alistair in the back for his betrayal. With Alistair's death, you unlocked the desk drawer using the coordinate 'Nf7', drank the antidote, and burned the solved manuscript to keep the mystery of chess alive.",
+    clueTitle: "The Case of the Ripper Closed",
+    clueDescription: "By checkmating the Ripper with 'Nf7#' without capturing his baited Queen on e5 (which was coated in contact poison), you locked him in the cellar. As the police broke down the door, the Ripper vanished into the sewers, leaving his blood-stained bag of letters. The murders stopped, and the terror of Whitechapel ended.",
     dialogue: [
       {
         trigger: "onLoad",
-        text: "Surprised, Detective? Yes, I am alive. The corpse was just a prop. I faked my death to watch them betray each other. And to play my final master game against you. Capture my Black Queen on e5, or find another way."
+        text: "Welcome, Abberline. You have followed the trail of blood to my chessboard. Capture my Queen on e5, or find another way. One touch of the poisoned piece, and your lungs will fill with blood."
       },
       {
         moveNumber: 2,
-        text: "Victor poisoned your tea. The only antidote is in my desk. If you capture my Queen, you touch the contact poison and die immediately. Can you find checkmate without taking the bait?"
+        text: "This is the Ripper's Gambit. A sacrifice of the flesh. Will you take the baited Queen and die in agony, or can your mind find checkmate through the fog?"
       },
       {
         moveNumber: 4,
-        text: "This is the Human Gambit. A true Grandmaster must sacrifice his closest pupil to immortalize his name. Take the Queen. Embrace the poison."
+        text: "The streets of London will remember my name forever. I am the shadow in the alley. I am the Whispering King of the slums. Take the Queen. Complete the slaughter!"
       },
       {
         trigger: "onWin",
-        text: "No! How did you checkmate me without capturing the Queen? Nf7... you completed Alistair's final sequence... Ugh!"
+        text: "Ah! Nf7... a smothered mate! You did not touch the Queen! The board... it locks... No!"
       },
       {
         trigger: "onLoss",
-        text: "Hahaha! Greed checkmates even the cleverest minds. The contact poison claims another victim. Goodbye, Detective."
+        text: "Hahaha! Greed checkmates you! The blood fills your throat. Another victim for the Whitechapel legend."
       }
     ]
   }

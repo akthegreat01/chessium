@@ -48,13 +48,13 @@ export default function StoryLandingPage() {
     <div className="max-w-6xl mx-auto space-y-8 p-4 md:p-6 lg:p-8">
       {/* Header Banner */}
       <div className="relative bg-[#141416] border border-[#2a2a30] rounded-3xl p-8 shadow-elevated overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#81b64c]/10 to-transparent pointer-events-none"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#ca3431]/10 to-transparent pointer-events-none"></div>
         <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <div className="text-[#81b64c] text-xs font-bold uppercase tracking-widest mb-2">Adventure Mode</div>
-            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2">The Whispering King</h1>
+            <div className="text-[#ca3431] text-xs font-bold uppercase tracking-widest mb-2">Adventure Mode</div>
+            <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2">The Ripper's Gambit</h1>
             <p className="text-[#a0a0a8] max-w-xl text-base md:text-lg">
-              Lord Alistair Thorne, a billionaire chess Grandmaster, has died under mysterious circumstances. Investigate Thorne Manor, play chess against the suspects, and piece together the final conspiracy.
+              Whitechapel, London, 1888. A shadow stalks the foggy gaslit alleys. Decode the letters 'From Hell,' play chess against the key historical suspects, and stop Jack the Ripper.
             </p>
           </div>
           <button
@@ -134,9 +134,17 @@ export default function StoryLandingPage() {
                 </div>
 
                 <div className="flex gap-4 mb-4">
-                  <div className="w-16 h-16 bg-[#1a1a1f] border border-[#2a2a30] rounded-2xl flex items-center justify-center text-4xl shadow-inner shrink-0 select-none">
-                    {ch.avatar}
-                  </div>
+                  {isUnlocked ? (
+                    <img 
+                      src={ch.imagePath} 
+                      alt={ch.suspectName} 
+                      className="w-16 h-16 rounded-2xl object-cover border border-[#2a2a30] shadow-inner shrink-0 select-none"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-[#1a1a1f] border border-[#2a2a30] rounded-2xl flex items-center justify-center text-3xl shadow-inner shrink-0 select-none opacity-40">
+                      👤
+                    </div>
+                  )}
                   <div>
                     <h3 className="text-xl font-bold text-white mb-0.5">{ch.suspectName}</h3>
                     <div className="text-xs text-[#a0a0a8] font-medium">{ch.title} • ELO: {ch.rating}</div>

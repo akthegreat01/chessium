@@ -33,7 +33,7 @@ export default function StoryGamePage({ params }: PageProps) {
     );
   }
 
-  const { settings } = useSettings();
+  const { settings, updateSetting } = useSettings();
   const { game, position, history, makeMove, isGameOver, turn, resetGame } = useChessGame();
   const { isReady, getBestMove, sendCommand } = useStockfish();
 
@@ -49,6 +49,146 @@ export default function StoryGamePage({ params }: PageProps) {
 
   // Track the history length to trigger dialogue lines based on move count
   const prevHistoryLengthRef = useRef(0);
+
+  // Speech synthesis voices and narration controls
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const lastSpokenTextRef = useRef("");
+
+  // Deep mysterious voice controls
+  const [narratorPitch, setNarratorPitch] = useState<number>(0.6);
+  const [narratorRate, setNarratorRate] = useState<number>(0.75);
+  const [showNarratorControls, setShowNarratorControls] = useState(false);
+
+  // Typewriter states
+  const [displayedDialogue, setDisplayedDialogue] = useState("");
+
+  // Game reactions
+  const [isShaking, setIsShaking] = useState(false);
+
+  const triggerBlunderShake = () => {
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 500);
+  };
+
+  // Load custom pitch/rate on mount
+  useEffect(() => {
+    const storedPitch = localStorage.getItem("chessium_narrator_pitch");
+    const storedRate = localStorage.getItem("chessium_narrator_rate");
+    if (storedPitch) setNarratorPitch(parseFloat(storedPitch));
+    if (storedRate) setNarratorRate(parseFloat(storedRate));
+  }, []);
+
+  const updateNarratorPitch = (val: number) => {
+    setNarratorPitch(val);
+    localStorage.setItem("chessium_narrator_pitch", val.toString());
+  };
+
+  const updateNarratorRate = (val: number) => {
+    setNarratorRate(val);
+    localStorage.setItem("chessium_narrator_rate", val.toString());
+  };
+
+  // Typewriter effect handler
+  useEffect(() => {
+    setDisplayedDialogue("");
+    if (!dialogueText) return;
+
+    let index = 0;
+    const interval = setInterval(() => {
+      setDisplayedDialogue((prev) => prev + dialogueText.charAt(index));
+      index++;
+      if (index >= dialogueText.length) {
+        clearInterval(interval);
+      }
+    }, 20); // 20ms per character typewriter pace
+
+    return () => clearInterval(interval);
+  }, [dialogueText]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+
+    const updateVoices = () => {
+      setVoices(window.speechSynthesis.getVoices());
+    };
+
+    updateVoices();
+    window.speechSynthesis.addEventListener("voiceschanged", updateVoices);
+    return () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", updateVoices);
+    };
+  }, []);
+
+  const speakDialogueText = (text: string) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+
+    window.speechSynthesis.cancel();
+    if (!settings.narrationEnabled || status === "intro") return;
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Deep mysterious override
+    utterance.pitch = narratorPitch;
+    utterance.rate = narratorRate;
+
+    const englishVoices = voices.filter((v) => v.lang.startsWith("en"));
+    if (englishVoices.length > 0) {
+      const ukVoices = englishVoices.filter(
+        (v) =>
+          v.lang.includes("GB") ||
+          v.name.toLowerCase().includes("uk") ||
+          v.name.toLowerCase().includes("great britain")
+      );
+
+      const maleKeywords = [
+        "male",
+        "david",
+        "george",
+        "daniel",
+        "rishi",
+        "google uk english male",
+        "arthur",
+        "microsoft david",
+        "steve",
+        "oliver",
+      ];
+
+      const candidateVoices = ukVoices.length > 0 ? ukVoices : englishVoices;
+      const matchedVoice = candidateVoices.find((v) =>
+        maleKeywords.some((kw) => v.name.toLowerCase().includes(kw))
+      );
+
+      if (matchedVoice) {
+        utterance.voice = matchedVoice;
+      } else if (candidateVoices.length > 0) {
+        utterance.voice = candidateVoices[0];
+      }
+    }
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    if (status === "intro" || !dialogueText) return;
+
+    if (settings.narrationEnabled) {
+      speakDialogueText(dialogueText);
+      lastSpokenTextRef.current = dialogueText;
+    } else {
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      lastSpokenTextRef.current = "";
+    }
+  }, [dialogueText, status, settings.narrationEnabled, narratorPitch, narratorRate, voices.length > 0]);
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== "undefined" && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   // Configure starting FEN and initial color on mount
   useEffect(() => {
@@ -135,6 +275,7 @@ export default function StoryGamePage({ params }: PageProps) {
           const blunderLine = chapter.dialogue.find((d) => d.trigger === "onBlunder");
           if (blunderLine) {
             setDialogueText(blunderLine.text);
+            triggerBlunderShake();
           }
         }
       }
@@ -180,6 +321,7 @@ export default function StoryGamePage({ params }: PageProps) {
     // Poisoned Queen check (Chapter 4)
     if (chapter.id === "chapter-4" && targetPiece && targetPiece.type === "q" && targetPiece.color === "b") {
       setIsPoisoned(true);
+      triggerBlunderShake();
       setStatus("failed");
       const lossLine = chapter.dialogue.find((d) => d.trigger === "onLoss");
       setDialogueText(lossLine ? lossLine.text : "You fell for the poisoned piece trap.");
@@ -252,6 +394,7 @@ export default function StoryGamePage({ params }: PageProps) {
       // Poisoned Queen check (Chapter 4 click-to-move)
       if (chapter.id === "chapter-4" && targetPiece && targetPiece.type === "q" && targetPiece.color === "b") {
         setIsPoisoned(true);
+        triggerBlunderShake();
         setStatus("failed");
         const lossLine = chapter.dialogue.find((d) => d.trigger === "onLoss");
         setDialogueText(lossLine ? lossLine.text : "You fell for the poisoned piece trap.");
@@ -333,8 +476,8 @@ export default function StoryGamePage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Board Container */}
-        <div className="w-full relative shadow-elevated rounded-2xl overflow-hidden border border-[#2a2a30] max-w-[550px] aspect-square bg-[#0a0a0b]">
+        {/* Board Container with horror shake and blood effects */}
+        <div className={`w-full relative shadow-elevated rounded-2xl overflow-hidden border border-[#2a2a30] max-w-[550px] aspect-square bg-[#0a0a0b] ${isShaking ? "animate-story-shake" : ""}`}>
           <Board
             position={position}
             boardOrientation={playerColor}
@@ -345,17 +488,32 @@ export default function StoryGamePage({ params }: PageProps) {
             theme={settings.boardTheme}
           />
 
+          {/* Dripping blood horror overlay */}
+          {isPoisoned && (
+            <div className="absolute inset-0 bg-[#600302]/40 pointer-events-none z-10 transition-opacity duration-1000">
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-[#ca3431]/30 animate-pulse pointer-events-none" />
+              <div className="absolute inset-x-0 top-0 bg-[#ca3431] opacity-70 pointer-events-none" style={{ height: "6px" }} />
+              <div className="absolute top-0 left-[20%] w-[2px] h-[60px] bg-[#600302] rounded-full animate-story-drip" style={{ animationDelay: "0.2s" }} />
+              <div className="absolute top-0 left-[45%] w-[3px] h-[90px] bg-[#ca3431] rounded-full animate-story-drip" style={{ animationDelay: "0.5s" }} />
+              <div className="absolute top-0 left-[75%] w-[2px] h-[40px] bg-[#600302] rounded-full animate-story-drip" style={{ animationDelay: "0.9s" }} />
+            </div>
+          )}
+
           {/* Intro Screen Overlay */}
           {status === "intro" && (
             <div className="absolute inset-0 bg-[#0a0a0b]/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-20">
-              <div className="text-6xl mb-4 select-none">{chapter.avatar}</div>
+              <img 
+                src={chapter.imagePath} 
+                alt={chapter.suspectName}
+                className="w-28 h-28 rounded-2xl object-cover border-2 border-[#ca3431]/40 mb-4 shadow-elevated"
+              />
               <h2 className="text-2xl font-black text-white mb-2">{chapter.suspectName}</h2>
               <p className="text-[#a0a0a8] text-sm max-w-sm mb-6 leading-relaxed">
                 {chapter.description}
               </p>
               <button
                 onClick={handleStartMatch}
-                className="bg-[#81b64c] hover:bg-[#9fcc6b] text-white font-bold px-8 py-3 rounded-xl transition-all shadow-elevated"
+                className="bg-[#ca3431] hover:bg-[#e24e4a] text-white font-bold px-8 py-3 rounded-xl transition-all shadow-elevated"
               >
                 Begin Confrontation
               </button>
@@ -444,26 +602,126 @@ export default function StoryGamePage({ params }: PageProps) {
         {/* Dialogue Chat Box */}
         <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-5 shadow-elevated flex flex-col flex-1 min-h-[200px]">
           <div className="flex items-center gap-3 border-b border-[#2a2a30] pb-3 mb-4">
-            <div className="w-10 h-10 bg-[#1a1a1f] border border-[#2a2a30] rounded-xl flex items-center justify-center text-2xl select-none">
-              {chapter.avatar}
-            </div>
+            <img 
+              src={chapter.imagePath} 
+              alt={chapter.suspectName}
+              className="w-10 h-10 rounded-xl object-cover border border-[#2a2a30] shadow-inner select-none"
+            />
             <div>
               <h3 className="font-bold text-white text-sm">{chapter.suspectName}</h3>
-              <span className="text-[10px] text-[#81b64c] font-black uppercase tracking-wider">
+              <span className="text-[10px] text-[#ca3431] font-black uppercase tracking-wider">
                 {isBotThinking ? "Typing..." : "Confronting"}
               </span>
             </div>
+            
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                onClick={() => setShowNarratorControls(!showNarratorControls)}
+                className={`p-2 rounded-lg transition-colors ${showNarratorControls ? "text-[#ca3431] bg-white/5" : "text-[#a0a0a8] hover:text-white hover:bg-white/5"}`}
+                title="Narration Pitch & Speed Settings"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => updateSetting("narrationEnabled", !settings.narrationEnabled)}
+                className="p-2 rounded-lg text-[#a0a0a8] hover:text-white hover:bg-white/5 transition-colors"
+                title={settings.narrationEnabled ? "Mute Narration" : "Unmute Narration"}
+                aria-label={settings.narrationEnabled ? "Mute Narration" : "Unmute Narration"}
+              >
+                {settings.narrationEnabled ? (
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-[#ca3431]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
+
+          {/* Narrator customized control panel drawer */}
+          {showNarratorControls && (
+            <div className="bg-[#0a0a0b] border border-[#2a2a30] rounded-xl p-3 mb-4 space-y-3 text-xs text-left">
+              <div className="flex justify-between items-center text-[#a0a0a8] font-bold">
+                <span>Narrator Tuning</span>
+                <button 
+                  onClick={() => {
+                    updateNarratorPitch(0.6);
+                    updateNarratorRate(0.75);
+                  }}
+                  className="text-[10px] text-[#ca3431] hover:underline"
+                >
+                  Reset Deep
+                </button>
+              </div>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#a0a0a8]">Pitch: {narratorPitch.toFixed(2)}</span>
+                  <span className="text-[10px] text-[#6b6b75]">{narratorPitch < 0.8 ? "Deep Voice" : "Standard"}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0.4"
+                  max="1.5"
+                  step="0.05"
+                  value={narratorPitch}
+                  onChange={(e) => updateNarratorPitch(parseFloat(e.target.value))}
+                  className="w-full h-1 bg-[#141416] rounded-lg appearance-none cursor-pointer accent-[#ca3431]"
+                />
+              </div>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-[#a0a0a8]">Speed: {narratorRate.toFixed(2)}x</span>
+                  <span className="text-[10px] text-[#6b6b75]">{narratorRate < 0.9 ? "Ominous & Slow" : "Fast"}</span>
+                </div>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="1.5"
+                  step="0.05"
+                  value={narratorRate}
+                  onChange={(e) => updateNarratorRate(parseFloat(e.target.value))}
+                  className="w-full h-1 bg-[#141416] rounded-lg appearance-none cursor-pointer accent-[#ca3431]"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Chat text box */}
           <div className="flex-1 flex flex-col justify-center text-center p-3 bg-[#0a0a0b] border border-[#2a2a30] rounded-xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 text-3xl opacity-10 text-[#81b64c] p-2 select-none">“</div>
-            <p className="text-sm font-medium text-white italic leading-relaxed z-10 px-2">
-              {dialogueText}
+            <div className="absolute top-0 left-0 text-3xl opacity-10 text-[#ca3431] p-2 select-none">“</div>
+            <p className="text-sm font-medium text-white italic leading-relaxed z-10 px-2 min-h-[60px] font-mono">
+              {displayedDialogue}
             </p>
-            <div className="absolute bottom-0 right-0 text-3xl opacity-10 text-[#81b64c] p-2 rotate-180 select-none">“</div>
+            <div className="absolute bottom-0 right-0 text-3xl opacity-10 text-[#ca3431] p-2 rotate-180 select-none">“</div>
           </div>
         </div>
+
+        {/* Global style overrides for custom animations */}
+        <style>{`
+          @keyframes story-shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+          }
+          .animate-story-shake {
+            animation: story-shake 0.4s ease-in-out;
+          }
+          @keyframes story-drip {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(500%); opacity: 0; }
+          }
+          .animate-story-drip {
+            animation: story-drip 2.2s infinite linear;
+          }
+        `}</style>
 
         {/* Moves Logger */}
         <div className="h-[220px] flex flex-col shrink-0">

@@ -69,6 +69,21 @@ export default function SettingsPage() {
                   </div>
                   
                   <hr className="border-[#2a2a30]" />
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-white mb-1">Dialogue Narration</div>
+                      <div className="text-sm text-[#a0a0a8]">Voice read-out of suspect dialogue in Story Mode.</div>
+                    </div>
+                    <button 
+                      onClick={() => updateSetting('narrationEnabled', !settings.narrationEnabled)}
+                      className={`relative inline-block w-12 h-6 rounded-full transition-colors ${settings.narrationEnabled ? 'bg-[#81b64c]' : 'bg-[#2a2a30]'}`}
+                    >
+                      <div className={`absolute top-1 bg-white w-4 h-4 rounded-full transition-transform ${settings.narrationEnabled ? 'translate-x-7' : 'translate-x-1'}`}></div>
+                    </button>
+                  </div>
+                  
+                  <hr className="border-[#2a2a30]" />
                   
                   <div className="flex items-center justify-between">
                     <div>
