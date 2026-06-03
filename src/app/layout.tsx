@@ -43,32 +43,6 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://chessium.in",
-    siteName: "Chessium",
-    title: "Chessium — Analyze. Learn. Improve.",
-    description:
-      "The modern chess platform for analysis, puzzles, courses, and improvement.",
-    images: [
-      {
-        url: '/og-image.jpg', // We should make sure we have a default OG image or assume one
-        width: 1200,
-        height: 630,
-        alt: 'Chessium Preview',
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Chessium",
-    description: "The modern chess platform for analysis, puzzles, and courses.",
-  },
-  icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
-  },
   robots: {
     index: true,
     follow: true,
