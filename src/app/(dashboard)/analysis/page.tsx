@@ -247,7 +247,14 @@ export default function AnalysisPage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
         const updateData = importTab === 'chesscom' ? { chess_com_username: username } : { lichess_username: username };
-        supabase.from("profiles").update(updateData).eq("id", user.id).then();
+        const metaUsername = user.user_metadata?.username || user.email?.split('@')[0] || 'Unknown';
+        
+        // Use upsert in case the profile doesn't exist (e.g. if the DB trigger failed during signup)
+        supabase.from("profiles").upsert({
+          id: user.id,
+          username: metaUsername,
+          ...updateData
+        }).then();
       }
     });
 
