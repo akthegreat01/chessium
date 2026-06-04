@@ -10,6 +10,10 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState('preferences');
 
   const handleLogout = async () => {
+    localStorage.removeItem("chessium_chesscom_user");
+    localStorage.removeItem("chessium_lichess_user");
+    localStorage.removeItem("chessium_puzzle_rating");
+    localStorage.removeItem("chessium_settings");
     await supabase.auth.signOut();
     window.location.href = "/";
   };

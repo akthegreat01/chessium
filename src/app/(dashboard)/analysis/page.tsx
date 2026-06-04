@@ -294,14 +294,19 @@ export default function AnalysisPage() {
           alert("No game archives found for this user.");
         }
       } else if (importTab === "lichess") {
-        const res = await fetch(`https://lichess.org/api/games/user/${username}?max=1&pgnInJson=false`);
-        const pgn = await res.text();
-        if (pgn.trim()) {
-          loadPgn(pgn);
-          setUsernameInput("");
-          setShouldAutoAnalyze(true);
+        const res = await fetch(`/api/lichess/games/${username}`);
+        if (res.ok) {
+          const text = await res.text();
+          const jsonLines = text.split('\n').filter(Boolean).map(line => JSON.parse(line));
+          if (jsonLines.length > 0 && jsonLines[0].pgn) {
+            loadPgn(jsonLines[0].pgn);
+            setUsernameInput("");
+            setShouldAutoAnalyze(true);
+          } else {
+            alert("No games found for this user.");
+          }
         } else {
-          alert("No games found for this user.");
+          alert("Failed to fetch games from Lichess.");
         }
       }
     } catch (err) {

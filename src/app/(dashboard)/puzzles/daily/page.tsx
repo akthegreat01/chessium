@@ -5,6 +5,7 @@ import Board from "@/components/chess/Board";
 import { Chess } from "chess.js";
 import AdSlot from "@/components/ui/AdSlot";
 import Link from "next/link";
+import { getAnyRandomPuzzle } from "@/lib/chess/puzzles-db";
 
 export default function DailyPuzzlePage() {
   const [puzzle, setPuzzle] = useState<any>(null);
@@ -12,32 +13,67 @@ export default function DailyPuzzlePage() {
   const [orientation, setOrientation] = useState<"white" | "black">("white");
   const [status, setStatus] = useState<"loading" | "playing" | "solved" | "failed">("loading");
   const [moveIndex, setMoveIndex] = useState(0);
+  const [isFallback, setIsFallback] = useState(false);
   
   const chessRef = useRef(new Chess());
 
   useEffect(() => {
+    setStatus("loading");
     fetch("/api/puzzle/daily")
-      .then(res => res.json())
+      .then(async (res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
-        const chess = new Chess();
+        if (!data || !data.puzzle || !data.puzzle.fen || !data.puzzle.solution) {
+          throw new Error("Invalid daily puzzle data structure received");
+        }
         
-        if (data.puzzle && data.puzzle.fen) {
-          try {
-            chess.load(data.puzzle.fen);
-          } catch(e) {
-            console.error("Failed to load puzzle FEN", e);
-          }
+        const chess = new Chess();
+        try {
+          chess.load(data.puzzle.fen);
+        } catch(e) {
+          throw new Error("Failed to load daily puzzle FEN in chess.js");
         }
         
         chessRef.current = chess;
         setPosition(chess.fen());
         setOrientation(chess.turn() === "w" ? "white" : "black");
-        
         setPuzzle(data.puzzle);
         setStatus("playing");
         setMoveIndex(0); // The user starts at move index 0 (even indexes are user moves)
+        setIsFallback(false);
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error("Daily puzzle fetch failed, loading fallback random puzzle:", err);
+        const fallback = getAnyRandomPuzzle();
+        if (fallback) {
+          const chess = new Chess();
+          try {
+            chess.load(fallback.fen);
+            chessRef.current = chess;
+            setPosition(chess.fen());
+            setOrientation(chess.turn() === "w" ? "white" : "black");
+            setPuzzle({
+              id: fallback.id,
+              rating: fallback.rating,
+              themes: fallback.themes,
+              solution: fallback.solution,
+              fen: fallback.fen
+            });
+            setStatus("playing");
+            setMoveIndex(0);
+            setIsFallback(true);
+          } catch (e) {
+            console.error("Failed to load fallback puzzle FEN:", e);
+            setStatus("failed");
+          }
+        } else {
+          setStatus("failed");
+        }
+      });
   }, []);
 
   // Helper to convert UCI (e.g. e2e4) to chess.js object
@@ -117,8 +153,49 @@ export default function DailyPuzzlePage() {
   };
 
   const handleRetry = () => {
-    if (puzzle) {
+    if (puzzle && puzzle.fen) {
+      const chess = new Chess();
+      try {
+        chess.load(puzzle.fen);
+        chessRef.current = chess;
+        setPosition(chess.fen());
+        setMoveIndex(0);
+        setStatus("playing");
+      } catch (e) {
+        console.error("Failed to reset puzzle on retry:", e);
+        window.location.reload();
+      }
+    } else {
       window.location.reload();
+    }
+  };
+
+  const handleNextPuzzle = () => {
+    setStatus("loading");
+    const fallback = getAnyRandomPuzzle();
+    if (fallback) {
+      const chess = new Chess();
+      try {
+        chess.load(fallback.fen);
+        chessRef.current = chess;
+        setPosition(chess.fen());
+        setOrientation(chess.turn() === "w" ? "white" : "black");
+        setPuzzle({
+          id: fallback.id,
+          rating: fallback.rating,
+          themes: fallback.themes,
+          solution: fallback.solution,
+          fen: fallback.fen
+        });
+        setStatus("playing");
+        setMoveIndex(0);
+        setIsFallback(true);
+      } catch (e) {
+        console.error("Failed to load next puzzle:", e);
+        setStatus("failed");
+      }
+    } else {
+      setStatus("failed");
     }
   };
 
@@ -145,8 +222,14 @@ export default function DailyPuzzlePage() {
         
         <div className="w-full lg:w-[320px] flex flex-col gap-4">
           <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-5 shadow-elevated">
+            {isFallback && (
+              <div className="mb-4 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs rounded-xl p-3 text-center">
+                ⚠️ Playing standard tactical challenge (daily puzzle API is currently offline).
+              </div>
+            )}
+
             {status === "loading" && (
-              <div className="text-center text-[#a0a0a8] py-8">Loading puzzle...</div>
+              <div className="text-center text-[#a0a0a8] py-8 animate-pulse">Loading puzzle...</div>
             )}
             
             {status === "playing" && (
@@ -164,7 +247,8 @@ export default function DailyPuzzlePage() {
                 <div className="text-xl font-bold text-[#81b64c] mb-2">Puzzle Solved!</div>
                 <div className="text-[#a0a0a8] mb-6">Excellent calculation!</div>
                 <button 
-                  className="w-full bg-[#81b64c] hover:bg-[#9fcc6b] text-white py-3 rounded-xl font-bold transition-colors"
+                  onClick={handleNextPuzzle}
+                  className="w-full bg-[#81b64c] hover:bg-[#9fcc6b] text-white py-3 rounded-xl font-bold transition-colors cursor-pointer"
                 >
                   Next Puzzle
                 </button>
@@ -178,7 +262,7 @@ export default function DailyPuzzlePage() {
                 <div className="text-[#a0a0a8] mb-6">That is not the best continuation.</div>
                 <button 
                   onClick={handleRetry}
-                  className="w-full bg-[#2a2a30] hover:bg-[#3a3a42] text-white py-3 rounded-xl font-bold transition-colors"
+                  className="w-full bg-[#2a2a30] hover:bg-[#3a3a42] text-white py-3 rounded-xl font-bold transition-colors cursor-pointer"
                 >
                   Retry Puzzle
                 </button>

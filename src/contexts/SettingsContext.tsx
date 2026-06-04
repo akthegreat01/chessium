@@ -55,7 +55,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }
     setIsLoaded(true);
 
-    // Sync Chess.com/Lichess username from localStorage to Supabase profile
+    // Sync Chess.com/Lichess username between localStorage and Supabase profile (bidirectional)
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) {
@@ -72,6 +72,15 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
               const dbChesscom = data.chess_com_username;
               const dbLichess = data.lichess_username;
               
+              // 1. Sync DB to localStorage if DB has it but local doesn't
+              if (dbChesscom && !localChesscom) {
+                localStorage.setItem("chessium_chesscom_user", dbChesscom);
+              }
+              if (dbLichess && !localLichess) {
+                localStorage.setItem("chessium_lichess_user", dbLichess);
+              }
+              
+              // 2. Sync localStorage to DB if local has it but DB doesn't
               let updateData: any = {};
               if (!dbChesscom && localChesscom) {
                 updateData.chess_com_username = localChesscom;
@@ -84,7 +93,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
                 supabase.from("profiles").update(updateData).eq("id", user.id).then();
               }
             } else if (error || !data) {
-              // Profile is completely missing, self-heal immediately with local storage values!
+              // Self-healing fallback: If profile is missing, create it dynamically
               const rawUsername = user.user_metadata?.username || user.email?.split("@")[0] || "user";
               let sanitizedUsername = rawUsername.replace(/[^a-zA-Z0-9_]/g, "");
               if (sanitizedUsername.length < 3) {

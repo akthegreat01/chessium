@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import Board from "@/components/chess/Board";
 import { Chess } from "chess.js";
 import AdSlot from "@/components/ui/AdSlot";
+import { getAnyRandomPuzzle } from "@/lib/chess/puzzles-db";
 
 export default function DashboardPage() {
   const [username, setUsername] = useState("");
@@ -45,7 +46,7 @@ export default function DashboardPage() {
     
     if (lichess && !chesscom) { // Lichess fallback if no chess.com
       try {
-        const res = await fetch(`https://lichess.org/api/user/${lichess}`);
+        const res = await fetch(`/api/lichess/user/${lichess}`);
         if (res.ok) {
           const data = await res.json();
           const rapid = data.perfs?.rapid?.rating;
@@ -70,7 +71,7 @@ export default function DashboardPage() {
     let fetchedGames: any[] = [];
     if (lichess) {
       try {
-        const res = await fetch(`https://lichess.org/api/games/user/${lichess}?max=5&pgnInJson=true`, { headers: { Accept: 'application/x-ndjson' }});
+        const res = await fetch(`/api/lichess/games/${lichess}`);
         if (res.ok) {
           const text = await res.text();
           const jsonLines = text.split('\n').filter(Boolean).map(line => JSON.parse(line));
@@ -182,23 +183,39 @@ export default function DashboardPage() {
     });
 
     fetch("/api/puzzle/daily")
-      .then(res => res.json())
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
       .then(data => {
-        const chess = new Chess();
-        if (data.puzzle && data.puzzle.fen) {
-          try {
-            chess.load(data.puzzle.fen);
-          } catch(e) {
-            console.error("Failed to load puzzle FEN", data.puzzle.fen, e);
-          }
+        if (!data || !data.puzzle || !data.puzzle.fen) {
+          throw new Error("Invalid daily puzzle data");
         }
+        const chess = new Chess();
+        chess.load(data.puzzle.fen);
         setDailyPuzzle({
           fen: chess.fen(),
-          rating: data.puzzle.rating,
+          rating: data.puzzle.rating || 1500,
           turn: chess.turn() === 'w' ? 'White' : 'Black'
         });
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error("Failed to fetch daily puzzle, loading dashboard fallback:", err);
+        const fallback = getAnyRandomPuzzle();
+        if (fallback) {
+          const chess = new Chess();
+          try {
+            chess.load(fallback.fen);
+            setDailyPuzzle({
+              fen: chess.fen(),
+              rating: fallback.rating,
+              turn: chess.turn() === 'w' ? 'White' : 'Black'
+            });
+          } catch (e) {
+            console.error("Failed to load dashboard fallback puzzle FEN:", e);
+          }
+        }
+      });
 
   }, [supabase]);
 

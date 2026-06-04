@@ -51,8 +51,13 @@ export default async function DashboardLayout({
         newProfile = inserted;
         insertSuccess = true;
       } else {
-        insertUsername = `${sanitizedUsername}_${Math.floor(Math.random() * 10000)}`;
-        attempts++;
+        console.error("Profile auto-creation error:", insertError);
+        if (insertError?.code === '23505') {
+          insertUsername = `${sanitizedUsername}_${Math.floor(Math.random() * 10000)}`;
+          attempts++;
+        } else {
+          break; // Stop retrying for RLS or other non-unique errors
+        }
       }
     }
     

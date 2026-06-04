@@ -33,8 +33,8 @@ export default function StatisticsPage() {
         if (savedLichess) {
           // Lichess is great because it gives us direct rating history
           const [userRes, historyRes] = await Promise.all([
-            fetch(`https://lichess.org/api/user/${savedLichess}`),
-            fetch(`https://lichess.org/api/user/${savedLichess}/rating-history`)
+            fetch(`/api/lichess/user/${savedLichess}`),
+            fetch(`/api/lichess/history/${savedLichess}`)
           ]);
 
           if (userRes.ok) {
