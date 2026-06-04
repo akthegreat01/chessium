@@ -144,7 +144,7 @@ export default function LiveLeaderboard({ members }: { members: Member[] }) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center flex-wrap gap-2">
                 <span className={`font-bold ${idx === 0 ? 'text-yellow-500' : 'text-white'} truncate`}>
-                  {entry.username}
+                  {entry.chessComUsername || entry.username}
                 </span>
                 {entry.role === 'owner' && (
                   <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#81b64c]/20 text-[#81b64c]">OWNER</span>
