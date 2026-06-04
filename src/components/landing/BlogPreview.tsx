@@ -2,38 +2,7 @@
 
 import { motion } from "motion/react";
 
-const blogPosts = [
-  {
-    slug: "mastering-ruy-lopez",
-    title: "Mastering the Ruy Lopez: A Complete Guide",
-    excerpt:
-      "Learn the key ideas, variations, and strategic concepts behind one of the oldest and most respected chess openings.",
-    category: "Openings",
-    readTime: "8 min read",
-    date: "Dec 15, 2025",
-    image: "♗",
-  },
-  {
-    slug: "tactical-patterns-beginners",
-    title: "10 Essential Tactical Patterns Every Beginner Should Know",
-    excerpt:
-      "From forks to pins, skewers to discovered attacks — master these patterns to win more games immediately.",
-    category: "Tactics",
-    readTime: "6 min read",
-    date: "Dec 10, 2025",
-    image: "♞",
-  },
-  {
-    slug: "endgame-fundamentals",
-    title: "Endgame Fundamentals: King and Pawn vs King",
-    excerpt:
-      "Understanding basic endgames is crucial for converting advantages. Learn the opposition, the square rule, and more.",
-    category: "Endgames",
-    readTime: "5 min read",
-    date: "Dec 5, 2025",
-    image: "♔",
-  },
-];
+import { BLOG_POSTS } from "@/app/blog/data";
 
 const categoryColors: Record<string, string> = {
   Openings: "#81b64c",
@@ -41,6 +10,15 @@ const categoryColors: Record<string, string> = {
   Endgames: "#5c8bb0",
   "Chess News": "#e58f2a",
   Improvement: "#1baca6",
+  Updates: "#81b64c",
+};
+
+const categoryIcons: Record<string, string> = {
+  Openings: "♗",
+  Tactics: "♞",
+  Endgames: "♔",
+  Improvement: "♙",
+  Updates: "⚙️",
 };
 
 export default function BlogPreview() {
@@ -75,9 +53,8 @@ export default function BlogPreview() {
           </a>
         </motion.div>
 
-        {/* Articles Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {blogPosts.map((post, index) => (
+          {BLOG_POSTS.slice(0, 3).map((post, index) => (
             <motion.a
               key={post.slug}
               href={`/blog/${post.slug}`}
@@ -97,7 +74,7 @@ export default function BlogPreview() {
                     }08 0%, transparent 100%)`,
                   }}
                 >
-                  {post.image}
+                  {categoryIcons[post.category] || "♟"}
                 </div>
 
                 <div className="p-5">
@@ -115,7 +92,7 @@ export default function BlogPreview() {
                       {post.category}
                     </span>
                     <span className="text-xs text-[#4a4a55]">
-                      {post.readTime}
+                      5 min read
                     </span>
                   </div>
 
