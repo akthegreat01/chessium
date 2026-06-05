@@ -63,10 +63,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <head>
-        {/* Adsterra Social Bar */}
-        <script src="https://pl29646501.effectivecpmnetwork.com/5d/28/ee/5d28eeb76a00c03323c77720da5f1601.js" async></script>
-      </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
       >
