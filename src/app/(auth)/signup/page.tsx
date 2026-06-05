@@ -19,28 +19,14 @@ export default function SignupPage() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-white mb-2">Create an account</h1>
           <p className="text-[#a0a0a8] text-sm">
-            Sign up with your email to start playing
+            Pick a username and password to get started
           </p>
         </div>
 
         <form action={formAction} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-[#a0a0a8] mb-1.5 ml-1">
-              Email Address
-            </label>
-            <input
-              name="email"
-              type="email"
-              required
-              className="w-full bg-[#1a1a1f] border border-[#2a2a30] rounded-xl px-4 py-3 text-white placeholder-[#4a4a55] focus:outline-none focus:border-[#81b64c] focus:ring-1 focus:ring-[#81b64c] transition-all"
-              placeholder="e.g. magnus@example.com"
-              autoComplete="email"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-[#a0a0a8] mb-1.5 ml-1">
-              Username
+              Username <span className="text-[#ca3431]">*</span>
             </label>
             <input
               name="username"
@@ -57,7 +43,21 @@ export default function SignupPage() {
 
           <div>
             <label className="block text-sm font-medium text-[#a0a0a8] mb-1.5 ml-1">
-              Password
+              Email Address <span className="text-[#6b6b75] text-xs font-normal">(optional)</span>
+            </label>
+            <input
+              name="email"
+              type="email"
+              className="w-full bg-[#1a1a1f] border border-[#2a2a30] rounded-xl px-4 py-3 text-white placeholder-[#4a4a55] focus:outline-none focus:border-[#81b64c] focus:ring-1 focus:ring-[#81b64c] transition-all"
+              placeholder="e.g. magnus@example.com"
+              autoComplete="email"
+            />
+            <p className="text-[10px] text-[#4a4a55] mt-1 ml-1">For account recovery only. You can sign up without one.</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-[#a0a0a8] mb-1.5 ml-1">
+              Password <span className="text-[#ca3431]">*</span>
             </label>
             <input
               name="password"
@@ -102,7 +102,7 @@ export default function SignupPage() {
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Secure account
+          No email required
         </span>
         <span className="flex items-center gap-1">
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

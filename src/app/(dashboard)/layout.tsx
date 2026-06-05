@@ -25,7 +25,7 @@ export default async function DashboardLayout({
 
   // Self-healing fallback: If profile is missing, create it dynamically
   if (!profile) {
-    const rawUsername = user.user_metadata?.username || user.email?.split("@")[0] || "user";
+    const rawUsername = user.user_metadata?.username || "user";
     let sanitizedUsername = rawUsername.replace(/[^a-zA-Z0-9_]/g, "");
     if (sanitizedUsername.length < 3) {
       sanitizedUsername = `user_${user.id.substring(0, 8)}`;
@@ -72,7 +72,7 @@ export default async function DashboardLayout({
         avatar: profile.avatar_url,
         role: profile.role === "admin" ? "Admin" : "Player",
       }
-    : { name: user.email?.split("@")[0] || "User" };
+    : { name: user.user_metadata?.username || "User" };
 
   const isAdmin = profile?.role === "admin";
 

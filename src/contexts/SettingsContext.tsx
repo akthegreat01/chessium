@@ -94,7 +94,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
               }
             } else if (error || !data) {
               // Self-healing fallback: If profile is missing, create it dynamically
-              const rawUsername = user.user_metadata?.username || user.email?.split("@")[0] || "user";
+              const rawUsername = user.user_metadata?.username || "user";
               let sanitizedUsername = rawUsername.replace(/[^a-zA-Z0-9_]/g, "");
               if (sanitizedUsername.length < 3) {
                 sanitizedUsername = `user_${user.id.substring(0, 8)}`;

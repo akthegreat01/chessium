@@ -83,7 +83,7 @@ export default function GlobalChat() {
       const displayName =
         profile?.display_name ||
         profile?.username ||
-        user.email?.split("@")[0] ||
+        user.user_metadata?.username ||
         "Player";
 
       const { error } = await supabase.from("global_messages").insert({
