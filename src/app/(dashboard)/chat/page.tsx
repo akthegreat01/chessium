@@ -30,7 +30,7 @@ const CHANNELS: Channel[] = [
 ];
 
 export default function ChatPage() {
-  const [activeChannel, setActiveChannel] = useState("general");
+  const activeChannel = "general";
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
@@ -140,53 +140,28 @@ export default function ChatPage() {
     }
   };
 
-  const activeChannelData = CHANNELS.find((c) => c.id === activeChannel) || CHANNELS[0];
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-extrabold text-white tracking-tight">Community Forums</h1>
-        <p className="text-[#a0a0a8] text-sm mt-1">Connect, share theory, and banter with chess players worldwide in real-time.</p>
+        <h1 className="text-3xl font-extrabold text-white tracking-tight">Global Chat</h1>
+        <p className="text-[#a0a0a8] text-sm mt-1">Connect and talk with chess players worldwide in real-time.</p>
       </div>
 
       {/* Main Container */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Sidebar - Channels */}
-        <div className="lg:col-span-3 bg-[#141416] border border-[#2a2a30] rounded-2xl p-4 space-y-4">
-          <h2 className="text-xs font-bold text-[#6b6b75] uppercase tracking-wider px-2">Forum Categories</h2>
-          <div className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible gap-1 pb-2 lg:pb-0 scrollbar-none">
-            {CHANNELS.map((channel) => {
-              const isActive = activeChannel === channel.id;
-              return (
-                <button
-                  key={channel.id}
-                  onClick={() => setActiveChannel(channel.id)}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 shrink-0 lg:shrink text-left w-auto lg:w-full ${
-                    isActive
-                      ? "bg-[#1a1a1f] text-white border-l-2 border-[#81b64c] shadow-[inset_4px_0_0_rgba(129,182,76,0.1)]"
-                      : "text-[#8a8a93] hover:bg-[#141416] hover:text-[#d0d0d5]"
-                  }`}
-                >
-                  <span className="text-base">{channel.icon}</span>
-                  <span>#{channel.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Center Panel - Live Chat Window */}
-        <div className="lg:col-span-6 bg-[#141416] border border-[#2a2a30] rounded-2xl flex flex-col overflow-hidden shadow-elevated h-[600px]">
+        {/* Center Panel - Live Chat Window (Expanded to 9 columns) */}
+        <div className="lg:col-span-9 bg-[#141416] border border-[#2a2a30] rounded-2xl flex flex-col overflow-hidden shadow-elevated h-[600px]">
           {/* Active Channel Header */}
           <div className="p-4 border-b border-[#2a2a30] flex items-center justify-between bg-[#18181b]">
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
-                <span className="text-lg">{activeChannelData.icon}</span>
-                <span className="font-bold text-white text-base">#{activeChannelData.name}</span>
+                <span className="text-lg">💬</span>
+                <span className="font-bold text-white text-base">#general</span>
               </div>
-              <span className="text-[11px] text-[#8a8a93] mt-0.5">{activeChannelData.description}</span>
+              <span className="text-[11px] text-[#8a8a93] mt-0.5">General chess discussion, banter, and platform news.</span>
             </div>
             <div className="flex items-center gap-1.5 bg-[#81b64c]/10 px-2 py-0.5 rounded-full shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-[#81b64c] animate-pulse"></span>
@@ -203,7 +178,7 @@ export default function ChatPage() {
               </div>
             ) : messages.length === 0 ? (
               <div className="h-full flex items-center justify-center text-[#6b6b75] text-sm text-center p-4">
-                No messages in #{activeChannelData.name} yet. Be the first to start the discussion!
+                No messages yet. Be the first to start the conversation!
               </div>
             ) : (
               messages.map((msg) => (
@@ -233,7 +208,7 @@ export default function ChatPage() {
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder={`Post to #${activeChannelData.name}...`}
+                  placeholder="Post to #general..."
                   maxLength={200}
                   className="flex-1 bg-[#0a0a0b] border border-[#2a2a30] text-white text-xs rounded-xl focus:ring-[#81b64c] focus:border-[#81b64c] p-3 outline-none transition-colors"
                 />
@@ -247,7 +222,7 @@ export default function ChatPage() {
               </form>
             ) : (
               <div className="text-center py-2">
-                <p className="text-[#6b6b75] text-xs mb-3">Join the Chessium community to write in the forum.</p>
+                <p className="text-[#6b6b75] text-xs mb-3">Join the Chessium community to write in the chat.</p>
                 <a
                   href="/login"
                   className="inline-block bg-[#2a2a30] hover:bg-[#3a3a42] text-white text-xs font-semibold px-5 py-2 rounded-xl transition-all"
@@ -259,42 +234,11 @@ export default function ChatPage() {
           </div>
         </div>
 
-        {/* Right Sidebar - Ad Space & Mock Promos */}
+        {/* Right Sidebar - Ad Space Only (3 columns) */}
         <div className="lg:col-span-3 space-y-4">
           <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-4">
             <h2 className="text-[10px] font-bold text-[#6b6b75] uppercase tracking-wider mb-3">SPONSOR ZONE</h2>
             <AdSlot slot="forum-sidebar-top" format="rectangle" className="w-full" />
-          </div>
-
-          {/* Premium Mock promos to look absolutely venture-backed / rich */}
-          <div className="bg-gradient-to-br from-[#1a1a24] to-[#121216] border border-[#ca3431]/20 rounded-2xl p-4 space-y-3 shadow-md relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-[#ca3431]/5 rounded-full blur-xl pointer-events-none group-hover:bg-[#ca3431]/10 transition-colors"></div>
-            <div className="flex items-center gap-2 text-xs font-bold text-[#ca3431] uppercase tracking-wider">
-              <span>💎</span>
-              <span>Chessium Premium</span>
-            </div>
-            <h3 className="text-sm font-bold text-white">Full Engine Reviews</h3>
-            <p className="text-xs text-[#a0a0a8] leading-relaxed">
-              Get detailed analysis accuracy, move-by-move classifications (Blunder, Mistake, Brilliant), and run unlimited lines using stockfish.
-            </p>
-            <button className="w-full bg-[#ca3431] hover:bg-[#d63f3c] text-white text-xs font-bold py-2 rounded-xl transition-colors">
-              Upgrade Now
-            </button>
-          </div>
-
-          <div className="bg-gradient-to-br from-[#181d18] to-[#111411] border border-[#81b64c]/20 rounded-2xl p-4 space-y-3 shadow-md relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-[#81b64c]/5 rounded-full blur-xl pointer-events-none group-hover:bg-[#81b64c]/10 transition-colors"></div>
-            <div className="flex items-center gap-2 text-xs font-bold text-[#81b64c] uppercase tracking-wider">
-              <span>🧩</span>
-              <span>Daily Challenge</span>
-            </div>
-            <h3 className="text-sm font-bold text-white">Solve Today's Puzzle</h3>
-            <p className="text-xs text-[#a0a0a8] leading-relaxed">
-              Test your calculation skills with our daily selected puzzle. Earn ranking points and climb the community leaderboards!
-            </p>
-            <a href="/puzzles" className="block text-center w-full bg-[#81b64c] hover:bg-[#9fcc6b] text-white text-xs font-bold py-2 rounded-xl transition-colors">
-              Play Puzzle
-            </a>
           </div>
 
           <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-4">
