@@ -23,45 +23,75 @@ export default function AdSlot({
   className = '',
 }: AdSlotProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const scriptLoaded = useRef(false);
 
   useEffect(() => {
-    if (!containerRef.current || scriptLoaded.current) return;
-    scriptLoaded.current = true;
+    if (!containerRef.current) return;
 
+    // Clean up any existing children first
+    containerRef.current.innerHTML = '';
+
+    const iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.border = 'none';
+    iframe.style.overflow = 'hidden';
+    iframe.style.background = 'transparent';
+    
     if (format === 'horizontal') {
-      // Native Banner — async script + div container
-      const script = document.createElement('script');
-      script.async = true;
-      script.setAttribute('data-cfasync', 'false');
-      script.src = 'https://pl29646499.effectivecpmnetwork.com/f82287c5194fdd874e49ad0f4b4e5e52/invoke.js';
-      
-      const div = document.createElement('div');
-      div.id = `container-f82287c5194fdd874e49ad0f4b4e5e52`;
-      
-      containerRef.current.appendChild(div);
-      containerRef.current.appendChild(script);
+      iframe.style.height = '90px';
+      iframe.height = '90';
     } else {
-      // 160x300 Banner — script config + invoke
-      const configScript = document.createElement('script');
-      configScript.type = 'text/javascript';
-      configScript.text = `
-        atOptions = {
-          'key' : 'ad3cfe7df1fc9774403752b49e0948d6',
-          'format' : 'iframe',
-          'height' : 300,
-          'width' : 160,
-          'params' : {}
-        };
-      `;
-
-      const invokeScript = document.createElement('script');
-      invokeScript.type = 'text/javascript';
-      invokeScript.src = 'https://www.highperformanceformat.com/ad3cfe7df1fc9774403752b49e0948d6/invoke.js';
-
-      containerRef.current.appendChild(configScript);
-      containerRef.current.appendChild(invokeScript);
+      iframe.style.height = '300px';
+      iframe.style.width = '160px';
+      iframe.height = '300';
+      iframe.width = '160';
     }
+
+    const iframeHtml = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+              width: 100%;
+              height: 100%;
+              overflow: hidden;
+              background-color: transparent;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+          </style>
+        </head>
+        <body>
+          \${format === 'horizontal' ? \`
+            <div id="container-f82287c5194fdd874e49ad0f4b4e5e52" style="width:100%; height:100%;"></div>
+            <script type="text/javascript" data-cfasync="false" src="https://pl29646499.effectivecpmnetwork.com/f82287c5194fdd874e49ad0f4b4e5e52/invoke.js" async></script>
+          \` : \`
+            <script type="text/javascript">
+              atOptions = {
+                'key' : 'ad3cfe7df1fc9774403752b49e0948d6',
+                'format' : 'iframe',
+                'height' : 300,
+                'width' : 160,
+                'params' : {}
+              };
+            </script>
+            <script type="text/javascript" src="https://www.highperformanceformat.com/ad3cfe7df1fc9774403752b49e0948d6/invoke.js"></script>
+          \`}
+        </body>
+      </html>
+    `;
+
+    iframe.srcdoc = iframeHtml;
+    containerRef.current.appendChild(iframe);
+
+    return () => {
+      if (containerRef.current) {
+        containerRef.current.innerHTML = '';
+      }
+    };
   }, [format]);
 
   return (
@@ -70,8 +100,8 @@ export default function AdSlot({
       className={`
         flex items-center justify-center
         overflow-hidden
-        ${format === 'horizontal' ? 'w-full min-h-[90px]' : 'min-h-[300px] w-[160px] mx-auto'}
-        ${className}
+        \${format === 'horizontal' ? 'w-full min-h-[90px]' : 'min-h-[300px] w-[160px] mx-auto'}
+        \${className}
       `}
     />
   );
