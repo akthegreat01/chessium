@@ -9,20 +9,26 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
-    return [
+    const crossOriginHeaders = [
       {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "Cross-Origin-Opener-Policy",
-            value: "same-origin",
-          },
-          {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "credentialless",
-          },
-        ],
+        key: "Cross-Origin-Opener-Policy",
+        value: "same-origin",
       },
+      {
+        key: "Cross-Origin-Embedder-Policy",
+        value: "credentialless",
+      },
+    ];
+    return [
+      { source: "/analysis", headers: crossOriginHeaders },
+      { source: "/play", headers: crossOriginHeaders },
+      { source: "/endgames/:path*", headers: crossOriginHeaders },
+      { source: "/drills/:path*", headers: crossOriginHeaders },
+      { source: "/openings/:path*", headers: crossOriginHeaders },
+      { source: "/master-games/:path*", headers: crossOriginHeaders },
+      { source: "/guess-the-elo", headers: crossOriginHeaders },
+      { source: "/vision", headers: crossOriginHeaders },
+      { source: "/story/:path*", headers: crossOriginHeaders },
     ];
   },
   turbopack: {},
