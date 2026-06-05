@@ -8,6 +8,7 @@ import Board from "@/components/chess/Board";
 import { Chess } from "chess.js";
 import AdSlot from "@/components/ui/AdSlot";
 import { getAnyRandomPuzzle } from "@/lib/chess/puzzles-db";
+import GlobalChat from "@/components/dashboard/GlobalChat";
 
 export default function DashboardPage() {
   const [username, setUsername] = useState("");
@@ -445,6 +446,8 @@ export default function DashboardPage() {
               </Link>
             </div>
           </div>
+          
+          <GlobalChat />
         </div>
       </div>
     </div>
