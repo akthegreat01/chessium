@@ -66,8 +66,6 @@ export default function RootLayout({
       <head>
         {/* Adsterra Social Bar */}
         <script src="https://pl29646501.effectivecpmnetwork.com/5d/28/ee/5d28eeb76a00c03323c77720da5f1601.js" async></script>
-        {/* Adsterra Popunder */}
-        <script src="https://pl29646498.effectivecpmnetwork.com/41/f8/23/41f823885a011492b6a2cc972e7e6f95.js" async></script>
       </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
