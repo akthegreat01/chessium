@@ -43,7 +43,7 @@ export default function LiveLeaderboard({ members }: { members: Member[] }) {
           // Try Chess.com first if connected
           if (entry.chessComUsername) {
             try {
-              const res = await fetch(`https://api.chess.com/pub/player/${entry.chessComUsername}/stats`);
+              const res = await fetch(`/api/chesscom/stats/${entry.chessComUsername}`);
               if (res.ok) {
                 const data = await res.json();
                 const modeKey = `chess_${selectedMode}`;

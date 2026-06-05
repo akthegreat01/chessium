@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
     if (chesscom) {
       try {
-        const res = await fetch(`https://api.chess.com/pub/player/${chesscom}/stats`);
+        const res = await fetch(`/api/chesscom/stats/${chesscom}`);
         if (res.ok) {
           const data = await res.json();
           const rapid = data.chess_rapid?.last?.rating;
@@ -42,7 +42,7 @@ export default function DashboardPage() {
           const puzzle = data.tactics?.highest?.rating;
           if (puzzle) { puzzleVal = puzzle; puzzleLabel = "Chess.com Puzzles"; }
         }
-      } catch(e) { console.error(e); }
+      } catch(e) { console.error("Error fetching Chess.com stats:", e); }
     }
     
     if (lichess && !chesscom) { // Lichess fallback if no chess.com
@@ -93,32 +93,25 @@ export default function DashboardPage() {
     
     if (chesscom) {
       try {
-        const res = await fetch(`https://api.chess.com/pub/player/${chesscom}/games/archives`);
+        const res = await fetch(`/api/chesscom/games/${chesscom}`);
         if (res.ok) {
           const data = await res.json();
-          const lastArchive = data.archives[data.archives.length - 1];
-          if (lastArchive) {
-            const res2 = await fetch(lastArchive);
-            if (res2.ok) {
-              const data2 = await res2.json();
-              const last5 = data2.games.slice(-5).reverse();
-              const chesscomGames = last5.map((g: any) => ({
-                id: g.url,
-                player_color: g.white.username.toLowerCase() === chesscom.toLowerCase() ? "white" : "black",
-                opponent_name: g.white.username.toLowerCase() === chesscom.toLowerCase() ? g.black.username : g.white.username,
-                result: g.white.username.toLowerCase() === chesscom.toLowerCase() 
-                  ? (g.white.result === 'win' ? 'win' : (g.white.result === 'repetition' || g.white.result === 'agreed' ? 'draw' : 'loss'))
-                  : (g.black.result === 'win' ? 'win' : (g.black.result === 'repetition' || g.black.result === 'agreed' ? 'draw' : 'loss')),
-                time_control: g.time_class,
-                created_at: new Date(g.end_time * 1000).toISOString(),
-                pgn: g.pgn,
-                platform: "chesscom"
-              }));
-              fetchedGames = [...fetchedGames, ...chesscomGames];
-            }
-          }
+          const last5 = (data.games || []).slice(-5).reverse();
+          const chesscomGames = last5.map((g: any) => ({
+            id: g.url,
+            player_color: g.white.username.toLowerCase() === chesscom.toLowerCase() ? "white" : "black",
+            opponent_name: g.white.username.toLowerCase() === chesscom.toLowerCase() ? g.black.username : g.white.username,
+            result: g.white.username.toLowerCase() === chesscom.toLowerCase() 
+              ? (g.white.result === 'win' ? 'win' : (g.white.result === 'repetition' || g.white.result === 'agreed' ? 'draw' : 'loss'))
+              : (g.black.result === 'win' ? 'win' : (g.black.result === 'repetition' || g.black.result === 'agreed' ? 'draw' : 'loss')),
+            time_control: g.time_class,
+            created_at: new Date(g.end_time * 1000).toISOString(),
+            pgn: g.pgn,
+            platform: "chesscom"
+          }));
+          fetchedGames = [...fetchedGames, ...chesscomGames];
         }
-      } catch(e) {}
+      } catch(e) { console.error("Error fetching Chess.com games:", e); }
     }
     
     setGames(prev => {

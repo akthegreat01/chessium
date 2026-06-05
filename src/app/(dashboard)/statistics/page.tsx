@@ -61,7 +61,7 @@ export default function StatisticsPage() {
           }
         } else if (savedChesscom) {
           const [statsRes] = await Promise.all([
-            fetch(`https://api.chess.com/pub/player/${savedChesscom}/stats`)
+            fetch(`/api/chesscom/stats/${savedChesscom}`)
           ]);
 
           if (statsRes.ok) {

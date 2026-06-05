@@ -10,6 +10,7 @@ const navLinks = [
   { label: 'Puzzles', href: '/puzzles' },
   { label: 'Courses', href: '/courses' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Chat', href: '/chat' },
 ];
 
 interface NavbarProps {
