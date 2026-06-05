@@ -236,13 +236,13 @@ export default function ChatPage() {
 
         {/* Right Sidebar - Ad Space Only (3 columns) */}
         <div className="lg:col-span-3 space-y-4">
-          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-4">
-            <h2 className="text-[10px] font-bold text-[#6b6b75] uppercase tracking-wider mb-3">SPONSOR ZONE</h2>
+          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-4 flex flex-col items-center">
+            <h2 className="text-[10px] font-bold text-[#6b6b75] uppercase tracking-wider mb-3 self-start">SPONSOR</h2>
             <AdSlot slot="forum-sidebar-top" format="rectangle" className="w-full" />
           </div>
 
-          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-4">
-            <h2 className="text-[10px] font-bold text-[#6b6b75] uppercase tracking-wider mb-3">SPONSOR ZONE</h2>
+          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-4 flex flex-col items-center">
+            <h2 className="text-[10px] font-bold text-[#6b6b75] uppercase tracking-wider mb-3 self-start">SPONSOR</h2>
             <AdSlot slot="forum-sidebar-bottom" format="rectangle" className="w-full" />
           </div>
         </div>

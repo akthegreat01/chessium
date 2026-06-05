@@ -64,8 +64,10 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <head>
-        <meta name="monetag" content="bb0cb39aef776ea821284c195177d29d" />
-        <script src="https://quge5.com/88/tag.min.js" data-zone="246526" async data-cfasync="false"></script>
+        {/* Adsterra Social Bar */}
+        <script src="https://pl29646501.effectivecpmnetwork.com/5d/28/ee/5d28eeb76a00c03323c77720da5f1601.js" async></script>
+        {/* Adsterra Popunder */}
+        <script src="https://pl29646498.effectivecpmnetwork.com/41/f8/23/41f823885a011492b6a2cc972e7e6f95.js" async></script>
       </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
