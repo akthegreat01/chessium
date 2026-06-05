@@ -65,6 +65,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <meta name="monetag" content="bb0cb39aef776ea821284c195177d29d" />
+        <script src="https://quge5.com/88/tag.min.js" data-zone="246526" async data-cfasync="false"></script>
       </head>
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased`}
