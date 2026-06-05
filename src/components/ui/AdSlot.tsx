@@ -65,10 +65,10 @@ export default function AdSlot({
           </style>
         </head>
         <body>
-          \${format === 'horizontal' ? \`
+          ${format === 'horizontal' ? `
             <div id="container-f82287c5194fdd874e49ad0f4b4e5e52" style="width:100%; height:100%;"></div>
             <script type="text/javascript" data-cfasync="false" src="https://pl29646499.effectivecpmnetwork.com/f82287c5194fdd874e49ad0f4b4e5e52/invoke.js" async></script>
-          \` : \`
+          ` : `
             <script type="text/javascript">
               atOptions = {
                 'key' : 'ad3cfe7df1fc9774403752b49e0948d6',
@@ -79,7 +79,7 @@ export default function AdSlot({
               };
             </script>
             <script type="text/javascript" src="https://www.highperformanceformat.com/ad3cfe7df1fc9774403752b49e0948d6/invoke.js"></script>
-          \`}
+          `}
         </body>
       </html>
     `;
@@ -100,8 +100,8 @@ export default function AdSlot({
       className={`
         flex items-center justify-center
         overflow-hidden
-        \${format === 'horizontal' ? 'w-full min-h-[90px]' : 'min-h-[300px] w-[160px] mx-auto'}
-        \${className}
+        ${format === 'horizontal' ? 'w-full min-h-[90px]' : 'min-h-[300px] w-[160px] mx-auto'}
+        ${className}
       `}
     />
   );
