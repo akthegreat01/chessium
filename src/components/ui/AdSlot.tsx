@@ -36,6 +36,7 @@ export default function AdSlot({
     iframe.style.overflow = 'hidden';
     iframe.style.background = 'transparent';
     
+    // Set initial layout height guesses
     if (format === 'horizontal') {
       iframe.style.height = '90px';
       iframe.height = '90';
@@ -55,30 +56,28 @@ export default function AdSlot({
               margin: 0;
               padding: 0;
               width: 100%;
-              height: 100%;
               overflow: hidden;
               background-color: transparent;
-              display: flex;
-              justify-content: center;
-              align-items: center;
             }
           </style>
         </head>
         <body>
           ${format === 'horizontal' ? `
-            <div id="container-f82287c5194fdd874e49ad0f4b4e5e52" style="width:100%; height:100%;"></div>
+            <div id="container-f82287c5194fdd874e49ad0f4b4e5e52" style="width:100%;"></div>
             <script type="text/javascript" data-cfasync="false" src="https://pl29646499.effectivecpmnetwork.com/f82287c5194fdd874e49ad0f4b4e5e52/invoke.js" async></script>
           ` : `
-            <script type="text/javascript">
-              atOptions = {
-                'key' : 'ad3cfe7df1fc9774403752b49e0948d6',
-                'format' : 'iframe',
-                'height' : 300,
-                'width' : 160,
-                'params' : {}
-              };
-            </script>
-            <script type="text/javascript" src="https://www.highperformanceformat.com/ad3cfe7df1fc9774403752b49e0948d6/invoke.js"></script>
+            <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+              <script type="text/javascript">
+                atOptions = {
+                  'key' : 'ad3cfe7df1fc9774403752b49e0948d6',
+                  'format' : 'iframe',
+                  'height' : 300,
+                  'width' : 160,
+                  'params' : {}
+                };
+              </script>
+              <script type="text/javascript" src="https://www.highperformanceformat.com/ad3cfe7df1fc9774403752b49e0948d6/invoke.js"></script>
+            </div>
           `}
         </body>
       </html>
@@ -87,7 +86,30 @@ export default function AdSlot({
     iframe.srcdoc = iframeHtml;
     containerRef.current.appendChild(iframe);
 
+    // Loop to dynamically adjust iframe height to match ad content height
+    const adjustHeight = () => {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow?.document;
+        if (doc && doc.body) {
+          const bodyHeight = doc.body.scrollHeight;
+          const container = doc.getElementById('container-f82287c5194fdd874e49ad0f4b4e5e52');
+          const contentHeight = container ? container.scrollHeight : bodyHeight;
+          const targetHeight = Math.max(bodyHeight, contentHeight);
+
+          if (targetHeight > 0 && Math.abs(targetHeight - parseInt(iframe.style.height)) > 5) {
+            iframe.style.height = `${targetHeight}px`;
+            iframe.height = `${targetHeight}`;
+          }
+        }
+      } catch (e) {
+        // Ignore cross-origin error security flags if scripts do redirects
+      }
+    };
+
+    const intervalId = setInterval(adjustHeight, 500);
+
     return () => {
+      clearInterval(intervalId);
       if (containerRef.current) {
         containerRef.current.innerHTML = '';
       }
