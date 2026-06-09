@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import AdSlot from '@/components/ui/AdSlot';
 
 interface NavItem {
   label: string;

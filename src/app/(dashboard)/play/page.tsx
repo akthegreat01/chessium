@@ -8,7 +8,6 @@ import { useChessGame } from "@/hooks/useChessGame";
 import { useStockfish } from "@/hooks/useStockfish";
 import MoveList from "@/components/chess/MoveList";
 import { useSettings } from "@/contexts/SettingsContext";
-import AdSlot from "@/components/ui/AdSlot";
 
 import { useRouter } from "next/navigation";
 
@@ -257,8 +256,7 @@ export default function PlayPage() {
   }, [turn, selectedBot, playerColor, isGameOver, isReady, position, makeMove, getBestMove, isBotThinking, sendCommand, game]);
 
   return (
-    <div className="flex gap-4 max-w-[1400px] mx-auto">
-    <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] flex-1 flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8 relative">
+    <div className="h-[calc(100vh-6rem)] md:h-[calc(100vh-4rem)] flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8 relative">
       {/* Board Area */}
       <div className="flex-1 flex flex-col gap-4 max-w-[700px] mx-auto w-full">
         {selectedBot && (
@@ -456,19 +454,6 @@ export default function PlayPage() {
           </div>
         )}
       </AnimatePresence>
-    </div>
-
-    {/* Right Sidebar Ad — Desktop only */}
-    <aside className="hidden xl:flex flex-col gap-6 w-[180px] shrink-0 sticky top-20 self-start pt-6">
-      <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-        <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-        <AdSlot format="rectangle" />
-      </div>
-      <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-        <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-        <AdSlot format="rectangle" />
-      </div>
-    </aside>
     </div>
   );
 }

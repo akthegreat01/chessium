@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
-import AdSlot from "@/components/ui/AdSlot";
 import { motion } from "motion/react";
 
 interface Message {
@@ -150,10 +149,10 @@ export default function ChatPage() {
       </div>
 
       {/* Main Container */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="max-w-5xl mx-auto">
         
-        {/* Center Panel - Live Chat Window (Expanded to 9 columns) */}
-        <div className="lg:col-span-9 bg-[#141416] border border-[#2a2a30] rounded-2xl flex flex-col overflow-hidden shadow-elevated h-[600px]">
+        {/* Center Panel - Live Chat Window */}
+        <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl flex flex-col overflow-hidden shadow-elevated h-[600px]">
           {/* Active Channel Header */}
           <div className="p-4 border-b border-[#2a2a30] flex items-center justify-between bg-[#18181b]">
             <div className="flex flex-col">
@@ -233,20 +232,6 @@ export default function ChatPage() {
             )}
           </div>
         </div>
-
-        {/* Right Sidebar - Ad Space Only (3 columns) */}
-        <div className="lg:col-span-3 space-y-4">
-          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-4 flex flex-col items-center">
-            <h2 className="text-[10px] font-bold text-[#6b6b75] uppercase tracking-wider mb-3 self-start">SPONSOR</h2>
-            <AdSlot slot="forum-sidebar-top" format="rectangle" className="w-full" />
-          </div>
-
-          <div className="bg-[#141416] border border-[#2a2a30] rounded-2xl p-4 flex flex-col items-center">
-            <h2 className="text-[10px] font-bold text-[#6b6b75] uppercase tracking-wider mb-3 self-start">SPONSOR</h2>
-            <AdSlot slot="forum-sidebar-bottom" format="rectangle" className="w-full" />
-          </div>
-        </div>
-
       </div>
     </div>
   );

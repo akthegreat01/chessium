@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Board from "@/components/chess/Board";
 import { Chess } from "chess.js";
 import { motion, AnimatePresence } from "motion/react";
-import AdSlot from "@/components/ui/AdSlot";
 
 const GAMES = [
   { id: 1, white: "Anonymous", black: "Anonymous", realElo: 1200, pgn: "1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. c3 Nf6 5. d4 exd4 6. cxd4 Bb4+ 7. Bd2 Bxd2+ 8. Nbxd2 d5 9. exd5 Nxd5 10. Qb3 Na5 11. Qa4+ Nc6 12. Qb3" },
@@ -227,10 +226,8 @@ export default function GuessTheEloPage() {
                 </button>
               </motion.div>
             </AnimatePresence>
-          )}
+        )}
         </div>
-
-        <AdSlot format="square" />
       </div>
 
     </div>

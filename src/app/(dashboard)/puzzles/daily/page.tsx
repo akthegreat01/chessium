@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef } from "react";
 import Board from "@/components/chess/Board";
 import { Chess } from "chess.js";
-import AdSlot from "@/components/ui/AdSlot";
 import Link from "next/link";
 import { getAnyRandomPuzzle } from "@/lib/chess/puzzles-db";
 
@@ -283,7 +282,6 @@ export default function DailyPuzzlePage() {
             )}
           </div>
           
-          <AdSlot slot="daily-puzzle-sidebar" />
         </div>
       </div>
     </div>

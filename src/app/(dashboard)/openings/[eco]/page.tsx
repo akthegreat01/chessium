@@ -7,7 +7,6 @@ import { OPENINGS_DB, Opening } from "@/lib/chess/openings-db";
 import { Chess, Move } from "chess.js";
 import Board from "@/components/chess/Board";
 import { useSettings } from "@/contexts/SettingsContext";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default function OpeningExplorerPage() {
   const params = useParams();
@@ -171,9 +170,6 @@ export default function OpeningExplorerPage() {
                     {paragraph}
                   </p>
                 ))}
-                <div className="my-6">
-                  <AdSlot format="horizontal" />
-                </div>
               </div>
             )}
             
@@ -185,10 +181,6 @@ export default function OpeningExplorerPage() {
                 </p>
               </div>
             )}
-
-            <div className="my-6">
-              <AdSlot format="horizontal" />
-            </div>
             
             <h4 className="font-bold text-white mb-3 flex items-center gap-2">
               <svg className="w-5 h-5 text-[#81b64c]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -230,10 +222,8 @@ export default function OpeningExplorerPage() {
                   </React.Fragment>
                 );
               })}
-            </div>
-            <div className="mt-auto">
-              <AdSlot format="square" />
-            </div>
+            
+          </div>
           </div>
 
         </div>

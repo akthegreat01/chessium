@@ -6,7 +6,6 @@ import { Chess } from "chess.js";
 import { motion, AnimatePresence } from "motion/react";
 import { getAnyRandomPuzzle, PuzzleData } from "@/lib/chess/puzzles-db";
 import Link from "next/link";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default function PuzzleSurvivalPage() {
   const [lives, setLives] = useState(3);
@@ -246,15 +245,11 @@ export default function PuzzleSurvivalPage() {
           >
             {streak}
           </motion.div>
-          
           <div className="text-[#a0a0a8] font-medium flex items-center gap-2 bg-[#1a1a1f] px-4 py-2 rounded-lg border border-[#2a2a30]">
             Best Streak: <span className="text-white font-bold">{bestStreak}</span>
           </div>
         </div>
-
-        <AdSlot format="square" />
       </div>
-
     </div>
   );
 }

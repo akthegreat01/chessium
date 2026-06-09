@@ -2,8 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import Link from "next/link";
-import AdSlot from "@/components/ui/AdSlot";
 import { COURSES_DB } from "@/lib/chess/courses-db";
 
 export default function CoursesPage() {
@@ -21,18 +19,8 @@ export default function CoursesPage() {
   }, []);
 
   return (
-    <div className="max-w-[1400px] mx-auto flex gap-6">
-      {/* Left Sidebar Ad — Desktop only */}
-      <aside className="hidden xl:flex flex-col gap-6 w-[180px] shrink-0 sticky top-20 self-start pt-2">
-        <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-          <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-          <AdSlot format="rectangle" />
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 max-w-6xl space-y-8">
-        {/* Header */}
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Header */}
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-r from-[#141416] to-[#1a1a1f] border border-[#2a2a30] p-8 md:p-12 shadow-2xl">
           <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] pointer-events-none mix-blend-overlay"></div>
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#81b64c]/10 blur-[100px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
@@ -45,11 +33,6 @@ export default function CoursesPage() {
               Learn step-by-step from interactive lessons. Understand the theory, practice the moves, and apply them in your games.
             </p>
           </div>
-        </div>
-
-        {/* Top Native Banner Ad */}
-        <div>
-          <AdSlot format="horizontal" />
         </div>
 
         {/* Courses Grid */}
@@ -132,21 +115,6 @@ export default function CoursesPage() {
               </Link>
             );
           })}
-        </div>
-
-        {/* Bottom Native Banner Ad */}
-        <div className="mt-8">
-          <AdSlot format="horizontal" />
-        </div>
-      </div>
-
-      {/* Right Sidebar Ad — Desktop only */}
-      <aside className="hidden xl:flex flex-col gap-6 w-[180px] shrink-0 sticky top-20 self-start pt-2">
-        <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-          <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-          <AdSlot format="rectangle" />
-        </div>
-      </aside>
-    </div>
+        </div>    </div>
   );
 }

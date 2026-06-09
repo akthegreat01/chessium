@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "motion/react";
-import AdSlot from "@/components/ui/AdSlot";
 import { createClubAction } from "./actions";
 
 export default function CreateClubPage() {
@@ -97,10 +96,6 @@ export default function CreateClubPage() {
           </button>
         </form>
       </motion.div>
-      
-      <div className="mt-8">
-        <AdSlot format="horizontal" />
-      </div>
     </div>
   );
 }

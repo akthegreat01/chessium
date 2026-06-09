@@ -1,21 +1,10 @@
 import React from "react";
 import Link from "next/link";
 import { OPENINGS_DB } from "@/lib/chess/openings-db";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default function OpeningsDirectoryPage() {
   return (
-    <div className="max-w-[1400px] mx-auto flex gap-6">
-      {/* Left Sidebar Ad — Desktop only */}
-      <aside className="hidden xl:flex flex-col gap-6 w-[180px] shrink-0 sticky top-20 self-start pt-2">
-        <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-          <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-          <AdSlot format="rectangle" />
-        </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="flex-1 max-w-6xl flex flex-col gap-8 min-h-[calc(100vh-8rem)]">
+    <div className="max-w-6xl mx-auto flex flex-col gap-8 min-h-[calc(100vh-8rem)]">
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
             Chess Openings <span className="text-[#81b64c]">Encyclopedia</span>
@@ -23,10 +12,6 @@ export default function OpeningsDirectoryPage() {
           <p className="text-[#a0a0a8] max-w-2xl mx-auto text-lg">
             Master the opening phase of the game. Browse our comprehensive database of chess openings, study the theory, and practice the main lines.
           </p>
-        </div>
-
-        <div className="mb-4">
-          <AdSlot format="horizontal" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -69,11 +54,6 @@ export default function OpeningsDirectoryPage() {
             </Link>
           ))}
         </div>
-
-        {/* Bottom Ad + CTA */}
-        <div className="mt-4">
-          <AdSlot format="horizontal" />
-        </div>
         
         <div className="mt-4 bg-[#1a1a1f] border border-[#2a2a30] rounded-2xl p-8 text-center shadow-elevated">
           <h3 className="text-xl font-bold text-white mb-2">Want to learn more?</h3>
@@ -82,15 +62,6 @@ export default function OpeningsDirectoryPage() {
             Browse Video Courses
           </Link>
         </div>
-      </div>
-
-      {/* Right Sidebar Ad — Desktop only */}
-      <aside className="hidden xl:flex flex-col gap-6 w-[180px] shrink-0 sticky top-20 self-start pt-2">
-        <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-          <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-          <AdSlot format="rectangle" />
-        </div>
-      </aside>
     </div>
   );
 }

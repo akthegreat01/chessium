@@ -3,7 +3,6 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import Board from "@/components/chess/Board";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default function PuzzlesPage() {
   return (
@@ -90,10 +89,6 @@ export default function PuzzlesPage() {
             </div>
           </div>
         </Link>
-      </div>
-      
-      <div className="mt-8">
-        <AdSlot slot="puzzles-bottom" />
       </div>
     </div>
   );

@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import { MASTER_GAMES } from "@/lib/chess/master-games-db";
-import AdSlot from "@/components/ui/AdSlot";
 import { motion } from "motion/react";
 
 export default function MasterGamesPage() {
@@ -64,10 +63,6 @@ export default function MasterGamesPage() {
             </motion.div>
           </Link>
         ))}
-      </div>
-      
-      <div className="mt-8">
-        <AdSlot slot="master-games-bottom" />
       </div>
     </div>
   );

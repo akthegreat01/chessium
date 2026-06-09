@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ENDGAMES_DB } from "@/lib/chess/endgames-db";
 import Board from "@/components/chess/Board";
 import { motion } from "motion/react";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default function EndgamesPage() {
   const [filter, setFilter] = useState<"all" | "Pawn" | "Rook" | "Minor Piece" | "Queen">("all");
@@ -29,10 +28,6 @@ export default function EndgamesPage() {
             Master the final phase of the game. Learn the theoretical wins and draws that every competitive player must know.
           </p>
         </div>
-      </div>
-
-      <div className="my-6">
-        <AdSlot format="horizontal" />
       </div>
 
       {/* Filters */}
@@ -94,10 +89,6 @@ export default function EndgamesPage() {
             </motion.div>
           </Link>
         ))}
-      </div>
-      
-      <div className="mt-8">
-        <AdSlot format="horizontal" />
       </div>
     </div>
   );

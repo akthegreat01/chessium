@@ -4,7 +4,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ReactMarkdown from 'react-markdown';
 import Link from "next/link";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -14,106 +13,40 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     notFound();
   }
 
-  // Split content into paragraphs for ad injection
-  const contentSections = post.content.split('\n\n');
-  const midPoint = Math.floor(contentSections.length / 2);
-  const thirdPoint = Math.floor(contentSections.length / 3);
-  const twoThirdPoint = Math.floor((contentSections.length * 2) / 3);
 
-  const section1 = contentSections.slice(0, thirdPoint).join('\n\n');
-  const section2 = contentSections.slice(thirdPoint, twoThirdPoint).join('\n\n');
-  const section3 = contentSections.slice(twoThirdPoint).join('\n\n');
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white flex flex-col">
       <Navbar />
       <main className="flex-1 pt-32 pb-16 px-6 w-full">
-        <div className="max-w-7xl mx-auto flex gap-8">
-          {/* Left Sidebar Ad — Desktop only */}
-          <aside className="hidden xl:flex flex-col gap-6 w-[180px] shrink-0 sticky top-32 self-start">
-            <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-              <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-              <AdSlot format="rectangle" />
+        <div className="max-w-3xl mx-auto">
+          <Link href="/blog" className="inline-flex items-center text-[#a0a0a8] hover:text-white mb-8 transition-colors">
+            <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Blog
+          </Link>
+          
+          <article>
+            <header className="mb-12">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#81b64c]/20 text-[#81b64c]">
+                  {post.category}
+                </span>
+                <span className="text-sm text-[#6b6b75]">{post.date}</span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+                {post.title}
+              </h1>
+              <p className="text-xl text-[#a0a0a8] leading-relaxed">
+                {post.excerpt}
+              </p>
+            </header>
+
+            <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-a:text-[#81b64c] hover:prose-a:text-[#9fcc6b] prose-strong:text-white prose-ul:list-disc prose-ol:list-decimal">
+              <ReactMarkdown>{post.content}</ReactMarkdown>
             </div>
-            <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-              <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-              <AdSlot format="rectangle" />
-            </div>
-          </aside>
-
-          {/* Main Content */}
-          <div className="flex-1 max-w-3xl mx-auto">
-            <Link href="/blog" className="inline-flex items-center text-[#a0a0a8] hover:text-white mb-8 transition-colors">
-              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Blog
-            </Link>
-            
-            <article>
-              <header className="mb-12">
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="px-3 py-1 rounded-full text-sm font-semibold bg-[#81b64c]/20 text-[#81b64c]">
-                    {post.category}
-                  </span>
-                  <span className="text-sm text-[#6b6b75]">{post.date}</span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-                  {post.title}
-                </h1>
-                <p className="text-xl text-[#a0a0a8] leading-relaxed">
-                  {post.excerpt}
-                </p>
-              </header>
-
-              {/* Top Native Banner Ad */}
-              <div className="mb-8">
-                <AdSlot format="horizontal" />
-              </div>
-
-              {/* Section 1 */}
-              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-a:text-[#81b64c] hover:prose-a:text-[#9fcc6b] prose-strong:text-white prose-ul:list-disc prose-ol:list-decimal mb-8">
-                <ReactMarkdown>{section1}</ReactMarkdown>
-              </div>
-
-              {/* Mid-article Native Banner Ad */}
-              <div className="my-8 py-4 border-y border-[#1e1e21]">
-                <AdSlot format="horizontal" />
-              </div>
-
-              {/* Section 2 */}
-              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-a:text-[#81b64c] hover:prose-a:text-[#9fcc6b] prose-strong:text-white prose-ul:list-disc prose-ol:list-decimal mb-8">
-                <ReactMarkdown>{section2}</ReactMarkdown>
-              </div>
-
-              {/* Second mid-article Native Banner Ad */}
-              <div className="my-8 py-4 border-y border-[#1e1e21]">
-                <AdSlot format="horizontal" />
-              </div>
-
-              {/* Section 3 */}
-              <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-a:text-[#81b64c] hover:prose-a:text-[#9fcc6b] prose-strong:text-white prose-ul:list-disc prose-ol:list-decimal">
-                <ReactMarkdown>{section3}</ReactMarkdown>
-              </div>
-
-              {/* Bottom Native Banner Ad */}
-              <div className="mt-10 pt-6 border-t border-[#1e1e21]">
-                <AdSlot format="horizontal" />
-              </div>
-            </article>
-          </div>
-
-          {/* Right Sidebar Ad — Desktop only */}
-          <aside className="hidden xl:flex flex-col gap-6 w-[180px] shrink-0 sticky top-32 self-start">
-            <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-              <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-              <AdSlot format="rectangle" />
-            </div>
-            <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-              <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-              <AdSlot format="rectangle" />
-            </div>
-          </aside>
+          </article>
         </div>
       </main>
       <Footer />

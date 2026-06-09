@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import AdSlot from "@/components/ui/AdSlot";
 
 interface StatData {
   blitz: number | string;
@@ -151,10 +150,6 @@ export default function StatisticsPage() {
             {isLoading ? <div className="w-24 h-10 bg-[#2a2a30] rounded animate-pulse"></div> : stats.puzzles}
           </div>
         </div>
-      </div>
-
-      <div className="my-2">
-        <AdSlot format="horizontal" />
       </div>
 
       {/* Charts Section */}

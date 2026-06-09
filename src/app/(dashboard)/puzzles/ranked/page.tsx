@@ -6,7 +6,6 @@ import { Chess } from "chess.js";
 import { getAnyRandomPuzzle, PuzzleData } from "@/lib/chess/puzzles-db";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default function RankedPuzzlePage() {
   const [elo, setElo] = useState<number>(1200);
@@ -294,12 +293,8 @@ export default function RankedPuzzlePage() {
                 </button>
               )}
             </div>
-            
           </div>
           
-          <div className="mt-auto">
-            <AdSlot />
-          </div>
         </div>
       </div>
     </div>

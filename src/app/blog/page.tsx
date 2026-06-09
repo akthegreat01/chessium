@@ -2,7 +2,6 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { BLOG_POSTS } from "./data";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default function BlogPage() {
   const posts = BLOG_POSTS;
@@ -11,17 +10,10 @@ export default function BlogPage() {
     <div className="min-h-screen bg-[#0a0a0b] text-white flex flex-col">
       <Navbar />
       <main className="flex-1 pt-32 pb-16 px-6 w-full">
-        <div className="max-w-7xl mx-auto flex gap-8">
-          {/* Main Content */}
-          <div className="flex-1 max-w-5xl">
+        <div className="max-w-5xl mx-auto">
             <div className="mb-12">
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">Chessium Blog</h1>
               <p className="text-[#a0a0a8] text-lg">Insights, tutorials, and updates from the Chessium team.</p>
-            </div>
-
-            {/* Top Native Banner Ad */}
-            <div className="mb-8">
-              <AdSlot format="horizontal" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -52,26 +44,7 @@ export default function BlogPage() {
                   </Link>
                 </div>
               ))}
-            </div>
-
-            {/* Bottom Native Banner Ad */}
-            <div className="mt-10">
-              <AdSlot format="horizontal" />
-            </div>
-          </div>
-
-          {/* Right Sidebar Ads — Desktop only */}
-          <aside className="hidden xl:flex flex-col gap-6 w-[180px] shrink-0 sticky top-32 self-start">
-            <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-              <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-              <AdSlot format="rectangle" />
-            </div>
-            <div className="bg-[#111113] border border-[#1e1e21] rounded-2xl p-3 flex flex-col items-center">
-              <span className="text-[9px] font-bold text-[#4a4a55] uppercase tracking-wider mb-2">Sponsor</span>
-              <AdSlot format="rectangle" />
-            </div>
-          </aside>
-        </div>
+            </div>        </div>
       </main>
       <Footer />
     </div>

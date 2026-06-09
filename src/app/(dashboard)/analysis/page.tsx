@@ -8,7 +8,6 @@ import EvalGraph from "@/components/chess/EvalGraph";
 import EngineLines from "@/components/chess/EngineLines";
 import { useChessGame } from "@/hooks/useChessGame";
 import { useStockfish } from "@/hooks/useStockfish";
-import AdSlot from "@/components/ui/AdSlot";
 import { analyzeGame } from "@/lib/chess/analysis";
 import { getEngine } from "@/lib/chess/engine";
 import { playMoveSound } from "@/lib/audio";
@@ -840,10 +839,7 @@ export default function AnalysisPage() {
             </svg>
           </button>
         </div>
-
-        <div className="mt-auto pt-2 shrink-0">
-          <AdSlot slot="analysis-bottom" />
-        </div>
+        
       </div>
     </div>
   );

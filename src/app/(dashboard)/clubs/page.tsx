@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import { getClubs } from "@/lib/chess/clubs-db";
-import AdSlot from "@/components/ui/AdSlot";
 
 export default async function ClubsDirectoryPage() {
   const clubs = await getClubs();
@@ -23,10 +22,6 @@ export default async function ClubsDirectoryPage() {
             Explore Clubs
           </Link>
         </div>
-      </div>
-
-      <div className="mb-12">
-        <AdSlot format="horizontal" />
       </div>
 
       <div id="explore" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

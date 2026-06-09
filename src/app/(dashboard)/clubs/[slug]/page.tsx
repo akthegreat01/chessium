@@ -2,7 +2,6 @@ import React from "react";
 import Link from "next/link";
 import { getClubBySlug, getClubMembers } from "@/lib/chess/clubs-db";
 import LiveLeaderboard from "@/components/clubs/LiveLeaderboard";
-import AdSlot from "@/components/ui/AdSlot";
 import ClubActions from "@/components/clubs/ClubActions";
 import { createClient } from "@/lib/supabase/server";
 
@@ -75,7 +74,6 @@ export default async function ClubDashboardPage({ params }: { params: Promise<{ 
               This leaderboard connects directly to the Chess.com public API. Member ratings for Rapid and Blitz are fetched in real-time when you load this page. Ensure your Chess.com username is linked in your profile to appear on the board!
             </p>
           </div>
-          <AdSlot format="square" />
         </div>
       </div>
     </div>

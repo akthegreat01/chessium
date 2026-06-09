@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSettings } from "@/contexts/SettingsContext";
-import AdSlot from "@/components/ui/AdSlot";
 
 const FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
 const RANKS = ["1", "2", "3", "4", "5", "6", "7", "8"];
@@ -227,14 +226,7 @@ export default function VisionTrainerPage() {
             )}
           </AnimatePresence>
           
-          <div className="mt-auto hidden md:block">
-            <AdSlot format="square" />
-          </div>
         </div>
-      </div>
-      
-      <div className="mt-8 md:hidden">
-        <AdSlot format="horizontal" />
       </div>
     </div>
   );

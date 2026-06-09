@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Board from "@/components/chess/Board";
 import { Chess } from "chess.js";
-import AdSlot from "@/components/ui/AdSlot";
 import { getAnyRandomPuzzle } from "@/lib/chess/puzzles-db";
 import GlobalChat from "@/components/dashboard/GlobalChat";
 
@@ -401,11 +400,9 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   </Link>
-                )})
+                );
+              })
               )}
-            </div>
-            <div className="mt-4">
-               <AdSlot slot="dashboard-games-bottom" />
             </div>
           </div>
         </div>

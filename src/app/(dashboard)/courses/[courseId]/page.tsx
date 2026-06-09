@@ -5,7 +5,6 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { getCourse } from "@/lib/chess/courses-db";
 import { motion } from "motion/react";
-import AdSlot from "@/components/ui/AdSlot";
 import { useCourseProgress } from "@/hooks/useCourseProgress";
 
 export default function CourseOverviewPage() {
@@ -64,9 +63,6 @@ export default function CourseOverviewPage() {
                 {para}
               </p>
             ))}
-            <div className="mt-6 mb-2">
-              <AdSlot format="horizontal" />
-            </div>
           </div>
         )}
 
@@ -83,9 +79,6 @@ export default function CourseOverviewPage() {
                 </li>
               ))}
             </ul>
-            <div className="mt-8">
-              <AdSlot format="horizontal" />
-            </div>
           </div>
         )}
       </div>
@@ -167,10 +160,6 @@ export default function CourseOverviewPage() {
               );
             })}
           </div>
-        </div>
-        
-        <div className="mt-16">
-          <AdSlot format="horizontal" />
         </div>
       </div>
     </div>
